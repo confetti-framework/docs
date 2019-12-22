@@ -35,7 +35,7 @@ type User struct {
 func NewUser(app foundation.Application) Router {
 
 	// Receive the repository from the application container
-	userRepository := app.Ma ke(repository.User{})(repository.User)
+	userRepository := app.Make(repository.User{})(repository.User)
 
 	return User{app: app, repository: userRepository}
 }
@@ -46,12 +46,9 @@ func (u User) IsAdmin() bool {
 
 ```
 
-In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service that
- is able to retrieve users. In this context, our `UserRepository` most likely uses [~~Eloquent~~](/docs/{{version
- }}/eloquent) to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
+In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service that is able to retrieve users. In this context, our `UserRepository` most likely uses [~~Eloquent~~](/docs/{{version}}/eloquent) to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
 
-A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well
- as for contributing to the Lanvard core itself.
+A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well as for contributing to the Lanvard core itself.
 
 <a name="binding"></a>
 ## Binding
@@ -65,20 +62,17 @@ Almost all of your service container bindings will be registered within [service
 
 #### Simple Bindings
 
-Within a service provider, you always have access to the container via the `app.Container` property. We can register
- a binding using the `Bind` method, passing the struct or interface that we wish to register along with a `Closure
- ` that returns an instance of the struct:
-```go
-app.Container.Bind((*contract.ErrorHandling)(nil), function (app) {
-    return logging.Error{app, container.Make(http.Client{}).(http.Client)}
-}
-```
+Within a service provider, you always have access to the container via the `app.Container` property. We can register a binding using the `Bind` method, passing the struct or interface that we wish to register along with a `Closure` that returns an instance of the struct:
+
+    app.Container.Bind((*contract.ErrorHandling)(nil), function (app) {
+        return logging.Error{app, container.Make(http.Client{}).(http.Client)}
+    }
+
 Note that we receive the container itself as an argument to the resolver. We can then use the container to resolve sub-dependencies of the object we are building.
 
 #### Binding A Singleton
 
-The `Singleton` method binds a class or interface into the container that should only be resolved one time. Once a
- singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
+The `Singleton` method binds a struct or interface into the container that should only be resolved one time. Once a singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
 
 	app.Container.Singleton(
 		testStruct{},
@@ -89,8 +83,7 @@ The `Singleton` method binds a class or interface into the container that should
 
 #### Binding Instances
 
-You may also bind an existing object instance into the container using the `Instance` method. The given instance will
- always be returned on subsequent calls into the container:
+You may also bind an existing object instance into the container using the `Instance` method. The given instance will always be returned on subsequent calls into the container:
 
 	user := model.NewUser()
 	app.Container.Instance("admin.User", user)
@@ -98,35 +91,21 @@ You may also bind an existing object instance into the container using the `Inst
 <a name="binding-interfaces-to-implementations"></a>
 ### Binding Interfaces To Implementations
 
-A very powerful feature of the service container is its ability to bind an interface to a given implementation. For example, let's assume we have an `EventPusher` interface and a `RedisEventPusher` implementation. Once we have coded our `RedisEventPusher` implementation of this interface, we can register it with the service container like so:
+A very powerful feature of the service container is its ability to bind an interface to a given implementation. For example, let's assume we have an `contract.EventPusher` interface and a `redis.EventPusher` implementation. Once we have coded our `redis.EventPusher` implementation of this interface, we can register it with the service container like so:
 
-    $this->app->bind(
-        'App\Contracts\EventPusher',
-        'App\Services\RedisEventPusher'
-    );
+	app.Bind(
+		(*contract.EventPusher)(nil),
+		redis.EventPusher{},
+	)
 
-This statement tells the container that it should inject the `RedisEventPusher` when a class needs an implementation of `EventPusher`. Now we can type-hint the `EventPusher` interface in a constructor, or any other location where dependencies are injected by the service container:
+This statement tells the container that it should inject the `redis.EventPusher` when a struct needs an implementation of `contract.EventPusher`. Now we can type-hint the `contract.EventPusher` interface in a constructor, or any other location where dependencies are injected by the service container:
 
-    use App\Contracts\EventPusher;
-
-    /**
-     * Create a new class instance.
-     *
-     * @param  EventPusher  $pusher
-     * @return void
-     */
-    public function __construct(EventPusher $pusher)
-    {
-        $this->pusher = $pusher;
-    }
+	eventPusher := app.Make((*contract.EventPusher)(nil))(contract.EventPusher)
 
 <a name="contextual-binding"></a>
 ### Contextual Binding
 
-Sometimes you may have two classes that utilize the same interface, but you wish to inject different implementations
- into each class. For example, two controllers may depend on different implementations of the `Illuminate\Contracts
- \Filesystem\Filesystem` [contract](/docs/{{version}}/contracts). Lanvard provides a simple, fluent interface for
-  defining this behavior:
+Sometimes you may have two structures that utilize the same interface, but you wish to inject different implementations into each struct. For example, two controllers may depend on different implementations of the `Illuminate\Contracts\Filesystem\Filesystem` [contract](/docs/{{version}}/contracts). Lanvard provides a simple, fluent interface for defining this behavior:
 
     use App\Http\Controllers\PhotoController;
     use App\Http\Controllers\UploadController;
@@ -134,14 +113,14 @@ Sometimes you may have two classes that utilize the same interface, but you wish
     use Illuminate\Contracts\Filesystem\Filesystem;
     use Illuminate\Support\Facades\Storage;
 
-    $this->app->when(PhotoController::class)
-              ->needs(Filesystem::class)
+    $this->app->when(PhotoController::struct)
+              ->needs(Filesystem::struct)
               ->give(function () {
                   return Storage::disk('local');
               });
 
-    $this->app->when([VideoController::class, UploadController::class])
-              ->needs(Filesystem::class)
+    $this->app->when([VideoController::struct, UploadController::struct])
+              ->needs(Filesystem::struct)
               ->give(function () {
                   return Storage::disk('s3');
               });
@@ -172,7 +151,7 @@ Once the services have been tagged, you may easily resolve them all via the `tag
 
 The `extend` method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The `extend` method accepts a Closure, which should return the modified service, as its only argument. The Closure receives the service being resolved and the container instance:
 
-    $this->app->extend(Service::class, function ($service, $app) {
+    $this->app->extend(Service::struct, function ($service, $app) {
         return new DecoratedService($service);
     });
 
@@ -182,7 +161,9 @@ The `extend` method allows the modification of resolved services. For example, w
 <a name="the-make-method"></a>
 #### The `make` Method
 
-You may use the `make` method to resolve a class instance out of the container. The `make` method accepts the name of the class or interface you wish to resolve:
+You may use the `make` method to resolve a struct instance out of the container. The `make` method accepts the name of
+ the
+ struct or interface you wish to resolve:
 
     $api = $this->app->make('HelpSpot\API');
 
@@ -190,16 +171,20 @@ If you are in a location of your code that does not have access to the `$app` va
 
     $api = resolve('HelpSpot\API');
 
-If some of your class' dependencies are not resolvable via the container, you may inject them by passing them as an associative array into the `makeWith` method:
+If some of your struct' dependencies are not resolvable via the container, you may inject them by passing them as an
+ associative array into the `makeWith` method:
 
     $api = $this->app->makeWith('HelpSpot\API', ['id' => 1]);
 
 <a name="automatic-injection"></a>
 #### Automatic Injection
 
-Alternatively, and importantly, you may "type-hint" the dependency in the constructor of a class that is resolved by the container, including [controllers](/docs/{{version}}/controllers), [event listeners](/docs/{{version}}/events), [middleware](/docs/{{version}}/middleware), and more. Additionally, you may type-hint dependencies in the `handle` method of [queued jobs](/docs/{{version}}/queues). In practice, this is how most of your objects should be resolved by the container.
+Alternatively, and importantly, you may "type-hint" the dependency in the constructor of a struct that is resolved by
+ the
+ container, including [controllers](/docs/{{version}}/controllers), [event listeners](/docs/{{version}}/events), [middleware](/docs/{{version}}/middleware), and more. Additionally, you may type-hint dependencies in the `handle` method of [queued jobs](/docs/{{version}}/queues). In practice, this is how most of your objects should be resolved by the container.
 
-For example, you may type-hint a repository defined by your application in a controller's constructor. The repository will automatically be resolved and injected into the class:
+For example, you may type-hint a repository defined by your application in a controller's constructor. The repository
+ will automatically be resolved and injected into the struct:
 
     <?php
 
@@ -207,7 +192,7 @@ For example, you may type-hint a repository defined by your application in a con
 
     use App\Users\Repository as UserRepository;
 
-    class UserController extends Controller
+    struct UserController extends Controller
     {
         /**
          * The user repository instance.
@@ -246,7 +231,7 @@ The service container fires an event each time it resolves an object. You may li
         // Called when container resolves object of any type...
     });
 
-    $this->app->resolving(HelpSpot\API::class, function ($api, $app) {
+    $this->app->resolving(HelpSpot\API::struct, function ($api, $app) {
         // Called when container resolves objects of type "HelpSpot\API"...
     });
 
