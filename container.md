@@ -102,29 +102,6 @@ This statement tells the container that it should inject the `redis.EventPusher`
 
 	eventPusher := app.Make((*contract.EventPusher)(nil))(contract.EventPusher)
 
-<a name="contextual-binding"></a>
-### Contextual Binding
-
-Sometimes you may have two structures that utilize the same interface, but you wish to inject different implementations into each struct. For example, two controllers may depend on different implementations of the `Illuminate\Contracts\Filesystem\Filesystem` [contract](/docs/{{version}}/contracts). Lanvard provides a simple, fluent interface for defining this behavior:
-
-    use App\Http\Controllers\PhotoController;
-    use App\Http\Controllers\UploadController;
-    use App\Http\Controllers\VideoController;
-    use Illuminate\Contracts\Filesystem\Filesystem;
-    use Illuminate\Support\Facades\Storage;
-
-    $this->app->when(PhotoController::struct)
-              ->needs(Filesystem::struct)
-              ->give(function () {
-                  return Storage::disk('local');
-              });
-
-    $this->app->when([VideoController::struct, UploadController::struct])
-              ->needs(Filesystem::struct)
-              ->give(function () {
-                  return Storage::disk('s3');
-              });
-
 <a name="tagging"></a>
 ### Tagging
 
