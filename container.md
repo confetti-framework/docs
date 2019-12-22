@@ -77,27 +77,23 @@ Note that we receive the container itself as an argument to the resolver. We can
 
 #### Binding A Singleton
 
-The `singleton` method binds a class or interface into the container that should only be resolved one time. Once a singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
+The `Singleton` method binds a class or interface into the container that should only be resolved one time. Once a
+ singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
 
-    $this->app->singleton('HelpSpot\API', function ($app) {
-        return new HelpSpot\API($app->make('HttpClient'));
-    });
+	app.Container.Singleton(
+		testStruct{},
+		func() interface{} {
+			return testStruct{}
+		},
+	)
 
 #### Binding Instances
 
-You may also bind an existing object instance into the container using the `instance` method. The given instance will always be returned on subsequent calls into the container:
+You may also bind an existing object instance into the container using the `Instance` method. The given instance will
+ always be returned on subsequent calls into the container:
 
-    $api = new HelpSpot\API(new HttpClient);
-
-    $this->app->instance('HelpSpot\API', $api);
-
-#### Binding Primitives
-
-Sometimes you may have a class that receives some injected classes, but also needs an injected primitive value such as an integer. You may easily use contextual binding to inject any value your class may need:
-
-    $this->app->when('App\Http\Controllers\UserController')
-              ->needs('$variableName')
-              ->give($value);
+	user := model.NewUser()
+	app.Container.Instance("admin.User", user)
 
 <a name="binding-interfaces-to-implementations"></a>
 ### Binding Interfaces To Implementations
