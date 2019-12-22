@@ -102,21 +102,6 @@ This statement tells the container that it should inject the `redis.EventPusher`
 
 	eventPusher := app.Make((*contract.EventPusher)(nil))(contract.EventPusher)
 
-<a name="tagging"></a>
-### Tagging
-
-Occasionally, you may need to resolve all of a certain "category" of binding. For example, perhaps you are building a report aggregator that receives an array of many different `Report` interface implementations. After registering the `Report` implementations, you can assign them a tag using the `tag` method:
-
-    $this->app->bind('SpeedReport', function () {
-        //
-    });
-
-    $this->app->bind('MemoryReport', function () {
-        //
-    });
-
-    $this->app->tag(['SpeedReport', 'MemoryReport'], 'reports');
-
 Once the services have been tagged, you may easily resolve them all via the `tagged` method:
 
     $this->app->bind('ReportAggregator', function ($app) {
