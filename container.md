@@ -127,22 +127,11 @@ The `Extend` method allows the modification of resolved services. For example, w
 ## Resolving
 
 <a name="the-make-method"></a>
-#### The `make` Method
+#### The `Make` Method
 
-You may use the `make` method to resolve a struct instance out of the container. The `make` method accepts the name of
- the
- struct or interface you wish to resolve:
+You may use the `Make` method to resolve a struct instance out of the container. The `Make` method accepts the name of the struct or interface you wish to resolve:
 
-    $api = $this->app->make('HelpSpot\API');
-
-If you are in a location of your code that does not have access to the `$app` variable, you may use the global `resolve` helper:
-
-    $api = resolve('HelpSpot\API');
-
-If some of your struct' dependencies are not resolvable via the container, you may inject them by passing them as an
- associative array into the `makeWith` method:
-
-    $api = $this->app->makeWith('HelpSpot\API', ['id' => 1]);
+    kernel := app.Make("http.kernel").(http.Kernel)
 
 <a name="automatic-injection"></a>
 #### Automatic Injection
