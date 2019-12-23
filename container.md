@@ -4,9 +4,7 @@
 - [Binding](#binding)
     - [Binding Basics](#binding-basics)
     - [Binding Interfaces To Implementations](#binding-interfaces-to-implementations)
-    - [Contextual Binding](#contextual-binding)
-    - [Tagging](#tagging)
-    - [Extending Bindings](#extending-bindings)
+    - [Binding without abstract](#binding-without-abstract)
 - [Resolving](#resolving)
     - [The Make Method](#the-make-method)
     - [Automatic Injection](#automatic-injection)
@@ -50,6 +48,8 @@ In this example, the `User` struct needs to retrieve users from a data source. S
 
 A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well as for contributing to the Lanvard core itself.
 
+> Tests and examples: lanvard/foundation/test/container_test.go
+
 <a name="binding"></a>
 ## Binding
 
@@ -75,9 +75,9 @@ Note that we receive the container itself as an argument to the resolver. We can
 The `Singleton` method binds a struct or interface into the container that should only be resolved one time. Once a singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
 
 	app.Container.Singleton(
-		testStruct{},
+		model.User{},
 		func() interface{} {
-			return testStruct{}
+			return model.User{}
 		},
 	)
 
@@ -102,20 +102,26 @@ This statement tells the container that it should inject the `redis.EventPusher`
 
 	eventPusher := app.Make((*contract.EventPusher)(nil))(contract.EventPusher)
 
-Once the services have been tagged, you may easily resolve them all via the `tagged` method:
+<a name="binding-without-abstract"></a>
+### Binding without abstract
 
-    $this->app->bind('ReportAggregator', function ($app) {
-        return new ReportAggregator($app->tagged('reports'));
-    });
+If you want to bind a struct, but do not want to use an abstract, you can also omit the abstract:
+
+	app.Container.JustBind(http.Client{})
+
+	client := app.Make(http.Client{}).(http.Client)
 
 <a name="extending-bindings"></a>
 ### Extending Bindings
 
-The `extend` method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The `extend` method accepts a Closure, which should return the modified service, as its only argument. The Closure receives the service being resolved and the container instance:
+The `Extend` method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The `Extend` method accepts a Closure, which should return the modified service, as its only argument. The Closure receives the service being resolved and the container instance:
 
-    $this->app->extend(Service::struct, function ($service, $app) {
-        return new DecoratedService($service);
-    });
+	app.Container.Extend(redis.connection{}, func(service interface{}) interface{} {
+		connection := connection.(redis.connection)
+		connection.name = "cache"
+
+		return connection
+	})
 
 <a name="resolving"></a>
 ## Resolving
