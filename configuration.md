@@ -15,18 +15,20 @@
 
 All of the configuration files for the Lanvard framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
+> Tests: [lanvard/test/config_test.go](https://github.com/lanvard/lanvard/blob/master/test/config_test.go)
+
 <a name="environment-configuration"></a>
 ## Environment Configuration
 
 It is often helpful to have different configuration values based on the environment where the application is running. For example, you may wish to use a different cache driver locally than you do on your production server.
 
-To make this a cinch, Lanvard utilizes the [GoDotEnv](https://github.com/joho/godotenv) PHP library by John Barton. In a fresh Lanvard installation, the root directory of your application will contain a `.env` file.
+To make this a cinch, Lanvard utilizes the [GoDotEnv](https://github.com/joho/godotenv) library by John Barton. In a fresh Lanvard installation, the root directory of your application will contain a `.env` file.
 
 Your `.env` file should not be committed to your application's source control, since each developer / server using your application could require a different environment configuration. Furthermore, this would be a security risk in the event an intruder gains access to your source control repository, since any sensitive credentials would get exposed.
 
-If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By putting placeholder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application. You may also create a `.env.testing` file. This file will override the `.env` file when running PHPUnit tests or executing Artisan commands with the `--env=testing` option.
+If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By putting placeholder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application. You may also create a `.env.testing` file. This file will override the `.env` file when running unit tests ~~or executing Artisan commands with the `--env=testing` option.~~
 
-> {tip} Any variable in your `.env` file can be overridden by external environment variables such as server-level or system-level environment variables.
+> {tip} Any variable in your `.env` file can be set by external environment variables such as server-level or system-level environment variables.
 
 <a name="environment-variable-types"></a>
 ### Environment Variable Types

@@ -48,7 +48,7 @@ In this example, the `User` struct needs to retrieve users from a data source. S
 
 A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well as for contributing to the Lanvard core itself.
 
-> Tests and examples: lanvard/foundation/test/container_test.go
+> Tests: [foundation/test/container_test.go](https://github.com/lanvard/foundation/blob/master/test/container_test.go)
 
 <a name="binding"></a>
 ## Binding
