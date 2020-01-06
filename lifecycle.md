@@ -26,7 +26,7 @@ Next, the incoming request is sent to either the HTTP kernel or the console kern
 
 The HTTP kernel constructs the `http/kernel` struct, which defines an slice of `bootstrappers` that will be run before the request is executed. ~~These bootstrappers configure error handling, configure logging~~, [detect the application environment](/docs/{{version}}/configuration#environment-configuration), and perform other tasks that need to be done before the request is actually handled.
 
-The HTTP kernel also defines a list of HTTP [middleware](/docs/{{version}}/middleware) that all requests must pass through before being handled by the application. These middleware handle reading and writing the [HTTP session](/docs/{{version}}/session), ~~determining if the application is in maintenance mode~~, ~~[verifying the CSRF token](/docs/{{version}}/csrf)~~, and more. Feel free to add your own middleware.
+The HTTP kernel also defines a list of HTTP [middleware](/docs/{{version}}/middleware) that all requests must pass through before being handled by the application. Feel free to add your own middleware.
 
 #### Service Providers
 

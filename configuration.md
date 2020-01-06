@@ -1,7 +1,6 @@
 # Configuration
 
 - [Introduction](#introduction)
-- [Retrieving Configuration](#retrieving-configuration)
 - [Environment Configuration](#environment-configuration)
     - [Retrieving Environment Configuration](#retrieving-environment-configuration)
     - [Determining The Current Environment](#determining-the-current-environment)
@@ -15,18 +14,7 @@
 
 All of the configuration files for the Lanvard framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
-> Tests: [lanvard/test/config_test.go](https://github.com/lanvard/lanvard/blob/master/test/config_test.go)
-
-<a name="retrieving-configuration"></a>
-## Retrieving Configuration
-
-Retrieving a configuration is very easy. Because of strict typing you have fully autocomplete:
-
-    config.App.LineSeparator
-    
-If the configuration contains a type with methods, you can also use its methods:
-
-    config.App.BasePath.StoragePath()
+> Tests: [lanvard/test/config_test.go](https://github.com/lanvard/lanvard/blob/master/test/config_test.go) and [foundation/test/application_test.go](https://github.com/lanvard/foundation/blob/master/test/application_test.go#L42-L71)
 
 <a name="environment-configuration"></a>
 ## Environment Configuration
@@ -44,106 +32,43 @@ If you are developing with a team, you may wish to continue including a `.env.ex
 <a name="retrieving-environment-configuration"></a>
 ### Retrieving Environment Configuration
 
-All of the variables listed in this file will be loaded into the `$_ENV` PHP super-global when your application receives a request. However, you may use the `env` helper to retrieve values from these variables in your configuration files. In fact, if you review the Lanvard configuration files, you will notice several of the options already using this helper:
+All of the variables listed in this file will be loaded when your application is running for the first time. However, you may use the `environment` package to retrieve values from these variables in your configuration files. In fact, if you review the Lanvard configuration files, you will notice several of the options already using this package:
 
-    'debug' => env('APP_DEBUG', false),
+    Url: environment.StrEnvOr("APP_URL", "http://localhost"),
 
-The second value passed to the `env` function is the "default value". This value will be used if no environment variable exists for the given key.
+The second value passed to the `StrEnvOr` function is the "default value". This value will be used if no environment variable exists for the given key.
 
 <a name="determining-the-current-environment"></a>
 ### Determining The Current Environment
 
-The current application environment is determined via the `APP_ENV` variable from your `.env` file. You may access this value via the `environment` method on the `App` [facade](/docs/{{version}}/facades):
+The current application environment is determined via the `APP_ENV` variable from your `.env` file. You may access this value via the `Environment` method on the `Application` struct:
 
-    $environment = App::environment();
+    app.Environment()
 
-You may also pass arguments to the `environment` method to check if the environment matches a given value. The method will return `true` if the environment matches any of the given values:
+You may also pass arguments to the `IsEnvironment` method to check if the environment matches a given value. The method will return `true` if the environment matches any of the given values:
 
-    if (App::environment('local')) {
+    if app.IsEnvironment("local") {
         // The environment is local
     }
 
-    if (App::environment(['local', 'staging'])) {
+    if app.IsEnvironment("local", "staging") {
         // The environment is either local OR staging...
     }
 
 > {tip} The current application environment detection can be overridden by a server-level `APP_ENV` environment variable. This can be useful when you need to share the same application for different environment configurations, so you can set up a given host to match a given environment in your server's configurations.
 
-<a name="hiding-environment-variables-from-debug"></a>
-### Hiding Environment Variables From Debug Pages
-
-When an exception is uncaught and the `APP_DEBUG` environment variable is `true`, the debug page will show all environment variables and their contents. In some cases you may want to obscure certain variables. You may do this by updating the `debug_blacklist` option in your `config/app.php` configuration file.
-
-Some variables are available in both the environment variables and the server / request data. Therefore, you may need to blacklist them for both `$_ENV` and `$_SERVER`:
-
-    return [
-
-        // ...
-
-        'debug_blacklist' => [
-            '_ENV' => [
-                'APP_KEY',
-                'DB_PASSWORD',
-            ],
-
-            '_SERVER' => [
-                'APP_KEY',
-                'DB_PASSWORD',
-            ],
-
-            '_POST' => [
-                'password',
-            ],
-        ],
-    ];
-
 <a name="accessing-configuration-values"></a>
 ## Accessing Configuration Values
 
-You may easily access your configuration values using the global `config` helper function from anywhere in your application. The configuration values may be accessed using "dot" syntax, which includes the name of the file and option you wish to access. A default value may also be specified and will be returned if the configuration option does not exist:
+Retrieving a configuration is very easy. Because of strict typing you have fully autocomplete:
 
-    $value = config('app.timezone');
+    config.App.LineSeparator
+    
+If the configuration contains a type with methods, you can also use its methods:
 
-To set configuration values at runtime, pass an array to the `config` helper:
-
-    config(['app.timezone' => 'America/Chicago']);
+    config.App.BasePath.StoragePath()
 
 <a name="configuration-caching"></a>
 ## Configuration Caching
 
-To give your application a speed boost, you should cache all of your configuration files into a single file using the `config:cache` Artisan command. This will combine all of the configuration options for your application into a single file which will be loaded quickly by the framework.
-
-You should typically run the `php artisan config:cache` command as part of your production deployment routine. The command should not be run during local development as configuration options will frequently need to be changed during the course of your application's development.
-
-> {note} If you execute the `config:cache` command during your deployment process, you should be sure that you are only calling the `env` function from within your configuration files. Once the configuration has been cached, the `.env` file will not be loaded and all calls to the `env` function will return `null`.
-
-<a name="maintenance-mode"></a>
-## Maintenance Mode
-
-When your application is in maintenance mode, a custom view will be displayed for all requests into your application. This makes it easy to "disable" your application while it is updating or when you are performing maintenance. A maintenance mode check is included in the default middleware stack for your application. If the application is in maintenance mode, a `MaintenanceModeException` will be thrown with a status code of 503.
-
-To enable maintenance mode, execute the `down` Artisan command:
-
-    php artisan down
-
-You may also provide `message` and `retry` options to the `down` command. The `message` value may be used to display or log a custom message, while the `retry` value will be set as the `Retry-After` HTTP header's value:
-
-    php artisan down --message="Upgrading Database" --retry=60
-
-Even while in maintenance mode, specific IP addresses or networks may be allowed to access the application using the command's `allow` option:
-
-    php artisan down --allow=127.0.0.1 --allow=192.168.0.0/16
-
-To disable maintenance mode, use the `up` command:
-
-    php artisan up
-
-> {tip} You may customize the default maintenance mode template by defining your own template at `resources/views/errors/503.blade.php`.
-
-#### Maintenance Mode & Queues
-
-While your application is in maintenance mode, no [queued jobs](/docs/{{version}}/queues) will be handled. The jobs will continue to be handled as normal once the application is out of maintenance mode.
-
-#### Alternatives To Maintenance Mode
-
-Since maintenance mode requires your application to have several seconds of downtime, consider alternatives like [Envoyer](https://envoyer.io) to accomplish zero-downtime deployment with Lanvard.
+Configuration is built at the start when you run the application. So you don't have to cache the configuration manually.
