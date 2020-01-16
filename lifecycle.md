@@ -30,7 +30,7 @@ The HTTP kernel also defines a list of HTTP [middleware](/docs/{{version}}/middl
 
 #### Service Providers
 
-One of the most important Kernel bootstrapping actions is loading the [service providers](/doc/{{version}}/providers) for your application. All of the service providers for the application are configured in the `config/providers/providers.go` configuration file. First, the `Register` method will be called on all RegisterProviders (at compile time), then, once all providers have been registered, the `Boot` method will be called on the RegisterProviders (at compile time).
+One of the most important Kernel bootstrapping actions is loading the [service providers](/docs/{{version}}/providers) for your application. All of the service providers for the application are configured in the `config/providers/providers.go` configuration file. First, the `Register` method will be called on all RegisterProviders (at compile time), then, once all providers have been registered, the `Boot` method will be called on the RegisterProviders (at compile time).
  
  You can have a service provider with a register and a boot method. Than you have to add this service to RegisterProviders and BootProviders.
 
