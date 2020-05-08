@@ -21,16 +21,17 @@ Let's look at a simple example:
 package model
 
 import (
-    "github.com/lanvard/foundation"
+    "github.com/lanvard/contract/inter"
+"github.com/lanvard/foundation"
     "lanvard/app/repository"
 )
 
 type User struct {
-	app        foundation.Application
+	app        inter.App
 	repository repository.User
 }
 
-func NewUser(app foundation.Application) Router {
+func NewUser(app inter.App) User {
 
 	// Receive the repository from the application container
 	userRepository := app.Make(repository.User{})(repository.User)
@@ -41,10 +42,9 @@ func NewUser(app foundation.Application) Router {
 func (u User) IsAdmin() bool {
 	return u.repository.HasRole(u, "admin")
 }
-
 ```
 
-In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service that is able to retrieve users. In this context, our `UserRepository` most likely uses [~~Eloquent~~](/docs/{{version}}/eloquent) to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
+In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service is able to retrieve users. In this context, our `UserRepository` most likely uses [~~Eloquent~~](/docs/{{version}}/eloquent) to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
 
 A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well as for contributing to the Lanvard core itself.
 
@@ -62,19 +62,19 @@ Almost all of your service container bindings will be registered within [service
 
 #### Simple Bindings
 
-Within a service provider, you always have access to the container via the `app.Container` property. We can register a binding using the `Bind` method, passing the struct or interface that we wish to register along with a `Closure` that returns an instance of the struct:
+We can register a binding using the `Bind` method, passing the struct or interface that we wish to register along with a `Closure` that returns an instance of the struct:
 
-    app.Container.Bind((*contract.ErrorHandling)(nil), function (app) {
-        return logging.Error{app, container.Make(http.Client{}).(http.Client)}
+    app.Bind((*contract.ErrorHandling)(nil), function () {
+        return logging.Error{app, app.Make(http.Client{}).(http.Client)}
     }
 
-Note that we receive the container itself as an argument to the resolver. We can then use the container to resolve sub-dependencies of the object we are building.
+Note that we can then use the container to resolve sub-dependencies of the object we are building.
 
 #### Binding A Singleton
 
 The `Singleton` method binds a struct or interface into the container that should only be resolved one time. Once a singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
 
-	app.Container.Singleton(
+	app.Singleton(
 		model.User{},
 		func() interface{} {
 			return model.User{}
@@ -86,7 +86,7 @@ The `Singleton` method binds a struct or interface into the container that shoul
 You may also bind an existing object instance into the container using the `Instance` method. The given instance will always be returned on subsequent calls into the container:
 
 	user := model.NewUser()
-	app.Container.Instance("admin.User", user)
+	app.Instance("admin.User", user)
 
 <a name="binding-interfaces-to-implementations"></a>
 ### Binding Interfaces To Implementations
@@ -107,7 +107,7 @@ This statement tells the container that it should inject the `redis.EventPusher`
 
 If you want to bind a struct, but do not want to use an abstract, you can also omit the abstract:
 
-	app.Container.JustBind(http.Client{})
+	app.BindStruct(http.Client{})
 
 	client := app.Make(http.Client{}).(http.Client)
 
@@ -116,11 +116,11 @@ If you want to bind a struct, but do not want to use an abstract, you can also o
 
 The `Extend` method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The `Extend` method accepts a Closure, which should return the modified service, as its only argument. The Closure receives the service being resolved and the container instance:
 
-	app.Container.Extend(redis.connection{}, func(service interface{}) interface{} {
-		connection := connection.(redis.connection)
-		connection.name = "cache"
+	(*app.Container()).Extend(redis.connection{}, func(service interface{}) interface{} {
+		service := service.(redis.Connection)
+		service.SetName("cache")
 
-		return connection
+		return service
 	})
 
 <a name="resolving"></a>

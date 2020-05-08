@@ -12,9 +12,7 @@
 <a name="introduction"></a>
 ## Introduction
 
-All of the configuration files for the Lanvard framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
-
-> Tests: [lanvard/test/config_test.go](https://github.com/lanvard/lanvard/blob/master/test/config_test.go) and [foundation/test/application_test.go](https://github.com/lanvard/foundation/blob/master/test/application_test.go#L42-L71)
+All the configuration files for the Lanvard framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
 <a name="environment-configuration"></a>
 ## Environment Configuration
@@ -32,7 +30,7 @@ If you are developing with a team, you may wish to continue including a `.env.ex
 <a name="retrieving-environment-configuration"></a>
 ### Retrieving Environment Configuration
 
-All of the variables listed in this file will be loaded when your application is running for the first time. However, you may use the `environment` package to retrieve values from these variables in your configuration files. In fact, if you review the Lanvard configuration files, you will notice several of the options already using this package:
+All the variables listed in this file will be loaded when your application is running for the first time. However, you may use the `environment` package to retrieve values from these variables in your configuration files. In fact, if you review the Lanvard configuration files, you will notice several of the options already using this package:
 
     Url: environment.StrEnvOr("APP_URL", "http://localhost"),
 

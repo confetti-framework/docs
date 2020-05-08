@@ -12,11 +12,11 @@
 
 Service providers are the central place of all Lanvard application bootstrapping. Your own application, as well as all of Lanvard's core services are bootstrapped via service providers.
 
-Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit.
+~~Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit.~~
 
 But, what do we mean by "bootstrapped"? In general, we mean **registering** things, including registering service container bindings, event listeners, and even routes. Service providers are the central place to configure your application.
 
-If you open the `config/providers/provider.go` file included with Lanvard, you will see a `providers` struct. These are all of the service provider classes that will be loaded for your application.
+If you open the `config/provider.go` file included with Lanvard, you will see a `Providers` struct. These are all the service provider classes that will be loaded for your application.
 
 In this overview you will learn how to write your own service providers and register them with your Lanvard application.
 
@@ -25,14 +25,14 @@ In this overview you will learn how to write your own service providers and regi
 <a name="writing-service-providers"></a>
 ## Writing Service Providers
 
-All service providers implements the `RegisterServiceProvider` or `BootServiceProvider` interface. The service providers contain a `Register` and/or a `Boot` method. Within the `Register` method, you should **only bind things into the [service container](/docs/{{version}}/container)**. You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. You can have a service provider with a register and a boot method. Than you have to add this service to the RegisterProviders slice and the BootProviders slice.
+All service providers implements the `inter.RegisterServiceProvider` or `inter.BootServiceProvider` interface. The service providers contain a `Register` and/or a `Boot` method. Within the `Register` method, you should **only bind things into the [service container](/docs/{{version}}/container)**. You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. You can have a service provider with a register and a boot method. Then you have to add this service to the RegisterProviders slice, and the BootProviders slice.
 
 <a name="the-register-method"></a>
 ### The Register Method
 
 As mentioned previously, within the `Register` method, you should only bind things into the [service container](/docs/{{version}}/container). You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. Otherwise, you may accidentally use a service that is provided by a service provider which has not loaded yet.
 
-Let's take a look at a basic service provider. Within any of your service provider methods, you always have access to the `app` property which provides access to the service container:
+Let's take a look at a basic service provider. Within any of your service provider methods, you always have access to the `inter.App` property which provides access to the service container:
     
     package providers
     
@@ -44,9 +44,9 @@ Let's take a look at a basic service provider. Within any of your service provid
     type RiakServiceProvider struct{}
     
     // Register any application services.
-    func (r RiakServiceProvider) Register(app *foundation.Application) *foundation.Application {
+    func (r RiakServiceProvider) Register(app inter.App) inter.App {
 
-        app.Container.Singleton(database.connection, func() {
+        app.Container.Singleton(database.Connection{}, func() {
             return riak.NewConnection()
         })
 
@@ -71,7 +71,7 @@ So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#vi
     type ComposerServiceProvider struct{}
     
     // Register any application services.
-    func (r ComposerServiceProvider) Boot(app *foundation.Application) *foundation.Application {
+    func (r ComposerServiceProvider) Boot(app inter.App) inter.App {
 
         view.Composer("all_users", func() {
             return user_repository.AllUsers()
@@ -82,9 +82,9 @@ So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#vi
 
 #### Boot Method Dependency Injection
 
-You may use foundation.Application for your dependencies in your service provider's `boot` method. The [service container](/docs/{{version}}/container) will automatically inject any dependencies you need:
+You may use App for your dependencies in your service provider's `Boot` method. The [service container](/docs/{{version}}/container) will automatically inject any dependencies you need:
 
-    func (r ComposerServiceProvider) Boot(app *foundation.Application) *foundation.Application {
+    func (r ComposerServiceProvider) Boot(app inter.App) inter.App {
 
         eventPusher := app.Make("EventPusher")(contract.EventPusher)
         
@@ -96,19 +96,22 @@ You may use foundation.Application for your dependencies in your service provide
 <a name="registering-providers"></a>
 ## Registering Providers
 
-All service providers are registered in the `config/providers/providers.go` configuration file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Lanvard core service providers are listed in this struct. These providers bootstrap the core Lanvard components, such as the mailer, queue, cache, and others.
+All service providers are registered in the `config/providers.go` configuration file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Lanvard core service providers are listed in this struct. These providers bootstrap the core Lanvard components, such as the mailer, queue, cache, and others.
 
 To register your provider, add it to the slices:
 
 	RegisterProviders: []decorator.RegisterServiceProvider{
+	    providers.AppServiceProvider{},
 		providers.ComposerServiceProvider{},
 		
 		//
 	},
     BootProviders: []decorator.BootServiceProvider{
+        providers.AppServiceProvider{},
+        providers.RouteServiceProvider{},
         providers.ComposerServiceProvider{},
         
         //
     },
     
-If you have a service provider with a register and a boot method. Than you have to add this service to the RegisterProviders slice and the BootProviders slice.
+If you have a service provider with a register and a boot method, you have to add this service to the RegisterProviders slice, and the BootProviders slice.
