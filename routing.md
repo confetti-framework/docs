@@ -73,15 +73,15 @@ Sometimes you may need to register a route that responds to multiple HTTP verbs.
 
 If you are defining a route that redirects to another URI, you may use the `Route::redirect` method. This method provides a convenient shortcut so that you do not have to define a full route or controller for performing a simple redirect:
 
-    Route::redirect('/here', '/there');
+    Redirect("/here", "/there", 302)
 
-By default, `Route::redirect` returns a `302` status code. You may customize the status code using the optional third parameter:
+You may use the `TemporaryRedirect` method to return a `302` status code:
 
-    Route::redirect('/here', '/there', 301);
+    TemporaryRedirect("/here", "/there")
 
-You may use the `Route::permanentRedirect` method to return a `301` status code:
+Or the `PermanentRedirect` method to return a `301` status code:
 
-    Route::permanentRedirect('/here', '/there');
+    PermanentRedirect("/here", "/there")
 
 <a name="view-routes"></a>
 ### View Routes
