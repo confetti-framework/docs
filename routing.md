@@ -86,7 +86,7 @@ Or the `PermanentRedirect` method to return a `301` status code:
 <a name="view-routes"></a>
 ### View Routes
 
-If your route only needs to return a view, you may use the `Route::view` method. Like the `redirect` method, this method provides a simple shortcut so that you do not have to define a full route or controller. The `view` method accepts a URI as its first argument and a view name as its second argument. In addition, you may provide an array of data to pass to the view as an optional third argument:
+~~If your route only needs to return a view, you may use the `Route::view` method. Like the `redirect` method, this method provides a simple shortcut so that you do not have to define a full route or controller. The `view` method accepts a URI as its first argument and a view name as its second argument. In addition, you may provide an array of data to pass to the view as an optional third argument:~~
 
     Route::view('/welcome', 'welcome');
 
@@ -98,32 +98,39 @@ If your route only needs to return a view, you may use the `Route::view` method.
 <a name="required-parameters"></a>
 ### Required Parameters
 
-Sometimes you will need to capture segments of the URI within your route. For example, you may need to capture a user's ID from the URL. You may do so by defining route parameters:
+Sometimes you will need to capture segments of the URI within your route. For example, you may need to capture a username from the URL. You may do so by defining route parameters:
 
-    Route::get('user/{id}', function ($id) {
-        return 'User '.$id;
-    });
+	Get("/user/{username}", func(request inter.Request) inter.Response {
+		name := request.UrlValues().String("username")
+		return outcome.Html("User " + name)
+	}),
 
 You may define as many route parameters as required by your route:
 
-    Route::get('posts/{post}/comments/{comment}', function ($postId, $commentId) {
-        //
-    });
+	Get("posts/{post_id}/comments/{comment_alias}", func(request inter.Request) inter.Response {
+		postId := request.UrlValues().Number("post_id")
+		commentAlias := request.UrlValues().String("comment_alias")
+		//
+	}),
 
-Route parameters are always encased within `{}` braces and should consist of alphabetic characters, and may not contain a `-` character. Instead of using the `-` character, use an underscore (`_`). Route parameters are injected into route callbacks / controllers based on their order - the names of the callback / controller arguments do not matter.
+If the parameter cannot be found, a Lanvard exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
+
+    postId, err := request.UrlValues().NumberE("post_id")
+    commentAlias, err := request.UrlValues().StringE("comment_alias")
+
+Route parameters are always encased within `{}` braces and should consist of alphabetic characters, and may not contain a `-` character. Instead of using the `-` character, use an underscore (`_`). Route parameters are injected into the request struct.
 
 <a name="parameters-optional-parameters"></a>
 ### Optional Parameters
 
-Occasionally you may need to specify a route parameter, but make the presence of that route parameter optional. You may do so by placing a `?` mark after the parameter name. Make sure to give the route's corresponding variable a default value:
+Occasionally you may need to specify a route parameter, but make the presence of that route parameter optional. You may do so by placing a `?` mark after the parameter name. If no value is found, an empty string or a zero is given.
 
-    Route::get('user/{name?}', function ($name = null) {
-        return $name;
-    });
-
-    Route::get('user/{name?}', function ($name = 'John') {
-        return $name;
-    });
+	Get("users/{username?}/comment/{comment_id?}", func(request inter.Request) inter.Response {
+		userName := request.UrlValues().String("username")
+		// userName = ""
+		commentId := request.UrlValues().Number("comment_id")
+		// commentId = 0
+	}),
 
 <a name="parameters-regular-expression-constraints"></a>
 ### Regular Expression Constraints
