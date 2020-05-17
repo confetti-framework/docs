@@ -51,7 +51,6 @@ The router allows you to register routes that respond to any HTTP verb:
     Put("/photos/{photo}", controllers.Photos.Update),
     Patch("/photos/{photo}", controllers.Photos.Update),
     Delete("/photos/{photo}", controllers.Photos.Destroy),
-    
 
 Sometimes you may need to register a route that responds to multiple HTTP verbs. You may do so using the `Match` method. Or, you may even register a route that responds to all HTTP verbs using the `Any` method:
 
@@ -101,24 +100,24 @@ Or the `PermanentRedirect` method to return a `301` status code:
 Sometimes you will need to capture segments of the URI within your route. For example, you may need to capture a username from the URL. You may do so by defining route parameters:
 
 	Get("/user/{username}", func(request inter.Request) inter.Response {
-		name := request.UrlValues().String("username")
+		name := request.UrlValue("username").String()
 		return outcome.Html("User " + name)
 	}),
 
 You may define as many route parameters as required by your route:
 
 	Get("posts/{post_id}/comments/{comment_alias}", func(request inter.Request) inter.Response {
-		postId := request.UrlValues().Number("post_id")
-		commentAlias := request.UrlValues().String("comment_alias")
+		postId := request.UrlValue("post_id").Number()
+		commentAlias := request.UrlValue("comment_alias").String()
 		//
 	}),
 
 If the parameter cannot be found, a Lanvard exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
 
-    postId, err := request.UrlValues().NumberE("post_id")
-    commentAlias, err := request.UrlValues().StringE("comment_alias")
+    postId, err := request.UrlValue("post_id").NumberE()
+    commentAlias, err := request.UrlValue("comment_alias").StringE()
 
-Route parameters are always encased within `{}` braces and should consist of alphabetic characters, and may not contain a `-` character. Instead of using the `-` character, use an underscore (`_`). Route parameters are injected into the request struct.
+Route parameters are always encased within `{}` braces and should consist of alphabetic characters, and may not contain a `-` character. Instead of using the `-` character, use an underscore (`_`).
 
 <a name="parameters-optional-parameters"></a>
 ### Optional Parameters
@@ -126,11 +125,24 @@ Route parameters are always encased within `{}` braces and should consist of alp
 Occasionally you may need to specify a route parameter, but make the presence of that route parameter optional. You may do so by placing a `?` mark after the parameter name. If no value is found, an empty string or a zero is given.
 
 	Get("users/{username?}/comment/{comment_id?}", func(request inter.Request) inter.Response {
-		userName := request.UrlValues().String("username")
-		// userName = ""
-		commentId := request.UrlValues().Number("comment_id")
+		userName := request.UrlValue("username").string()
+        // userName = ""
+
+		commentId := request.UrlValue("comment_id").Number()
 		// commentId = 0
 	}),
+	
+Use Empty or Present to check if a value is present.
+
+        userName := request.UrlValue("username")
+        if userName.Empty() {
+            // userName is empty
+        }
+
+        commentId := request.UrlValue("comment_id")
+        if commentId.Present() {
+            commentId.Number()
+        }
 
 <a name="parameters-regular-expression-constraints"></a>
 ### Regular Expression Constraints
