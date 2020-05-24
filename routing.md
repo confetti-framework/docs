@@ -147,42 +147,37 @@ Use Empty or Present to check if a value is present.
 <a name="parameters-regular-expression-constraints"></a>
 ### Regular Expression Constraints
 
-You may constrain the format of your route parameters using the `where` method on a route instance. The `where` method accepts the name of the parameter and a regular expression defining how the parameter should be constrained:
+You may constrain the format of your route parameters using regex. The key and regular expression must be separated by a colon:
 
-    Route::get('user/{name}', function ($name) {
-        //
-    })->where('name', '[A-Za-z]+');
+    Get("/user/{username:[A-Za-z]+}", controllers.User.Show),
+    Get("/user/{id:[0-9]+}", controllers.User.Show),
 
-    Route::get('user/{id}', function ($id) {
-        //
-    })->where('id', '[0-9]+');
+Or define a restriction separately:
 
-    Route::get('user/{id}/{name}', function ($id, $name) {
-        //
-    })->where(['id' => '[0-9]+', 'name' => '[a-z]+']);
+    Get("/user/{id}", controllers.User.Show).Where("id", "[0-9]+")
 
 <a name="parameters-global-constraints"></a>
 #### Global Constraints
 
-If you would like a route parameter to always be constrained by a given regular expression, you may use the `pattern` method. You should define these patterns in the `boot` method of your `RouteServiceProvider`:
+If you would like a route parameter to always be constrained by a given regular expression, you may use the `WhereMulti` method. You should define these patterns in the `Boot` method of your `RouteServiceProvider` after the collection is filled:
 
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Route::pattern('id', '[0-9]+');
+    // Define your router model bindings, pattern filters, etc.
+    func (p RouteServiceProvider) Boot() {
+        collection := routing.NewRouteCollection()
 
-        parent::boot();
+        collection.Merge(routes.Api)
+    	collection.Merge(routes.Web)
+
+        collection.WhereMulti(map[string]string{
+            // "id": "[0-9]+",
+            // "name": "[a-z_]+",
+        })
     }
 
 Once the pattern has been defined, it is automatically applied to all routes using that parameter name:
 
-    Route::get('user/{id}', function ($id) {
-        // Only executed if {id} is numeric...
-    });
+    // Only executed if {id} is numeric...
+    Get("/user/{id}", controllers.User.Show),
 
 <a name="parameters-encoded-forward-slashes"></a>
 #### Encoded Forward Slashes
