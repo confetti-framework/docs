@@ -70,7 +70,7 @@ Sometimes you may need to register a route that responds to multiple HTTP verbs.
 <a name="redirect-routes"></a>
 ### Redirect Routes
 
-If you are defining a route that redirects to another URI, you may use the `Route::redirect` method. This method provides a convenient shortcut so that you do not have to define a full route or controller for performing a simple redirect:
+If you are defining a route that redirects to another URI, you may use `Redirect`. This function provides a convenient shortcut so that you do not have to define a full route or controller for performing a simple redirect:
 
     Redirect("/here", "/there", 302)
 
@@ -169,8 +169,8 @@ If you would like a route parameter to always be constrained by a given regular 
     	collection.Merge(routes.Web)
 
         collection.WhereMulti(map[string]string{
-            // "id": "[0-9]+",
-            // "name": "[a-z_]+",
+            "id": "[0-9]+",
+            "username": "[a-z_]+",
         })
     }
 
@@ -184,9 +184,7 @@ Once the pattern has been defined, it is automatically applied to all routes usi
 
 The Lanvard routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `where` condition regular expression:
 
-    Route::get('search/{search}', function ($search) {
-        return $search;
-    })->where('search', '.*');
+    Get("/search/{search}", controllers.User.Index).Where("search", ".*")
 
 > {note} Encoded forward slashes are only supported within the last route segment.
 
