@@ -182,7 +182,7 @@ Once the pattern has been defined, it is automatically applied to all routes usi
 <a name="parameters-encoded-forward-slashes"></a>
 #### Encoded Forward Slashes
 
-The Lanvard routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `where` condition regular expression:
+The Lanvard routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `Where` condition regular expression:
 
     Get("/search/{search}", controllers.User.Index).Where("search", ".*")
 
@@ -191,17 +191,19 @@ The Lanvard routing component allows all characters except `/`. You must explici
 <a name="named-routes"></a>
 ## Named Routes
 
-Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `name` method onto the route definition:
+Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `Name` method onto the route definition:
 
-    Route::get('user/profile', function () {
-        //
-    })->name('profile');
+    Get("/users/roles", controllers.User.Roles.Index).Name("UsersRoles")
+    Get("/users/comments", controllers.User.Comments.Index).Name("UsersComments")
+    
+Or you can name a group:
 
-You may also specify route names for controller actions:
+    Group(
+        Get("/roles", emptyController()).Name("Roles"),
+        Get("/comments", emptyController()).Name("Comments"),
+    ).Prefix("/users").Name("Users")
 
-    Route::get('user/profile', 'UserProfileController@show')->name('profile');
-
-> {note} Route names should always be unique.
+The names of the above routes are `UsersRoles` and `UsersComments`.
 
 #### Generating URLs To Named Routes
 
