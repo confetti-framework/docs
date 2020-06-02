@@ -193,47 +193,57 @@ The Lanvard routing component allows all characters except `/`. You must explici
 
 Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `Name` method onto the route definition:
 
-    Get("/users/roles", controllers.User.Roles.Index).Name("UsersRoles")
-    Get("/users/comments", controllers.User.Comments.Index).Name("UsersComments")
+    Get("/user/roles", controllers.User.Role.Index).Name("UserRoles")
+    Get("/user/comments", controllers.User.Comment.Index).Name("UserComments")
     
 Or you can name a group:
 
     Group(
-        Get("/roles", emptyController()).Name("Roles"),
-        Get("/comments", emptyController()).Name("Comments"),
-    ).Prefix("/users").Name("Users")
+        Get("/roles", controllers.User.Role.Index).Name("Roles"),
+        Get("/comments", controllers.User.Comment.Index).Name("Comments"),
+    ).Prefix("/users").Name("User")
 
-The names of the above routes are `UsersRoles` and `UsersComments`.
+The names of the above routes are `UserRoles` and `UserComments`.
 
 #### Generating URLs To Named Routes
 
-Once you have assigned a name to a given route, you may use the route's name when generating URLs or redirects via the global `route` function:
+Once you have assigned a name to a given route, you may use the route's name when generating URLs via the
+`UrlByName` function:
 
     // Generating URLs...
-    $url = route('profile');
+    url := routing.UrlByName(app, "UserRoles")
 
+//////////////////////////////////////////////////////////////////////////////////////////
+Once you have assigned a name to a given route, you may use the route's name when redirects via the `........` function:
+// @todo
+    !!!!!!!!!!!!!!!!
     // Generating Redirects...
     return redirect()->route('profile');
+//////////////////////////////////////////////////////////////////////////////////////////
 
-If the named route defines parameters, you may pass the parameters as the second argument to the `route` function. The given parameters will automatically be inserted into the URL in their correct positions:
+If the named route defines parameters, you may pass the parameters as the third argument to the `UrlByName` function. The given parameters will automatically be inserted into the URL in their correct positions:
+    
+    Get("/user/{id}", controllers.User.Show).Name("User")
+    
+    url := routing.UrlByName(app, "User", routing.Parameters{"id": 12})
+    
+    // /user/12
+    
 
-    Route::get('user/{id}/profile', function ($id) {
-        //
-    })->name('profile');
+If you also want to build a query string, use the 5th parameter, those key / value pairs will automatically be added to the generated URL's query string:
+    
+    Get("/user/{id}", emptyController()).Name("User")
+    
+    routing.UrlByName(
+    		app,
+    		"User",
+    		routing.Parameters{"id": 12},
+    		routing.Parameters{"order_by": "name", "size": 50},
+    	)
 
-    $url = route('profile', ['id' => 1]);
+    // /user/12/profile?order_by=name&size=50
 
-If you pass additional parameters in the array, those key / value pairs will automatically be added to the generated URL's query string:
-
-    Route::get('user/{id}/profile', function ($id) {
-        //
-    })->name('profile');
-
-    $url = route('profile', ['id' => 1, 'photos' => 'yes']);
-
-    // /user/1/profile?photos=yes
-
-> {tip} Sometimes, you may wish to specify request-wide default values for URL parameters, such as the current locale. To accomplish this, you may use the [`URL::defaults` method](/docs/{{version}}/urls#default-values).
+~~> {tip} Sometimes, you may wish to specify request-wide default values for URL parameters, such as the current locale. To accomplish this, you may use the [`URL::defaults` method](/docs/{{version}}/urls#default-values).~~
 
 #### Inspecting The Current Route
 
@@ -298,6 +308,8 @@ Route groups may also be used to handle subdomain routing. Subdomains may be ass
             //
         });
     });
+
+!!!! @todo Test_full_url_by_name test/named_route_test.go:49
 
 > {note} In order to ensure your subdomain routes are reachable, you should register subdomain routes before registering root domain routes. This will prevent root domain routes from overwriting subdomain routes which have the same URI path.
 
