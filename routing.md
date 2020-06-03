@@ -207,19 +207,18 @@ The names of the above routes are `UserRoles` and `UserComments`.
 
 #### Generating URLs To Named Routes
 
-Once you have assigned a name to a given route, you may use the route's name when generating URLs via the
-`UrlByName` function:
+Once you have assigned a name to a given route, you may use the route's name when redirects via the `RedirectToRoute` function:
+
+    // Generating Redirects...
+    Get("/comments", func(request inter.Request) inter.Response {
+        return outcome.RedirectToRoute(request.App(), "UserRoles")
+    })
+
+Or you use the route's name when generating URLs via the
+   `UrlByName` function:
 
     // Generating URLs...
     url := routing.UrlByName(app, "UserRoles")
-
-//////////////////////////////////////////////////////////////////////////////////////////
-Once you have assigned a name to a given route, you may use the route's name when redirects via the `........` function:
-// @todo
-    !!!!!!!!!!!!!!!!
-    // Generating Redirects...
-    return redirect()->route('profile');
-//////////////////////////////////////////////////////////////////////////////////////////
 
 If the named route defines parameters, you may pass the parameters as the third argument to the `UrlByName` function. The given parameters will automatically be inserted into the URL in their correct positions:
     
@@ -230,9 +229,9 @@ If the named route defines parameters, you may pass the parameters as the third 
     // /user/12
     
 
-If you also want to build a query string, use the 5th parameter, those key / value pairs will automatically be added to the generated URL's query string:
+If you also want to build a query string, use the 4th parameter, those key / value pairs will automatically be added to the generated URL's query string:
     
-    Get("/user/{id}", emptyController()).Name("User")
+    Get("/user/{id}", controllers.User.Show).Name("User")
     
     routing.UrlByName(
     		app,
@@ -241,34 +240,26 @@ If you also want to build a query string, use the 5th parameter, those key / val
     		routing.Parameters{"order_by": "name", "size": 50},
     	)
 
-    // /user/12/profile?order_by=name&size=50
+    // /user/12?order_by=name&size=50
 
 ~~> {tip} Sometimes, you may wish to specify request-wide default values for URL parameters, such as the current locale. To accomplish this, you may use the [`URL::defaults` method](/docs/{{version}}/urls#default-values).~~
 
 #### Inspecting The Current Route
 
-If you would like to determine if the current request was routed to a given named route, you may use the `named` method on a Route instance. For example, you may check the current route name from a route middleware:
+If you would like to determine if the current request was routed to a given named route, you may use the `Named` method on a Route instance. For example, you may check the current route name from a route middleware:
 
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle($request, Closure $next)
-    {
-        if ($request->route()->named('profile')) {
+    func (v ValidatePostSize) Handle(request inter.Request, next inter.MiddlewareDestination) inter.Response {
+        if request.Route().Named("Profile") {
             //
         }
-
-        return $next($request);
+        
+        return next(request)
     }
 
 <a name="route-groups"></a>
 ## Route Groups
 
-Route groups allow you to share route attributes, such as middleware or namespaces, across a large number of routes without needing to define those attributes on each individual route. Shared attributes are specified in an array format as the first parameter to the `Route::group` method.
+Route groups allow you to share route attributes, such as middleware or prefixes, across a large number of routes without needing to define those attributes on each individual route. Shared attributes are specified in an array format as the first parameter to the `Group` method.
 
 Nested groups attempt to intelligently "merge" attributes with their parent group. Middleware and `where` conditions are merged while names, namespaces, and prefixes are appended. Namespace delimiters and slashes in URI prefixes are automatically added where appropriate.
 
