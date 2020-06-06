@@ -193,15 +193,15 @@ The Lanvard routing component allows all characters except `/`. You must explici
 
 Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `Name` method onto the route definition:
 
-    Get("/user/roles", controllers.User.Role.Index).Name("UserRoles")
-    Get("/user/comments", controllers.User.Comment.Index).Name("UserComments")
+    Get("/user/roles", controllers.User.Role.Index).Name("user.roles")
+    Get("/user/comments", controllers.User.Comment.Index).Name("user.comments")
     
 Or you can name a group:
 
     Group(
-        Get("/roles", controllers.User.Role.Index).Name("Roles"),
-        Get("/comments", controllers.User.Comment.Index).Name("Comments"),
-    ).Prefix("/users").Name("User")
+        Get("/roles", controllers.User.Role.Index).Name("roles"),
+        Get("/comments", controllers.User.Comment.Index).Name("comments"),
+    ).Prefix("/users").Name("user.")
 
 The names of the above routes are `UserRoles` and `UserComments`.
 
@@ -211,31 +211,31 @@ Once you have assigned a name to a given route, you may use the route's name whe
 
     // Generating Redirects...
     Get("/comments", func(request inter.Request) inter.Response {
-        return outcome.RedirectToRoute(request.App(), "UserRoles")
+        return outcome.RedirectToRoute(request.App(), "user.roles")
     })
 
 Or you use the route's name when generating URLs via the
    `UrlByName` function:
 
     // Generating URLs...
-    url := routing.UrlByName(app, "UserRoles")
+    url := routing.UrlByName(app, "user.roles")
 
 If the named route defines parameters, you may pass the parameters as the third argument to the `UrlByName` function. The given parameters will automatically be inserted into the URL in their correct positions:
     
-    Get("/user/{id}", controllers.User.Show).Name("User")
+    Get("/user/{id}", controllers.User.Show).Name("user")
     
-    url := routing.UrlByName(app, "User", routing.Parameters{"id": 12})
+    url := routing.UrlByName(app, "user", routing.Parameters{"id": 12})
     
     // /user/12
     
 
 If you also want to build a query string, use the 4th parameter, those key / value pairs will automatically be added to the generated URL's query string:
     
-    Get("/user/{id}", controllers.User.Show).Name("User")
+    Get("/user/{id}", controllers.User.Show).Name("user")
     
     routing.UrlByName(
     		app,
-    		"User",
+    		"user",
     		routing.Parameters{"id": 12},
     		routing.Parameters{"order_by": "name", "size": 50},
     	)
@@ -249,7 +249,7 @@ If you also want to build a query string, use the 4th parameter, those key / val
 If you would like to determine if the current request was routed to a given named route, you may use the `Named` method on a Route instance. For example, you may check the current route name from a route middleware:
 
     func (v ValidatePostSize) Handle(request inter.Request, next inter.MiddlewareDestination) inter.Response {
-        if request.Route().Named("Profile") {
+        if request.Route().Named("profile") {
             //
         }
         
@@ -259,72 +259,54 @@ If you would like to determine if the current request was routed to a given name
 <a name="route-groups"></a>
 ## Route Groups
 
-Route groups allow you to share route attributes, such as middleware or prefixes, across a large number of routes without needing to define those attributes on each individual route. Shared attributes are specified in an array format as the first parameter to the `Group` method.
+Route groups allow you to share route attributes, such as middleware or prefixes, across many routes without needing to define those attributes on each individual route. Shared attributes are specified in an array format as the first parameter to the `Group` method.
 
-Nested groups attempt to intelligently "merge" attributes with their parent group. Middleware and `where` conditions are merged while names, namespaces, and prefixes are appended. Namespace delimiters and slashes in URI prefixes are automatically added where appropriate.
+Nested groups attempt to intelligently "merge" attributes with their parent group. `Where` conditions are merged while Middleware, names and prefixes are appended.
 
 <a name="route-group-middleware"></a>
 ### Middleware
 
-To assign middleware to all routes within a group, you may use the `middleware` method before defining the group. Middleware are executed in the order they are listed in the array:
+To assign middleware to all routes within a group, you may use the `Middleware` method after defining the group. Middleware are executed in the order they are listed in the array:
 
-    Route::middleware(['first', 'second'])->group(function () {
-        Route::get('/', function () {
-            // Uses first & second Middleware
-        });
-
-        Route::get('user/profile', function () {
-            // Uses first & second Middleware
-        });
-    });
-
-<a name="route-group-namespaces"></a>
-### Namespaces
-
-Another common use-case for route groups is assigning the same PHP namespace to a group of controllers using the `namespace` method:
-
-    Route::namespace('Admin')->group(function () {
-        // Controllers Within The "App\Http\Controllers\Admin" Namespace
-    });
-
-Remember, by default, the `RouteServiceProvider` includes your route files within a namespace group, allowing you to register controller routes without specifying the full `App\Http\Controllers` namespace prefix. So, you only need to specify the portion of the namespace that comes after the base `App\Http\Controllers` namespace.
+    Group(
+        Get("/roles", controllers.User.Role.Index),
+        Get("/comments", controllers.User.Comment.Index),
+    ).Middleware(First{}, Second{})
 
 <a name="route-group-subdomain-routing"></a>
 ### Subdomain Routing
 
-Route groups may also be used to handle subdomain routing. Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your route or controller. The subdomain may be specified by calling the `domain` method before defining the group:
+Route groups may also be used to handle subdomain routing. Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your route or controller. The subdomain may be specified by calling the `Domain` method before defining the group:
 
-    Route::domain('{account}.myapp.com')->group(function () {
-        Route::get('user/{id}', function ($account, $id) {
-            //
-        });
-    });
-
-!!!! @todo Test_full_url_by_name test/named_route_test.go:49
+    Group(
+		Get("/user/{id}", func(request inter.Request) inter.Response {
+			account := request.UrlValue("account")
+			userId := request.UrlValue("id")
+			//
+		}),
+	).Domain("{account}.myapp.com")
 
 > {note} In order to ensure your subdomain routes are reachable, you should register subdomain routes before registering root domain routes. This will prevent root domain routes from overwriting subdomain routes which have the same URI path.
 
 <a name="route-group-prefixes"></a>
 ### Route Prefixes
 
-The `prefix` method may be used to prefix each route in the group with a given URI. For example, you may want to prefix all route URIs within the group with `admin`:
+The `Prefix` method may be used to prefix each route in the group with a given URI. For example, you may want to prefix all route URIs within the group with `admin`:
 
-    Route::prefix('admin')->group(function () {
-        Route::get('users', function () {
-            // Matches The "/admin/users" URL
-        });
-    });
+    Group(
+		Get("/users", controllers.User.Show),
+	).Prefix("/admin")
+
+    // Matches The "/admin/users" URL
 
 <a name="route-group-name-prefixes"></a>
 ### Route Name Prefixes
 
-The `name` method may be used to prefix each route name in the group with a given string. For example, you may want to prefix all of the grouped route's names with `admin`. The given string is prefixed to the route name exactly as it is specified, so we will be sure to provide the trailing `.` character in the prefix:
+The `Name` method may be used to prefix each route name in the group with a given string. For example, you may want to prefix all the grouped route's names with `admin`. The given string is prefixed to the route name exactly as it is specified, so we will be sure to provide the trailing `.` character in the prefix:
 
-    Route::name('admin.')->group(function () {
-        Route::get('users', function () {
-            // Route assigned name "admin.users"...
-        })->name('users');
-    });
+    Group(
+		Get("/users", controllers.User.Show).Name("users"),
+	).Name("admin.")
 
 <a name="route-model-binding"></a>
 ## Route Model Binding
