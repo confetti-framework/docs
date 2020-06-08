@@ -3,10 +3,12 @@
 - [Basic Routing](#basic-routing)
     - [Redirect Routes](#redirect-routes)
     - [View Routes](#view-routes)
-- [Route Parameters](#route-parameters)
+- [Route Values](#route-values)
     - [Required Parameters](#required-parameters)
     - [Optional Parameters](#parameters-optional-parameters)
     - [Regular Expression Constraints](#parameters-regular-expression-constraints)
+    - [Route Model Binding](#route-model-binding)
+    - [Route Adapters](#route-adapters)
 - [Named Routes](#named-routes)
 - [Route Groups](#route-groups)
     - [Middleware](#route-group-middleware)
@@ -14,9 +16,6 @@
     - [Subdomain Routing](#route-group-subdomain-routing)
     - [Route Prefixes](#route-group-prefixes)
     - [Route Name Prefixes](#route-group-name-prefixes)
-- [Route Model Binding](#route-model-binding)
-    - [Implicit Binding](#implicit-binding)
-    - [Explicit Binding](#explicit-binding)
 - [Fallback Routes](#fallback-routes)
 - [Rate Limiting](#rate-limiting)
 - [Form Method Spoofing](#form-method-spoofing)
@@ -29,8 +28,8 @@
 The most basic Lanvard routes accept a URI and a `Closure`, providing a very simple and expressive method of defining routes:
 
     Get("/users", func(request inter.Request) inter.Response {
-		return outcome.Http("Hello World")
-	})
+        return outcome.Http("Hello World")
+    })
 
 #### The Default Route Files
 
@@ -38,7 +37,7 @@ All Lanvard routes are defined in your route files, which are located in the `ro
 
 The routes defined in `routes/web.go` may be accessed by entering the defined route's URL in your browser. For example, you may access the following route by navigating to `http://your-app.test/user` in your browser:
 
-    Get("/user", controllers.User.Index),
+    Get("/user", controller.User.Index),
 
 Routes defined in the `routes/api.go` file are nested within a route group. Within this group, the `/api` URI prefix is automatically applied, so you do not need to manually apply it to every route in the file. You may modify the prefix and other route group options by using multiple methods.
 
@@ -46,17 +45,17 @@ Routes defined in the `routes/api.go` file are nested within a route group. With
 
 The router allows you to register routes that respond to any HTTP verb:
 
-    Get("/photos", controllers.Photos.Index),
-    Post("/photos", controllers.Photos.Store),
-    Put("/photos/{photo}", controllers.Photos.Update),
-    Patch("/photos/{photo}", controllers.Photos.Update),
-    Delete("/photos/{photo}", controllers.Photos.Destroy),
+    Get("/photos", controller.Photos.Index),
+    Post("/photos", controller.Photos.Store),
+    Put("/photos/{photo}", controller.Photos.Update),
+    Patch("/photos/{photo}", controller.Photos.Update),
+    Delete("/photos/{photo}", controller.Photos.Destroy),
 
 Sometimes you may need to register a route that responds to multiple HTTP verbs. You may do so using the `Match` method. Or, you may even register a route that responds to all HTTP verbs using the `Any` method:
 
-    Match([]string{method.Get, method.Post}, "/photos/{photo}", controllers.Photos.Destroy),
+    Match([]string{method.Get, method.Post}, "/photos/{photo}", controller.Photos.Destroy),
 
-    Any("/photos/{photo}", controllers.Photos),
+    Any("/photos/{photo}", controller.Photos),
 
 #### ~~CSRF Protection~~
 
@@ -91,26 +90,26 @@ Or the `PermanentRedirect` method to return a `301` status code:
 
     Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
 
-<a name="route-parameters"></a>
-## Route Parameters
+<a name="route-values"></a>
+## Route Values
 
 <a name="required-parameters"></a>
 ### Required Parameters
 
 Sometimes you will need to capture segments of the URI within your route. For example, you may need to capture a username from the URL. You may do so by defining route parameters:
 
-	Get("/user/{username}", func(request inter.Request) inter.Response {
-		name := request.UrlValue("username").String()
-		return outcome.Html("User " + name)
-	}),
+    Get("/user/{username}", func(request inter.Request) inter.Response {
+        name := request.UrlValue("username").String()
+        return outcome.Html("User " + name)
+    }),
 
 You may define as many route parameters as required by your route:
 
-	Get("posts/{post_id}/comments/{comment_alias}", func(request inter.Request) inter.Response {
-		postId := request.UrlValue("post_id").Number()
-		commentAlias := request.UrlValue("comment_alias").String()
-		//
-	}),
+    Get("posts/{post_id}/comments/{comment_alias}", func(request inter.Request) inter.Response {
+        postId := request.UrlValue("post_id").Number()
+        commentAlias := request.UrlValue("comment_alias").String()
+        //
+    }),
 
 If the parameter cannot be found, a Lanvard exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
 
@@ -124,14 +123,14 @@ Route parameters are always encased within `{}` braces and should consist of alp
 
 Occasionally you may need to specify a route parameter, but make the presence of that route parameter optional. You may do so by placing a `?` mark after the parameter name. If no value is found, an empty string or a zero is given.
 
-	Get("users/{username?}/comment/{comment_id?}", func(request inter.Request) inter.Response {
-		userName := request.UrlValue("username").string()
+    Get("users/{username?}/comment/{comment_id?}", func(request inter.Request) inter.Response {
+        userName := request.UrlValue("username").string()
         // userName = ""
 
-		commentId := request.UrlValue("comment_id").Number()
-		// commentId = 0
-	}),
-	
+        commentId := request.UrlValue("comment_id").Number()
+        // commentId = 0
+    }),
+    
 Use Empty or Present to check if a value is present.
 
         userName := request.UrlValue("username")
@@ -149,12 +148,12 @@ Use Empty or Present to check if a value is present.
 
 You may constrain the format of your route parameters using regex. The key and regular expression must be separated by a colon:
 
-    Get("/user/{username:[A-Za-z]+}", controllers.User.Show),
-    Get("/user/{id:[0-9]+}", controllers.User.Show),
+    Get("/user/{username:[A-Za-z]+}", controller.User.Show),
+    Get("/user/{id:[0-9]+}", controller.User.Show),
 
 Or define a restriction separately:
 
-    Get("/user/{id}", controllers.User.Show).Where("id", "[0-9]+")
+    Get("/user/{id}", controller.User.Show).Where("id", "[0-9]+")
 
 <a name="parameters-global-constraints"></a>
 #### Global Constraints
@@ -166,7 +165,7 @@ If you would like a route parameter to always be constrained by a given regular 
         collection := routing.NewRouteCollection()
 
         collection.Merge(routes.Api)
-    	collection.Merge(routes.Web)
+        collection.Merge(routes.Web)
 
         collection.WhereMulti(map[string]string{
             "id": "[0-9]+",
@@ -177,33 +176,94 @@ If you would like a route parameter to always be constrained by a given regular 
 Once the pattern has been defined, it is automatically applied to all routes using that parameter name:
 
     // Only executed if {id} is numeric...
-    Get("/user/{id}", controllers.User.Show),
+    Get("/user/{id}", controller.User.Show),
 
 <a name="parameters-encoded-forward-slashes"></a>
 #### Encoded Forward Slashes
 
 The Lanvard routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `Where` condition regular expression:
 
-    Get("/search/{search}", controllers.User.Index).Where("search", ".*")
+    Get("/search/{search}", controller.User.Index).Where("search", ".*")
 
 > {note} Encoded forward slashes are only supported within the last route segment.
+
+<a name="route-model-binding"></a>
+### Route Model Binding
+
+Since Golang is a strict typed language, it can be difficult to convert a request into a struct. For simple transformation of a parameter to a model, you can bind a model to a parameter. You can use the RouteModelBinding middleware for this:
+
+     func (b RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.Response {
+        request.App().Instance("user", func() model.User {
+            return model.User.Find(request.UrlValue("user"))
+        })
+        
+        return next(request)
+     }
+     
+Later you can retrieve the user from the container:
+     
+     user := request.Make("user").(model.User)
+
+> {note} The callback ensures that the user is received from the database when you need it. This can be nice if you first want to validate the request before accessing the database.
+
+<a name="route-adapters"></a>
+### Route Adapters
+
+If you want to extract users from a request in different ways, then it can be helpful to use the adapter pattern. The adapter pattern is a pattern that ensures that you convert something in a certain interface.
+
+    package adapters
+
+    ...
+
+    func (adapter User) FindE() (contract.User, error) {
+        userId, err := adapter.Request.UrlValue("user").NumberE()
+        if err != nil {
+            return _, err
+        }
+    
+        return model.NewUserE(userId, "test@lanvard.com")
+    }
+
+ Then you can retrieve a model from a parameter, body or session in a nice and elegant way:
+
+    user, err := adapters.User{request}.FindE()
+    if err != nil {
+        //
+    }
+    
+Most of the time it is nice that the caller is responsible for handling the errors. If the errors often have to be treated in the same way, it can be nice to leave that responsibility with the adapter:
+
+    func (adapter User) Find() contract.User {
+        user, err := adapter.FindE()
+        if err != nil {
+            panic(err)
+        }
+    
+        return user
+    }
+    
+Your caller will stay organized and clean:
+
+    user := adapters.User{request}.Find()    
+    
+In the standard src code you see this example. Feel free to implement the adapter pattern your way.
 
 <a name="named-routes"></a>
 ## Named Routes
 
 Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `Name` method onto the route definition:
 
-    Get("/user/roles", controllers.User.Role.Index).Name("user.roles")
-    Get("/user/comments", controllers.User.Comment.Index).Name("user.comments")
+    Get("/user/roles", controller.User.Role.Index).Name("user.roles")
+    Get("/user/comments", controller.User.Comment.Index).Name("user.comments")
     
 Or you can name a group:
 
     Group(
-        Get("/roles", controllers.User.Role.Index).Name("roles"),
-        Get("/comments", controllers.User.Comment.Index).Name("comments"),
+        Get("/roles", controller.User.Role.Index).Name("roles"),
+        Get("/comments", controller.User.Comment.Index).Name("comments"),
     ).Prefix("/users").Name("user.")
 
-The names of the above routes are `UserRoles` and `UserComments`.
+The names of the above routes are `user.roles` and `user.comments`.
 
 #### Generating URLs To Named Routes
 
@@ -211,7 +271,7 @@ Once you have assigned a name to a given route, you may use the route's name whe
 
     // Generating Redirects...
     Get("/comments", func(request inter.Request) inter.Response {
-        return outcome.RedirectToRoute(request.App(), "user.roles")
+        return outcome.RedirectToRoute(request, "user.roles")
     })
 
 Or you use the route's name when generating URLs via the
@@ -222,25 +282,25 @@ Or you use the route's name when generating URLs via the
 
 If the named route defines parameters, you may pass the parameters as the third argument to the `UrlByName` function. The given parameters will automatically be inserted into the URL in their correct positions:
     
-    Get("/user/{id}", controllers.User.Show).Name("user")
+    Get("/user/{id}", controller.User.Show).Name("user")
     
     url := routing.UrlByName(app, "user", routing.Parameters{"id": 12})
     
-    // /user/12
+    /user/12
     
 
 If you also want to build a query string, use the 4th parameter, those key / value pairs will automatically be added to the generated URL's query string:
     
-    Get("/user/{id}", controllers.User.Show).Name("user")
+    Get("/user/{id}", controller.User.Show).Name("user")
     
     routing.UrlByName(
-    		app,
-    		"user",
-    		routing.Parameters{"id": 12},
-    		routing.Parameters{"order_by": "name", "size": 50},
-    	)
+            app,
+            "user",
+            routing.Parameters{"id": 12},
+            routing.Parameters{"order_by": "name", "size": 50},
+        )
 
-    // /user/12?order_by=name&size=50
+    /user/12?order_by=name&size=50
 
 ~~> {tip} Sometimes, you may wish to specify request-wide default values for URL parameters, such as the current locale. To accomplish this, you may use the [`URL::defaults` method](/docs/{{version}}/urls#default-values).~~
 
@@ -248,7 +308,7 @@ If you also want to build a query string, use the 4th parameter, those key / val
 
 If you would like to determine if the current request was routed to a given named route, you may use the `Named` method on a Route instance. For example, you may check the current route name from a route middleware:
 
-    func (v ValidatePostSize) Handle(request inter.Request, next inter.MiddlewareDestination) inter.Response {
+    func (v ValidatePostSize) Handle(request inter.Request, next inter.Next) inter.Response {
         if request.Route().Named("profile") {
             //
         }
@@ -259,32 +319,32 @@ If you would like to determine if the current request was routed to a given name
 <a name="route-groups"></a>
 ## Route Groups
 
-Route groups allow you to share route attributes, such as middleware or prefixes, across many routes without needing to define those attributes on each individual route. Shared attributes are specified in an array format as the first parameter to the `Group` method.
+Route groups allow you to share route attributes, such as middleware or prefixes, across many routes without needing to define those attributes on each individual route. Shared attributes are specified after the `Group` method.
 
 Nested groups attempt to intelligently "merge" attributes with their parent group. `Where` conditions are merged while Middleware, names and prefixes are appended.
 
 <a name="route-group-middleware"></a>
 ### Middleware
 
-To assign middleware to all routes within a group, you may use the `Middleware` method after defining the group. Middleware are executed in the order they are listed in the array:
+To assign middleware to all routes within a group, you may use the `Middleware` method after defining the group. Middlewares are executed in the order they are listed:
 
     Group(
-        Get("/roles", controllers.User.Role.Index),
-        Get("/comments", controllers.User.Comment.Index),
+        Get("/roles", controller.User.Role.Index),
+        Get("/comments", controller.User.Comment.Index),
     ).Middleware(First{}, Second{})
 
 <a name="route-group-subdomain-routing"></a>
 ### Subdomain Routing
 
-Route groups may also be used to handle subdomain routing. Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your route or controller. The subdomain may be specified by calling the `Domain` method before defining the group:
+Route groups may also be used to handle subdomain routing. Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your route or controller. The subdomain may be specified by calling the `Domain` method after defining the group:
 
     Group(
-		Get("/user/{id}", func(request inter.Request) inter.Response {
-			account := request.UrlValue("account")
-			userId := request.UrlValue("id")
-			//
-		}),
-	).Domain("{account}.myapp.com")
+        Get("/user/{id}", func(request inter.Request) inter.Response {
+            account := request.UrlValue("account")
+            userId := request.UrlValue("id")
+            //
+        }),
+    ).Domain("{account}.myapp.com")
 
 > {note} In order to ensure your subdomain routes are reachable, you should register subdomain routes before registering root domain routes. This will prevent root domain routes from overwriting subdomain routes which have the same URI path.
 
@@ -294,8 +354,8 @@ Route groups may also be used to handle subdomain routing. Subdomains may be ass
 The `Prefix` method may be used to prefix each route in the group with a given URI. For example, you may want to prefix all route URIs within the group with `admin`:
 
     Group(
-		Get("/users", controllers.User.Show),
-	).Prefix("/admin")
+        Get("/users", controller.User.Show),
+    ).Prefix("/admin")
 
     // Matches The "/admin/users" URL
 
@@ -305,122 +365,22 @@ The `Prefix` method may be used to prefix each route in the group with a given U
 The `Name` method may be used to prefix each route name in the group with a given string. For example, you may want to prefix all the grouped route's names with `admin`. The given string is prefixed to the route name exactly as it is specified, so we will be sure to provide the trailing `.` character in the prefix:
 
     Group(
-		Get("/users", controllers.User.Show).Name("users"),
-	).Name("admin.")
-
-<a name="route-model-binding"></a>
-## Route Model Binding
-
-When injecting a model ID to a route or controller action, you will often query to retrieve the model that corresponds to that ID. Lanvard route model binding provides a convenient way to automatically inject the model instances directly into your routes. For example, instead of injecting a user's ID, you can inject the entire `User` model instance that matches the given ID.
-
-<a name="implicit-binding"></a>
-### Implicit Binding
-
-Lanvard automatically resolves Eloquent models defined in routes or controller actions whose type-hinted variable names match a route segment name. For example:
-
-    Route::get('api/users/{user}', function (App\User $user) {
-        return $user->email;
-    });
-
-Since the `$user` variable is type-hinted as the `App\User` Eloquent model and the variable name matches the `{user}` URI segment, Lanvard will automatically inject the model instance that has an ID matching the corresponding value from the request URI. If a matching model instance is not found in the database, a 404 HTTP response will automatically be generated.
-
-#### Customizing The Key
-
-Sometimes you may wish to resolve Eloquent models using a column other than `id`. To do so, you may specify the column in the route parameter definition:
-
-    Route::get('api/posts/{post:slug}', function (App\Post $post) {
-        return $post;
-    });
-
-#### Custom Keys & Scoping
-
-Sometimes, when implicitly binding multiple Eloquent models in a single route definition, you may wish to scope the second Eloquent model such that it must be a child of the first Eloquent model. For example, consider this situation that retrieves a blog post by slug for a specific user:
-
-    use App\Post;
-    use App\User;
-
-    Route::get('api/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
-        return $post;
-    });
-
-When using a custom keyed implicit binding as a nested route parameter, Lanvard will automatically scope the query to retrieve the nested model by its parent using conventions to guess the relationship name on the parent. In this case, it will be assumed that the `User` model has a relationship named `posts` (the plural of the route parameter name) which can be used to retrieve the `Post` model.
-
-#### Customizing The Default Key Name
-
-If you would like model binding to use a default database column other than `id` when retrieving a given model class, you may override the `getRouteKeyName` method on the Eloquent model:
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
-
-<a name="explicit-binding"></a>
-### Explicit Binding
-
-To register an explicit binding, use the router's `model` method to specify the class for a given parameter. You should define your explicit model bindings in the `boot` method of the `RouteServiceProvider` class:
-
-    public function boot()
-    {
-        parent::boot();
-
-        Route::model('user', App\User::class);
-    }
-
-Next, define a route that contains a `{user}` parameter:
-
-    Route::get('profile/{user}', function (App\User $user) {
-        //
-    });
-
-Since we have bound all `{user}` parameters to the `App\User` model, a `User` instance will be injected into the route. So, for example, a request to `profile/1` will inject the `User` instance from the database which has an ID of `1`.
-
-If a matching model instance is not found in the database, a 404 HTTP response will be automatically generated.
-
-#### Customizing The Resolution Logic
-
-If you wish to use your own resolution logic, you may use the `Route::bind` method. The `Closure` you pass to the `bind` method will receive the value of the URI segment and should return the instance of the class that should be injected into the route:
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        parent::boot();
-
-        Route::bind('user', function ($value) {
-            return App\User::where('name', $value)->firstOrFail();
-        });
-    }
-
-Alternatively, you may override the `resolveRouteBinding` method on your Eloquent model. This method will receive the value of the URI segment and should return the instance of the class that should be injected into the route:
-
-    /**
-     * Retrieve the model for a bound value.
-     *
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveRouteBinding($value, $field = null)
-    {
-        return $this->where('name', $value)->firstOrFail();
-    }
+        Get("/users", controller.User.Show).Name("users"),
+    ).Name("admin.")
+    
+    // Matches "admin.users"
 
 <a name="fallback-routes"></a>
 ## Fallback Routes
 
 Using the `Route::fallback` method, you may define a route that will be executed when no other route matches the incoming request. Typically, unhandled requests will automatically render a "404" page via your application's exception handler. However, since you may define the `fallback` route within your `routes/web.php` file, all middleware in the `web` middleware group will apply to the route. You are free to add additional middleware to this route as needed:
 
-    Route::fallback(function () {
-        //
-    });
+    Group(
+		Get("/users", controller.User.Show).Name("users"),
+		Fallback(func(request inter.Request) inter.Response {
+			return outcome.Html("404 Page not found")
+		}),
+	)
 
 > {note} The fallback route should always be the last route registered by your application.
 
