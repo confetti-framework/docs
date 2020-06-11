@@ -387,91 +387,33 @@ Using the `Route::fallback` method, you may define a route that will be executed
 <a name="rate-limiting"></a>
 ## Rate Limiting
 
-Lanvard includes a [middleware](/docs/{{version}}/middleware) to rate limit access to routes within your application. To get started, assign the `throttle` middleware to a route or a group of routes. The `throttle` middleware accepts two parameters that determine the maximum number of requests that can be made in a given number of minutes. For example, let's specify that an authenticated user may access the following group of routes 60 times per minute:
-
-    Route::middleware('auth:api', 'throttle:60,1')->group(function () {
-        Route::get('/user', function () {
-            //
-        });
-    });
-
-#### Dynamic Rate Limiting
-
-You may specify a dynamic request maximum based on an attribute of the authenticated `User` model. For example, if your `User` model contains a `rate_limit` attribute, you may pass the name of the attribute to the `throttle` middleware so that it is used to calculate the maximum request count:
-
-    Route::middleware('auth:api', 'throttle:rate_limit,1')->group(function () {
-        Route::get('/user', function () {
-            //
-        });
-    });
-
-#### Distinct Guest & Authenticated User Rate Limits
-
-You may specify different rate limits for guest and authenticated users. For example, you may specify a maximum of `10` requests per minute for guests `60` for authenticated users:
-
-    Route::middleware('throttle:10|60,1')->group(function () {
-        //
-    });
-
-You may also combine this functionality with dynamic rate limits. For example, if your `User` model contains a `rate_limit` attribute, you may pass the name of the attribute to the `throttle` middleware so that it is used to calculate the maximum request count for authenticated users:
-
-    Route::middleware('auth:api', 'throttle:10|rate_limit,1')->group(function () {
-        Route::get('/user', function () {
-            //
-        });
-    });
-
-#### Rate Limit Segments
-
-Typically, you will probably specify one rate limit for your entire API. However, your application may require different rate limits for different segments of your API. If this is the case, you will need to pass a segment name as the third argument to the `throttle` middleware:
-
-    Route::middleware('auth:api')->group(function () {
-        Route::middleware('throttle:60,1,default')->group(function () {
-            Route::get('/servers', function () {
-                //
-            });
-        });
-
-        Route::middleware('throttle:60,1,deletes')->group(function () {
-            Route::delete('/servers/{id}', function () {
-                //
-            });
-        });
-    });
+This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/51
 
 <a name="form-method-spoofing"></a>
 ## Form Method Spoofing
 
-HTML forms do not support `PUT`, `PATCH` or `DELETE` actions. So, when defining `PUT`, `PATCH` or `DELETE` routes that are called from an HTML form, you will need to add a hidden `_method` field to the form. The value sent with the `_method` field will be used as the HTTP request method:
-
-    <form action="/foo/bar" method="POST">
-        <input type="hidden" name="_method" value="PUT">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-    </form>
-
-You may use the `@method` Blade directive to generate the `_method` input:
-
-    <form action="/foo/bar" method="POST">
-        @method('PUT')
-        @csrf
-    </form>
+This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/52
 
 <a name="accessing-the-current-route"></a>
 ## Accessing The Current Route
 
-You may use the `current`, `currentRouteName`, and `currentRouteAction` methods on the `Route` facade to access information about the route handling the incoming request:
+You can remove the current router from the container:
 
-    $route = Route::current();
+     yourStruct.App().Make("route").(inter.Route)
+     
+ Or get the route from the request:
+ 
+    request.Route()
 
-    $name = Route::currentRouteName();
+You may use the `Name`, `Method` and `Domain` methods on the `Route` facade to access information about the route handling the incoming request:
 
-    $action = Route::currentRouteAction();
+    name := request.Route().Name()
 
-Refer to the API documentation for both the [underlying class of the Route facade](https://laravel.com/api/{{version}}/Illuminate/Routing/Router.html) and [Route instance](https://laravel.com/api/{{version}}/Illuminate/Routing/Route.html) to review all accessible methods.
+    domain := request.Route().Domain
 
 <a name="cors"></a>
 ## Cross-Origin Resource Sharing (CORS)
 
-Lanvard can automatically respond to CORS OPTIONS requests with values that you configure. All CORS settings may be configured in your `cors` configuration file and OPTIONS requests will automatically be handled by the `HandleCors` middleware that is included by default in your global middleware stack.
+~~Lanvard can automatically respond to CORS OPTIONS requests with values that you configure. All CORS settings may be configured in your `cors` configuration file and OPTIONS requests will automatically be handled by the `HandleCors` middleware that is included by default in your global middleware stack.~~
 
-> {tip} For more information on CORS and CORS headers, please consult the [MDN web documentation on CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers).
+~~> {tip} For more information on CORS and CORS headers, please consult the [MDN web documentation on CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers).~~
