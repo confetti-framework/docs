@@ -73,13 +73,13 @@ If you are defining a route that redirects to another URI, you may use `Redirect
 
     Redirect("/here", "/there", 302)
 
-You may use the `TemporaryRedirect` method to return a `302` status code:
+You may use the `RedirectTemporary` method to return a `302` status code:
 
-    TemporaryRedirect("/here", "/there")
+    RedirectTemporary("/here", "/there")
 
-Or the `PermanentRedirect` method to return a `301` status code:
+Or the `RedirectPermanent` method to return a `301` status code:
 
-    PermanentRedirect("/here", "/there")
+    RedirectPermanent("/here", "/there")
 
 <a name="view-routes"></a>
 ### View Routes
