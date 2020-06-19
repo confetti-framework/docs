@@ -3,7 +3,7 @@
 - [Basic Routing](#basic-routing)
     - [Redirect Routes](#redirect-routes)
     - [View Routes](#view-routes)
-- [Route Values](#route-values)
+- [Route Parameters](#route-values)
     - [Required Parameters](#required-parameters)
     - [Optional Parameters](#parameters-optional-parameters)
     - [Regular Expression Constraints](#parameters-regular-expression-constraints)
@@ -90,8 +90,8 @@ Or the `RedirectPermanent` method to return a `301` status code:
 
     Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
 
-<a name="route-values"></a>
-## Route Values
+<a name="route-parameters"></a>
+## Route Parameters
 
 <a name="required-parameters"></a>
 ### Required Parameters
@@ -99,22 +99,22 @@ Or the `RedirectPermanent` method to return a `301` status code:
 Sometimes you will need to capture segments of the URI within your route. For example, you may need to capture a username from the URL. You may do so by defining route parameters:
 
     Get("/user/{username}", func(request inter.Request) inter.Response {
-        name := request.UrlValue("username").String()
+        name := request.Value("username").String()
         return outcome.Html("User " + name)
     }),
 
 You may define as many route parameters as required by your route:
 
     Get("posts/{post_id}/comments/{comment_alias}", func(request inter.Request) inter.Response {
-        postId := request.UrlValue("post_id").Number()
-        commentAlias := request.UrlValue("comment_alias").String()
+        postId := request.Value("post_id").Number()
+        commentAlias := request.Value("comment_alias").String()
         //
     }),
 
 If the parameter cannot be found, a Lanvard exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
 
-    postId, err := request.UrlValue("post_id").NumberE()
-    commentAlias, err := request.UrlValue("comment_alias").StringE()
+    postId, err := request.Value("post_id").NumberE()
+    commentAlias, err := request.Value("comment_alias").StringE()
 
 Route parameters are always encased within `{}` braces and should consist of alphabetic characters, and may not contain a `-` character. Instead of using the `-` character, use an underscore (`_`).
 
@@ -124,21 +124,21 @@ Route parameters are always encased within `{}` braces and should consist of alp
 Occasionally you may need to specify a route parameter, but make the presence of that route parameter optional. You may do so by placing a `?` mark after the parameter name. If no value is found, an empty string or a zero is given.
 
     Get("users/{username?}/comment/{comment_id?}", func(request inter.Request) inter.Response {
-        userName := request.UrlValue("username").string()
+        userName := request.Value("username").string()
         // userName = ""
 
-        commentId := request.UrlValue("comment_id").Number()
+        commentId := request.Value("comment_id").Number()
         // commentId = 0
     }),
     
 Use Empty or Present to check if a value is present.
 
-        userName := request.UrlValue("username")
+        userName := request.Value("username")
         if userName.Empty() {
             // userName is empty
         }
 
-        commentId := request.UrlValue("comment_id")
+        commentId := request.Value("comment_id")
         if commentId.Present() {
             commentId.Number()
         }
@@ -194,7 +194,7 @@ Since Golang is a strict typed language, it can be difficult to convert a reques
 
      func (b RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.Response {
         request.App().Instance("user", func() model.User {
-            return model.User.Find(request.UrlValue("user"))
+            return model.User.Find(request.Value("user"))
         })
         
         return next(request)
@@ -216,7 +216,7 @@ If you want to extract users from a request in different ways, then it can be he
     ...
 
     func (adapter User) FindE() (contract.User, error) {
-        userId, err := adapter.Request.UrlValue("user").NumberE()
+        userId, err := adapter.Request.Value("user").NumberE()
         if err != nil {
             return _, err
         }
@@ -340,8 +340,8 @@ Route groups may also be used to handle subdomain routing. Subdomains may be ass
 
     Group(
         Get("/user/{id}", func(request inter.Request) inter.Response {
-            account := request.UrlValue("account")
-            userId := request.UrlValue("id")
+            account := request.Value("account")
+            userId := request.Value("id")
             //
         }),
     ).Domain("{account}.myapp.com")

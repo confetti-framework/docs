@@ -33,7 +33,7 @@ Let's place a new `CheckAge` struct within your `app/http/middleware` directory.
     type CheckAge struct{}
     
     func (c CheckAge) Handle(request inter.Request, next inter.Next) inter.Response {
-    	if request.QueryValue("age").Number() <= 200 {
+    	if request.Value("age").Number() <= 200 {
     		return outcome.RedirectTemporary("home")
     	}
     	
@@ -172,8 +172,7 @@ Middleware can also receive additional parameters. For example, if your applicat
 You can pass the parameters to the public fields of the middleware:
     
     Group(
-        Get("/comment", controller.Comment.Index),
-        Post("/comment/{id}", controller.Comment.Update),
+        //
     ).Middleware(middleware.CheckRole{Role: "editor"})
 
 <a name="terminable-middleware"></a>
