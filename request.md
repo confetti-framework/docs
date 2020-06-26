@@ -106,35 +106,28 @@ You may pass a default value as the second argument to the `ValueOr` method. Thi
 
 When working with forms that contain array inputs, use "dot" notation to access the arrays:
 
-    $name = $request->input('products.0.name');
+    name := request.Value("name.1").String()
+    name, err := request.Value("name.1").StringE()
+    
+    names := request.Value("name.*").Collection()
 
-    $names = $request->input('products.*.name');
+You may call the `All` method in order to retrieve all of the input values as support.Map:
 
-You may call the `input` method without any arguments in order to retrieve all of the input values as an associative array:
-
-    $input = $request->input();
+    requestValues = request.All()
 
 #### Retrieving Input From The Query String
 
-While the `input` method retrieves values from entire request payload (including the query string), the `query` method will only retrieve values from the query string:
+While the `Value` method retrieves values from entire request payload (including the query string), the `Query` method will only retrieve values from the query string:
 
-    $name = $request->query('name');
+    name := request.Query("name")
 
 If the requested query string value data is not present, the second argument to this method will be returned:
 
-    $name = $request->query('name', 'Helen');
+    name := request.QueryOr("name", "Sally").String()
 
-You may call the `query` method without any arguments in order to retrieve all of the query string values as an associative array:
+You may call the `Query` method with an asterisk in order to retrieve all of the query string values as support.Map:
 
-    $query = $request->query();
-
-#### Retrieving Input Via Dynamic Properties
-
-You may also access user input using dynamic properties on the `Illuminate\Http\Request` instance. For example, if one of your application's forms contains a `name` field, you may access the value of the field like so:
-
-    $name = $request->name;
-
-When using dynamic properties, Lanvard will first look for the parameter's value in the request payload. If it is not present, Lanvard will search for the field in the route parameters.
+    name := request.Query("*").Map()
 
 #### Retrieving JSON Input Values
 
