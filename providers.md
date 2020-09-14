@@ -5,22 +5,19 @@
     - [The Register Method](#the-register-method)
     - [The Boot Method](#the-boot-method)
 - [Registering Providers](#registering-providers)
-- [Deferred Providers](#deferred-providers)
 
 <a name="introduction"></a>
 ## Introduction
 
 Service providers are the central place of all Lanvard application bootstrapping. Your own application, as well as all of Lanvard's core services are bootstrapped via service providers.
 
-~~Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit.~~
+Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit.
 
 But, what do we mean by "bootstrapped"? In general, we mean **registering** things, including registering service container bindings, event listeners, and even routes. Service providers are the central place to configure your application.
 
-If you open the `config/provider.go` file included with Lanvard, you will see a `Providers` struct. These are all the service provider classes that will be loaded for your application.
+If you open the `app/providers/provider.go` file included with Lanvard, you will see a `Providers` struct. These are all the service providers that will be loaded for your application.
 
 In this overview you will learn how to write your own service providers and register them with your Lanvard application.
-
-> Tests: [foundation/test/container_test.go](https://github.com/lanvard/foundation/blob/master/test/container_test.go)
 
 <a name="writing-service-providers"></a>
 ## Writing Service Providers
@@ -32,7 +29,7 @@ All service providers implements the `inter.RegisterServiceProvider` or `inter.B
 
 As mentioned previously, within the `Register` method, you should only bind things into the [service container](/docs/{{version}}/container). You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. Otherwise, you may accidentally use a service that is provided by a service provider which has not loaded yet.
 
-Let's take a look at a basic service provider. Within any of your service provider methods, you always have access to the `inter.App` property which provides access to the service container:
+Let's take a look at a basic service provider. Within any of your service provider methods, you always have access to the `inter.Container` property which provides access to the service container:
     
     package providers
     
@@ -44,7 +41,7 @@ Let's take a look at a basic service provider. Within any of your service provid
     type RiakServiceProvider struct{}
     
     // Register any application services.
-    func (r RiakServiceProvider) Register(app inter.App) inter.App {
+    func (r RiakServiceProvider) Register(container inter.Container) inter.Container {
 
         app.Container.Singleton(database.Connection{}, func() {
             return riak.NewConnection()
@@ -65,13 +62,13 @@ So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#vi
     import (
         "github.com/lanvard/foundation"
         "github.com/lanvard/view"
-        user_repository "lanvard/app/repository/user"
+        user_repository "app/repository/user"
     )
     
     type ComposerServiceProvider struct{}
     
     // Register any application services.
-    func (r ComposerServiceProvider) Boot(app inter.App) inter.App {
+    func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {
 
         view.Composer("all_users", func() {
             return user_repository.AllUsers()
@@ -82,9 +79,9 @@ So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#vi
 
 #### Boot Method Dependency Injection
 
-You may use App for your dependencies in your service provider's `Boot` method. The [service container](/docs/{{version}}/container) will automatically inject any dependencies you need:
+You may use Container for your dependencies in your service provider's `Boot` method. The [service container](/docs/{{version}}/container) will automatically inject any dependencies you need:
 
-    func (r ComposerServiceProvider) Boot(app inter.App) inter.App {
+    func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {
 
         eventPusher := app.Make("EventPusher")(contract.EventPusher)
         
@@ -96,7 +93,7 @@ You may use App for your dependencies in your service provider's `Boot` method. 
 <a name="registering-providers"></a>
 ## Registering Providers
 
-All service providers are registered in the `config/providers.go` configuration file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Lanvard core service providers are listed in this struct. These providers bootstrap the core Lanvard components, such as the mailer, queue, cache, and others.
+All service providers are registered in the `app/providers/provider.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Lanvard core service providers are listed in this struct. These providers bootstrap the core Lanvard components, such as the mailer, queue, cache, and others.
 
 To register your provider, add it to the slices:
 

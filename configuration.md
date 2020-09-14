@@ -7,7 +7,7 @@
     - [Hiding Environment Variables From Debug Pages](#hiding-environment-variables-from-debug)
 - [Accessing Configuration Values](#accessing-configuration-values)
 - [Configuration Caching](#configuration-caching)
-- [Maintenance Mode](#maintenance-mode)
+- [~~Maintenance Mode~~](#maintenance-mode)
 
 <a name="introduction"></a>
 ## Introduction
@@ -50,7 +50,7 @@ You may also pass arguments to the `IsEnvironment` method to check if the enviro
     }
 
     if app.IsEnvironment("local", "staging") {
-        // The environment is either local OR staging...
+        // The environment is either local OR testing...
     }
 
 > {tip} The current application environment detection can be overridden by a server-level `APP_ENV` environment variable. This can be useful when you need to share the same application for different environment configurations, so you can set up a given host to match a given environment in your server's configurations.
