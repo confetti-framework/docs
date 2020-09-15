@@ -24,9 +24,9 @@ The `main.go` file retrieves an instance of the Lanvard application from `bootst
 
 One of the most important bootstrapping actions is loading the [service providers](/docs/{{version}}/providers) for your application. All of the service providers for the application are configured in the `app/providers/providers.go` file. First, the `Register` method will be called on all RegisterProviders. Then, once all providers have been registered, the `Boot` method will be called on the BootProviders. 
 
-Service providers are responsible for bootstrapping all of the framework's various components, such as the database, queue, validation, and routing components. Since they bootstrap and configure every feature offered by the framework, service providers are the most important aspect of the entire Lanvard bootstrap process. Feel free to create a service provider yourself.
+Service providers are responsible for bootstrapping all the framework's various components, such as the database, queue, validation, and routing components. Since they bootstrap and configure every feature offered by the framework, service providers are the most important aspect of the entire Lanvard bootstrap process. Feel free to create a service provider yourself.
 
-> {tip} Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit. Besides simple tasks, you can have a cache warmup take place in a 'service provider'.
+> {tip} Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit. For example, you can have a cache warmup in a 'service provider'.
 
 ### HTTP / Console Kernels
 

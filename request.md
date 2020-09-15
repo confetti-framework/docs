@@ -15,7 +15,7 @@
 <a name="accessing-the-request"></a>
 ## Accessing The Request
 
-In the parameter from a controller you get a `inter.Request` instance. From the request you can view all information that has been sent to you. Think for example of cookies, headers, body and query parameters.
+In the parameter from a controller you get a `inter.Request` instance. From the request you can view all information that has been sent to you. Think for example of ~~cookies~~, headers, body and query parameters.
 
     package controller
     
@@ -88,11 +88,20 @@ This hasn't been built yet, but feel free to help: https://github.com/lanvard/la
 <a name="retrieving-input-values"></a>
 ## Retrieving Input Value
 
-#### Retrieving All values
+#### Retrieving Body Or Form Values
 
-You may also retrieve all of the input data as an `support.Bag` using the `All` method:
+You may also retrieve all of the form or body data as an `support.Value` using the `Body` method:
 
-    input := request.All()
+    username := request.Parameter("username").string()
+    
+Or use a default value if the parameter is not present
+ 
+    username := request.ParameterOr("username", "green-candy").string()
+
+Receive all parameters by passing an empty string. Then cast that to a map for easy use.
+
+    allParameters := request.Parameter("").Map()
+    allParameters["username"]
 
 #### Retrieving An Input Value
 
@@ -117,17 +126,17 @@ You may call the `All` method in order to retrieve all of the input values as su
 
 #### Retrieving Input From The Query String
 
-While the `Value` method retrieves values from entire request payload (including the query string), the `Query` method will only retrieve values from the query string:
+While the `Value` method retrieves values from entire request payload (including the query string), the `Parameter` method will only retrieve values from the query string:
 
-    name := request.Query("name")
+    name := request.Parameter("name")
 
 If the requested query string value data is not present, the second argument to this method will be returned:
 
-    name := request.QueryOr("name", "Sally").String()
+    name := request.ParameterOr("name", "Sally").String()
 
-You may call the `Query` method with an asterisk in order to retrieve all of the query string values as support.Map:
+You may call the `Parameter` method with an empty string in order to retrieve all of the query string values as support.Map:
 
-    name := request.Query("*").Map()
+    parameters := request.Parameter("").Map()
 
 #### Retrieving JSON Input Values
 
