@@ -153,15 +153,17 @@ If you need to retrieve a subset of the input data, you may use the `Only` and `
 
 #### Determining If An Input Value Is Present
 
-You should use the `has` method to determine if a value is present on the request. The `has` method returns `true` if the value is present on the request:
+You should use the `Has` method to determine if a value is present on the request. The `Has` method returns `true` if the value is present on the request:
 
-    if ($request->has('name')) {
+    body := request.Body("").Map()
+    if body.Has("name") {
         //
     }
 
-When given an array, the `has` method will determine if all of the specified values are present:
+When given an array, the `Has` method will determine if all of the specified values are present:
 
-    if ($request->has(['name', 'email'])) {
+    body := request.Body("").Map()
+    if body.Has("name", "email") {
         //
     }
 
@@ -182,6 +184,8 @@ To determine if a given key is absent from the request, you may use the `missing
     if ($request->missing('name')) {
         //
     }
+
+> {tip} If you have a slice with multiple keys, you can use the spread operator: `body.Has(params...)`
 
 <a name="old-input"></a>
 ### Old Input
