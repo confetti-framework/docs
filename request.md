@@ -72,11 +72,11 @@ To retrieve the full URL for the incoming request you may use the `Url` or `Full
 
 #### Retrieving The Request Method
 
-The `Method` method will return the HTTP verb for the request. You may use the `IsMethod` method to verify that the HTTP verb matches a given string:
+The `Method` method will return the HTTP verb for the request. You may use the `IsMethod` helper method to verify that the HTTP verb matches a given string:
 
     method := request.Method()
 
-    if request.IsMethod(method.Post) {
+    if request_helper.IsMethod(request, method.Post) {
         //
     }
 
@@ -88,41 +88,38 @@ This hasn't been built yet, but feel free to help: https://github.com/lanvard/la
 <a name="retrieving-input-values"></a>
 ## Retrieving Input Value
 
-#### Retrieving Body Or Form Values
-
-You may also retrieve all of the form or body data as an `support.Value` using the `Body` method:
-
-    username := request.Parameter("username").string()
-    
-Or use a default value if the parameter is not present
- 
-    username := request.ParameterOr("username", "green-candy").string()
-
-Receive all parameters by passing an empty string. Then cast that to a map for easy use.
-
-    allParameters := request.Parameter("").Map()
-    allParameters["username"]
-
 #### Retrieving An Input Value
 
 Using a few simple methods, you may access all of the user input from your `http.request` instance without worrying about which HTTP verb was used for the request. Regardless of the HTTP verb, the `Input` method may be used to retrieve user input:
 
-    name := request.Value("name").String()
+    name := request.Body("name").String()
 
-You may pass a default value as the second argument to the `ValueOr` method. This value will be returned if the requested input value is not present on the request:
+You may pass a default value as the second argument to the `BodyOr` method. This value will be returned if the requested input value is not present on the request:
 
-    name := request.ValueOr("name", "Sally").String()
+    name := request.BodyOr("name", "Sally").String()
 
 When working with forms that contain array inputs, use "dot" notation to access the arrays:
 
-    name := request.Value("name.1").String()
-    name, err := request.Value("name.1").StringE()
+    name := request.Body("name.1").String()
+    name, err := request.Body("name.1").StringE()
     
-    names := request.Value("name.*").Collection()
+    names := request.Body("name.*").Collection()
 
-You may call the `All` method in order to retrieve all of the input values as support.Map:
+You may call the `Body` method with an empty string in order to retrieve all of the input values as support.Map:
 
-    requestValues = request.All()
+    requestValues = request.Body("").Map()
+
+#### Retrieving JSON Input Values
+
+When sending JSON requests to your application, you may access the JSON data via the `Body` method as long as the `Content-Type` header of the request is properly set to `application/json`. You may even use "dot" syntax to dig into JSON arrays:
+
+    name := request.Body("data.address.street").String()
+    
+#### Retrieving Raw Content Data
+
+To receive the data as it was sent, use the `Content` method. In that case you will always receive a string
+
+    rawContent := request.Content()
 
 #### Retrieving Input From The Query String
 
@@ -138,17 +135,11 @@ You may call the `Parameter` method with an empty string in order to retrieve al
 
     parameters := request.Parameter("").Map()
 
-#### Retrieving JSON Input Values
-
-When sending JSON requests to your application, you may access the JSON data via the `input` method as long as the `Content-Type` header of the request is properly set to `application/json`. You may even use "dot" syntax to dig into JSON arrays:
-
-    $name = $request->input('user.name');
-
 #### Retrieving Boolean Input Values
 
-When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings. For example, "true" or "on". For convenience, you may use the `boolean` method to retrieve these values as booleans. The `boolean` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
+When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings. For example, "true" or "on". For convenience, you may use the `Bool` method to retrieve these values as booleans. The `Bool` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
 
-    $archived = $request->boolean('archived');
+    archived := request.Body("archived").Bool()
 
 #### Retrieving A Portion Of The Input Data
 
