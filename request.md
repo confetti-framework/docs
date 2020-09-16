@@ -140,18 +140,14 @@ You may call the `Parameter` method with an empty string in order to retrieve al
 When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings. For example, "true" or "on". For convenience, you may use the `Bool` method to retrieve these values as booleans. The `Bool` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
 
     archived := request.Body("archived").Bool()
+    archived, err := request.Body("archived").BoolE()
 
 #### Retrieving A Portion Of The Input Data
 
-If you need to retrieve a subset of the input data, you may use the `only` and `except` methods. Both of these methods accept a single `array` or a dynamic list of arguments:
+If you need to retrieve a subset of the input data, you may use the `Only` and `Except` methods. Both of these methods accept dynamic list of arguments:
 
-    $input = $request->only(['username', 'password']);
-
-    $input = $request->only('username', 'password');
-
-    $input = $request->except(['credit_card']);
-
-    $input = $request->except('credit_card');
+    request.Body("data.user").Map().Only("username", "password")
+    request.Body("data.user").Map().Except("username", "password")
 
 > {tip} The `only` method returns all of the key / value pairs that you request; however, it will not return key / value pairs that are not present on the request.
 
