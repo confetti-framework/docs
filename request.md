@@ -160,16 +160,17 @@ You should use the `Has` method to determine if a value is present on the reques
         //
     }
 
-When given an array, the `Has` method will determine if all of the specified values are present:
+When given multiple strings, the `Has` method will determine if all of the specified values are present:
 
     body := request.Body("").Map()
     if body.Has("name", "email") {
         //
     }
 
-The `hasAny` method returns `true` if any of the specified values are present:
+The `HasAny` method returns `true` if any of the specified values are present:
 
-    if ($request->hasAny(['name', 'email'])) {
+    body := request.Body("").Map()
+    if body.HasAny("name", "email") {
         //
     }
 
