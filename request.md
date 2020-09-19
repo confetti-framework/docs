@@ -193,15 +193,15 @@ If you would like to determine if a value is present on the request and is not e
 <a name="old-input"></a>
 ### Old Input
 
-Lanvard allows you to keep input from one request during the next request. This feature is particularly useful for re-populating forms after detecting validation errors. However, if you are using Lanvard's included [validation features](/docs/{{version}}/validation), it is unlikely you will need to manually use these methods, as some of Lanvard's built-in validation facilities will call them automatically.
+~~Lanvard allows you to keep input from one request during the next request. This feature is particularly useful for re-populating forms after detecting validation errors. However, if you are using Lanvard's included [validation features](/docs/{{version}}/validation), it is unlikely you will need to manually use these methods, as some of Lanvard's built-in validation facilities will call them automatically.~~
 
 #### Flashing Input To The Session
 
-The `flash` method on the `Illuminate\Http\Request` class will flash the current input to the [session](/docs/{{version}}/session) so that it is available during the user's next request to the application:
+~~The `flash` method on the `Illuminate\Http\Request` class will flash the current input to the [session](/docs/{{version}}/session) so that it is available during the user's next request to the application:~~
 
     $request->flash();
 
-You may also use the `flashOnly` and `flashExcept` methods to flash a subset of the request data to the session. These methods are useful for keeping sensitive information such as passwords out of the session:
+~~You may also use the `flashOnly` and `flashExcept` methods to flash a subset of the request data to the session. These methods are useful for keeping sensitive information such as passwords out of the session:~~
 
     $request->flashOnly(['username', 'email']);
 
@@ -209,7 +209,7 @@ You may also use the `flashOnly` and `flashExcept` methods to flash a subset of 
 
 #### Flashing Input Then Redirecting
 
-Since you often will want to flash input to the session and then redirect to the previous page, you may easily chain input flashing onto a redirect using the `withInput` method:
+~~Since you often will want to flash input to the session and then redirect to the previous page, you may easily chain input flashing onto a redirect using the `withInput` method:~~
 
     return redirect('form')->withInput();
 
@@ -219,11 +219,11 @@ Since you often will want to flash input to the session and then redirect to the
 
 #### Retrieving Old Input
 
-To retrieve flashed input from the previous request, use the `old` method on the `Request` instance. The `old` method will pull the previously flashed input data from the [session](/docs/{{version}}/session):
+~~To retrieve flashed input from the previous request, use the `old` method on the `Request` instance. The `old` method will pull the previously flashed input data from the [session](/docs/{{version}}/session):~~
 
     $username = $request->old('username');
 
-Lanvard also provides a global `old` helper. If you are displaying old input within a [Blade template](/docs/{{version}}/blade), it is more convenient to use the `old` helper. If no old input exists for the given field, `null` will be returned:
+~~Lanvard also provides a global `old` helper. If you are displaying old input within a [Blade template](/docs/{{version}}/blade), it is more convenient to use the `old` helper. If no old input exists for the given field, `null` will be returned:~~
 
     <input type="text" name="username" value="{{ old('username') }}">
 
