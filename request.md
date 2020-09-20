@@ -232,43 +232,14 @@ If you would like to determine if a value is present on the request and is not e
 
 #### Retrieving Cookies From Requests
 
-All cookies created by the Lanvard framework are encrypted and signed with an authentication code, meaning they will be considered invalid if they have been changed by the client. To retrieve a cookie value from the request, use the `cookie` method on a `Illuminate\Http\Request` instance:
+All cookies created by the Lanvard framework are encrypted and signed with an authentication code, meaning they will be considered invalid if they have been changed by the client. To retrieve a cookie value from the request, use the `Cookie` method on a `inter.Request` instance:
 
-    $value = $request->cookie('name');
+    latestPage := request.Cookie("latest_page")
+    latestPage, err := request.CookieE("latest_page")
 
-Alternatively, you may use the `Cookie` facade to access cookie values:
+ If you are looking for how to set a cookie, you can read [Attaching Cookies To Responses](/docs/{{version}}/responses#attaching-cookies-to-responses)
 
-    use Illuminate\Support\Facades\Cookie;
-
-    $value = Cookie::get('name');
-
-#### Attaching Cookies To Responses
-
-You may attach a cookie to an outgoing `Illuminate\Http\Response` instance using the `cookie` method. You should pass the name, value, and number of minutes the cookie should be considered valid to this method:
-
-    return response('Hello World')->cookie(
-        'name', 'value', $minutes
-    );
-
-The `cookie` method also accepts a few more arguments which are used less frequently. Generally, these arguments have the same purpose and meaning as the arguments that would be given to PHP's native [setcookie](https://secure.php.net/manual/en/function.setcookie.php) method:
-
-    return response('Hello World')->cookie(
-        'name', 'value', $minutes, $path, $domain, $secure, $httpOnly
-    );
-
-Alternatively, you can use the `Cookie` facade to "queue" cookies for attachment to the outgoing response from your application. The `queue` method accepts a `Cookie` instance or the arguments needed to create a `Cookie` instance. These cookies will be attached to the outgoing response before it is sent to the browser:
-
-    Cookie::queue(Cookie::make('name', 'value', $minutes));
-
-    Cookie::queue('name', 'value', $minutes);
-
-#### Generating Cookie Instances
-
-If you would like to generate a `Symfony\Component\HttpFoundation\Cookie` instance that can be given to a response instance at a later time, you may use the global `cookie` helper. This cookie will not be sent back to the client unless it is attached to a response instance:
-
-    $cookie = cookie('name', 'value', $minutes);
-
-    return response('Hello World')->cookie($cookie);
+> {tip} If you want to receive all original cookies, you can use the cookies from source by `request.Source().Cookies()`
 
 <a name="files"></a>
 ## Files
