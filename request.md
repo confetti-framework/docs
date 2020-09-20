@@ -5,7 +5,7 @@
     - [Request Path & Method](#request-path-and-method)
 - [Input Trimming & Normalization](#input-trimming-and-normalization)
 - [Retrieving Input Values](#retrieving-input-values)
-    - [Old Input](#old-input)
+    - [~~Old Input~~](#old-input)
     - [Cookies](#cookies)
 - [Files](#files)
     - [Retrieving Uploaded Files](#retrieving-uploaded-files)
@@ -247,12 +247,17 @@ All cookies created by the Lanvard framework are encrypted and signed with an au
 <a name="retrieving-uploaded-files"></a>
 ### Retrieving Uploaded Files
 
-You may access uploaded files from a `Illuminate\Http\Request` instance using the `file` method or using dynamic properties. The `file` method returns an instance of the `Illuminate\Http\UploadedFile` class, which extends the PHP `SplFileInfo` class and provides a variety of methods for interacting with the file:
+~~You may access uploaded files from a `inter.Request` instance using the `File` method or using dynamic properties. The `File` method returns an instance of the `Illuminate\Http\UploadedFile` class, which extends the PHP `SplFileInfo` class and provides a variety of methods for interacting with the file:~~
 
-    $file = $request->file('photo');
+    file := request.File("photo")
+    file, err := request.FileE("photo")
 
-    $file = $request->photo;
+Ore you can use the `Files` method to retrieve multiple files:
 
+    files := request.Files("photos")
+    files, err := request.FilesE("photos")
+
+ 
 You may determine if a file is present on the request using the `hasFile` method:
 
     if ($request->hasFile('photo')) {
