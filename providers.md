@@ -62,7 +62,7 @@ So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#vi
     import (
         "github.com/lanvard/foundation"
         "github.com/lanvard/view"
-        user_repository "app/repository/user"
+        user_repository "lanvard/app/repository/user"
     )
     
     type ComposerServiceProvider struct{}
