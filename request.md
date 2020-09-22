@@ -247,12 +247,12 @@ All cookies created by the Lanvard framework are encrypted and signed with an au
 <a name="retrieving-uploaded-files"></a>
 ### Retrieving Uploaded Files
 
-~~You may access uploaded files from a `inter.Request` instance using the `File` method or using dynamic properties. The `File` method returns an instance of the `Illuminate\Http\UploadedFile` class, which extends the PHP `SplFileInfo` class and provides a variety of methods for interacting with the file:~~
+You may access uploaded files from a `inter.Request` instance using the `File` method. The `File` method returns an instance of the `support.File`, which holds the Go `multipart.File` interface and provides a variety of methods for interacting with the file:
 
     file := request.File("photo")
     file, err := request.FileE("photo")
 
-Ore you can use the `Files` method to retrieve multiple files:
+~~Ore you can use the `Files` method to retrieve multiple files:~~
 
     files := request.Files("photos")
     files, err := request.FilesE("photos")
