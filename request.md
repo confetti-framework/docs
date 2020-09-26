@@ -155,35 +155,35 @@ If you need to retrieve a subset of the input data, you may use the `Only` and `
 
 You should use the `Has` method to determine if a value is present on the request. The `Has` method returns `true` if the value is present on the request:
 
-    body := request.Body("").Map()
+    body := request.Body("data.user").Map()
     if body.Has("name") {
         //
     }
 
 When given multiple strings, the `Has` method will determine if all of the specified values are present:
 
-    body := request.Body("").Map()
+    body := request.Body("data.user").Map()
     if body.Has("name", "email") {
         //
     }
 
 The `HasAny` method returns `true` if any of the specified values are present:
 
-    body := request.Body("").Map()
+    body := request.Body("data.user").Map()
     if body.HasAny("name", "email") {
         //
     }
 
 To determine if a given key is absent from the request, you may use the `Missing` method:
 
-    body := request.Body("").Map()
+    body := request.Body("data.user").Map()
     if body.Missing("name") {
         //
     }
 
 If you would like to determine if a value is present on the request and is not empty, you may use the `Filled` method:
 
-    body := request.Body("").Map()
+    body := request.Body("data.user").Map()
     if body.Filled("name") {
         //
     }
@@ -265,9 +265,12 @@ You may determine if a file is present on the request:
 
 #### File Paths & Extensions
 
-The `UploadedFile` class also contains methods for accessing the file's fully-qualified path and its extension. The `extension` method will attempt to guess the file's extension based on its contents. This extension may be different from the extension that was supplied by the client:
+The `support.File` struct also contains methods for accessing the file's fully-qualified path and its extension.
+The `extension` method will attempt to guess the file's extension based on its contents. This extension may be different
+from the extension that was supplied by the client:
 
-    $path = $request->photo->path();
+    name := request.File("photo").Name()
+    // photo.jpg
 
     $extension = $request->photo->extension();
 
