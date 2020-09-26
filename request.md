@@ -20,18 +20,18 @@ In the parameter from a controller you get a `inter.Request` instance. From the 
     package controller
     
     import (
-    	"github.com/lanvard/contract/inter"
-    	"github.com/lanvard/routing/outcome"
+        "github.com/lanvard/contract/inter"
+        "github.com/lanvard/routing/outcome"
     )
     
     var User = struct {
-    	Store inter.Controller
+        Store inter.Controller
     }{
-    	Store: func(request inter.Request) inter.Response {
-    		name := request.Value("name").String()
+        Store: func(request inter.Request) inter.Response {
+            name := request.Value("name").String()
     
-    		return outcome.Html("Username:" + name)
-    	},
+            return outcome.Html("Username:" + name)
+        },
     }
     
 More information about receiving a parameter, see: [Route Parameters](/docs/{{version}}/route-parameters)
@@ -40,9 +40,9 @@ More information about receiving a parameter, see: [Route Parameters](/docs/{{ve
 
 You can also receive the `request` interface on a route Closure. Lanvard inject the incoming request into the Closure when it is executed:
 
-	Get("/", func(request inter.Request) inter.Response {
-		//
-	})
+    Get("/", func(request inter.Request) inter.Response {
+        //
+    })
 
 ### net http.Request
 If you need to use net http.request for a library, or you want information that is only available in the original Golang request. Then you can retrieve it by the `Source` method:
@@ -252,23 +252,14 @@ You may access uploaded files from a `inter.Request` instance using the `File` m
     file := request.File("photo")
     file, err := request.FileE("photo")
 
-~~Ore you can use the `Files` method to retrieve multiple files:~~
+Or you can use the `Files` method to retrieve multiple files:
 
     files := request.Files("photos")
     files, err := request.FilesE("photos")
 
- 
-You may determine if a file is present on the request using the `hasFile` method:
+You may determine if a file is present on the request:
 
-    if ($request->hasFile('photo')) {
-        //
-    }
-
-#### Validating Successful Uploads
-
-In addition to checking if the file is present, you may verify that there were no problems uploading the file via the `isValid` method:
-
-    if ($request->file('photo')->isValid()) {
+    if file, err := request.FileE("photo"); err != nil {
         //
     }
 
