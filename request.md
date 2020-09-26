@@ -259,7 +259,7 @@ Or you can use the `Files` method to retrieve multiple files:
 
 You may determine if a file is present on the request:
 
-    if file, err := request.FileE("photo"); err != nil {
+    if file, err := request.FileE("photo"); err == nil {
         //
     }
 
