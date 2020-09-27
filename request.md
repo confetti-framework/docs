@@ -270,7 +270,7 @@ The `extension` method will attempt to guess the file's extension based on its c
 from the extension that was supplied by the client:
 
     name := request.File("photo").Name()
-    // photo.jpg
+    // photo.jpeg
 
     $extension = $request->photo->extension();
 
