@@ -266,7 +266,7 @@ You may determine if a file is present on the request:
 #### File Paths & Extensions
 
 The `support.File` struct also contains methods for accessing the file's fully-qualified path and its extension.
-The `extension` method will attempt to guess the file's extension based on its contents. This extension may be different
+The `Extension` method will attempt to guess the file's extension based on its contents. This extension may be different
 from the extension that was supplied by the client:
 
     name := request.File("photo").Name()
