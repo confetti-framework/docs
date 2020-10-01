@@ -61,12 +61,20 @@ You may also pass arguments to the `IsEnvironment` method to check if the enviro
 Retrieving a configuration is very easy. Because of strict typing you have fully autocomplete:
 
     config.App.LineSeparator
-    
-If the configuration contains a type with methods, you can also use its methods:
+
+If the configuration contains a type with methods, you can use its methods:
 
     config.App.BasePath.StoragePath()
 
+If you are a developer of a package, you can get the configuration from an `inter.App` instance:
+
+    app.Make("config.App.LineSeparator").(string)
+    app.Make("config.App.BasePath").(inter.BasePath).StoragePath()
+
+> {note} To get configuration from `inter.App`, the config must be present in the `config/index.go` file
+
 <a name="configuration-caching"></a>
+
 ## Configuration Caching
 
 Configuration is built at the start when you run the application. So you don't have to cache the configuration manually.
