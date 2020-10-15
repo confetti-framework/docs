@@ -73,7 +73,7 @@ Name | Description | Default
 
 #### Configuring The Slack Channel
 
-The `slack` channel requires a `url` configuration option. This URL should match a URL for
+The `slack` channel requires a `WebhookUrl` configuration option. This URL should match a URL for
 an [incoming webhook](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks) that you have configured for your Slack team.
 By default, Slack will only receive logs at the `critical` level and above; however, you can adjust this in
 your `logging` configuration file.
@@ -86,99 +86,94 @@ As previously mentioned, the `stack` driver allows you to combine multiple chann
 illustrate how to use log stacks, let's take a look at an example configuration that you might see in a production
 application:
 
-    'channels' => [
-        'stack' => [
-            'driver' => 'stack',
-            'channels' => ['syslog', 'slack'],
-        ],
+	Channels: map[string]inter.Logger{
+		"stack": loggers.Stack{
+			Channels: []string{"daily", "slack"},
+		},
 
-        'syslog' => [
-            'driver' => 'syslog',
-            'level' => 'debug',
-        ],
+		"daily": loggers.Syslog{
+			Path:     Path.Storage + "/logs/{yyyy-mm-dd}_default.log",
+			MinLevel: syslog.DEBUG,
+			MaxFiles: 14,
+		},
 
-        'slack' => [
-            'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Lanvard Log',
-            'emoji' => ':boom:',
-            'level' => 'critical',
-        ],
-    ],
+		"slack": loggers.Slack{
+			WebhookUrl: env.StringOr("LOG_SLACK_WEBHOOK_URL", ""),
+			MinLevel:   syslog.CRIT,
+		},
+	},
 
-Let's dissect this configuration. First, notice our `stack` channel aggregates two other channels via its `channels`
-option: `syslog` and `slack`. So, when logging messages, both of these channels will have the opportunity to log the
+Let's dissect this configuration. First, notice our `stack` channel aggregates two other channels via its `Channels`
+option: `daily` and `slack`. So, when logging messages, both of these channels will have the opportunity to log the
 message.
 
 #### Log Levels
 
-Take note of the `level` configuration option present on the `syslog` and `slack` channel configurations in the example
-above. This option determines the minimum "level" a message must be in order to be logged by the channel. Syslog, which
-powers Lanvard's logging services, offers all of the log levels defined in
+Take note of the `MinLevel` configuration option present on the `daily` and `slack` channel configurations in the
+example above. This option determines the minimum "level" a message must be in order to be logged by the channel.
+loggers.Syslog, which powers Lanvard's logging services, offers all of the log levels defined in
 the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**, **critical**, **error**, **
 warning**, **notice**, **info**, and **debug**.
 
 So, imagine we log a message using the `debug` method:
 
-    Log::debug('An informational message.');
+    app.Log().Debug("An informational message.")
 
-Given our configuration, the `syslog` channel will write the message to the system log; however, since the error message
+Given our configuration, the `daily` channel will write the message to the system log; however, since the error message
 is not `critical` or above, it will not be sent to Slack. However, if we log an `emergency` message, it will be sent to
 both the system log and Slack since the `emergency` level is above our minimum level threshold for both channels:
 
-    Log::emergency('The system is down!');
+    app.Log().Emergency("The system is down!")
 
 <a name="writing-log-messages"></a>
 
 ## Writing Log Messages
 
-You may write information to the logs using the `Log` [facade](/docs/{{version}}/facades). As previously mentioned, the
-logger provides the eight logging levels defined in
+You may write information to the logs using the `Log` [~~facade~~](/docs/{{version}}/facades). As previously mentioned,
+the logger provides the eight logging levels defined in
 the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**, **critical**, **error**, **
 warning**, **notice**, **info** and **debug**:
 
-    Log::emergency($message);
-    Log::alert($message);
-    Log::critical($message);
-    Log::error($message);
-    Log::warning($message);
-    Log::notice($message);
-    Log::info($message);
-    Log::debug($message);
+    app.Log().Emergency(message)
+    app.Log().Alert(message);
+    app.Log().Critical(message);
+    app.Log().Error(message);
+    app.Log().Warning(message);
+    app.Log().Notice(message);
+    app.Log().Info(message);
+    app.Log().Debug(message);
+    app.Log().Log(syslog.ALERT, message)
 
 So, you may call any of these methods to log a message for the corresponding level. By default, the message will be
-written to the default log channel as configured by your `config/logging.php` configuration file:
+written to the default log channel as configured by your `config/logging.go` configuration file:
 
-    <?php
+    package controller
 
-    namespace App\Http\Controllers;
-
-    use App\Http\Controllers\Controller;
-    use App\Models\User;
-    use Illuminate\Support\Facades\Log;
-
-    class UserController extends Controller
-    {
-        /**
-         * Show the profile for the given user.
-         *
-         * @param  int  $id
-         * @return Response
-         */
-        public function showProfile($id)
-        {
-            Log::info('Showing user profile for user: '.$id);
-
-            return view('user.profile', ['user' => User::findOrFail($id)]);
-        }
+    import (
+        "github.com/lanvard/contract/inter"
+        "github.com/lanvard/routing/outcome"
+    )
+    
+    func ShowProfile(request inter.Request) inter.Response {
+        id := request.Parameter("user_id")
+        request.App().Log().Info("Showing user profile for user: " + id.String())
+    
+        user := User.FindOrFail(id.Number())
+        return outcome.View("user.profile", outcome.Options{"user:", user})
     }
 
 #### Contextual Information
 
-An array of contextual data may also be passed to the log methods. This contextual data will be formatted and displayed
-with the log message:
+An array of contextual data may also be passed to the log `...With()` methods. This contextual data will be formatted to
+JSON and displayed with the log message:
 
-    Log::info('User failed to login.', ['id' => $user->id]);
+    logData := map[string]string{"id": id.String()}
+    request.App().Log().InfoWith("User failed to login.", logData)
+
+If you want to log data as prescribed by the standards, use StructuredData:
+
+    logData := syslog.StructuredData{syslog.SDElement{"id": id.String()}
+    request.App().Log().InfoWith("User failed to login.", logData)
 
 <a name="writing-to-specific-channels"></a>
 
@@ -293,9 +288,8 @@ the `formatter` configuration option to `default`:
 ### Creating Channels Via Factories
 
 If you would like to define an entirely custom channel in which you have full control over Syslog's instantiation and
-configuration, you may specify a `custom` driver type in your `config/logging.php` configuration file. Your
-configuration should include a `via` option to point to the factory class which will be invoked to create the Syslog
-instance:
+configuration, you may specify a `custom` driver type in your `config/logging.go` configuration file. Your configuration
+should include a `via` option to point to the factory class which will be invoked to create the Syslog instance:
 
     'channels' => [
         'custom' => [
