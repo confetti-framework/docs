@@ -3,31 +3,26 @@
 - [Introduction](#introduction)
 - [Configuration](#configuration)
   - [Building Log Stacks](#building-log-stacks)
+  - [Creating Custom Channels And Loggers](#creating-custom-channels-and-loggers)
 - [Writing Log Messages](#writing-log-messages)
   - [Writing To Specific Channels](#writing-to-specific-channels)
-- [Advanced Syslog Channel Customization](#advanced-syslog-channel-customization)
-  - [Customizing Syslog For Channels](#customizing-syslog-for-channels)
-  - [Creating Syslog Handler Channels](#creating-syslog-handler-channels)
-  - [Creating Channels Via Factories](#creating-channels-via-factories)
 
 <a name="introduction"></a>
 
 ## Introduction
 
-To help you learn more about what's happening within your application, Lanvard provides robust logging services that
-allow you to log messages to files, the system error log, and even to Slack to notify your entire team.
+To help you learn more about what's happening within your application, Lanvard provides robust logging services that allow you to log messages to files, the system error log, and even to Slack to notify your entire team.
 
-Under the hood, Lanvard utilizes the [Syslog](https://github.com/lanvard/syslog) library, which provides support for a
-variety of powerful log handlers. Lanvard makes it a cinch to configure these handlers, allowing you to mix and match
-them to customize your application's log handling.
+Under the hood, Lanvard utilizes the [Syslog](https://github.com/lanvard/syslog) library, which provides support for
+a variety of powerful log handlers. Lanvard makes it a cinch to configure these handlers, allowing you to mix and match them to customize your application's log handling.
 
 <a name="configuration"></a>
 
 ## Configuration
 
-All of the configuration for your application's logging system is housed in the `config/logging.go` configuration file.
-This file allows you to configure your application's log channels, so be sure to review each of the available channels
-and their options. We'll review a few common options below.
+All of the configuration for your application's logging system is housed in the `config/logging.go` configuration
+file. This file allows you to configure your application's log channels, so be sure to review each of the available
+channels and their options. We'll review a few common options below.
 
 By default, Lanvard will use the `stack` channel when logging messages. The `stack` channel is used to aggregate
 multiple log channels into a single channel. For more information on building stacks, check out
@@ -65,7 +60,7 @@ Most channels are based on `loggers.Syslog`. This logger can write files, but ca
 Name | Description | Default
 ------------- | ------------- | -------------
 `Path` | The path to the log file |
-`permission` | The log file's permissions | `0644`
+`Permission` | The log file's permissions | `0644`
 `MinLevel` | The minimum "level" a message must be in order to be logged | EMERG
 `MaxFiles` | Automatically clean up old logs when overwriting x number of logs | 0 (off)
 `Facility` | Specify the type of program that is logging the message | 8 (USER)
@@ -125,6 +120,24 @@ both the system log and Slack since the `emergency` level is above our minimum l
 
     app.Log().Emergency("The system is down!")
 
+<a name="creating-custom-channels-and-loggers"></a>
+
+### Creating Custom Channels And Loggers
+
+As indicated earlier: it is very easy to create channels and loggers yourself. A channel is a combination between a
+name (present as a key in config.Logging.Channels) and a logger. A logger is simply a struct that conforms to
+interface `inter.Logger()`.
+
+Let's create a NewRelic channel:
+
+        "new_relic": new_relic.LogFacade{
+			AppName: App.Name,
+			Labels:  App.Env,
+			License: env.Str("NEW_RELIC_LICENSE"),
+		},
+
+The logger `new_relic.LogFacade{}` only needs to support interface `inter.Logger{}`.
+
 <a name="writing-log-messages"></a>
 
 ## Writing Log Messages
@@ -179,144 +192,11 @@ If you want to log data as prescribed by the standards, use StructuredData:
 
 ### Writing To Specific Channels
 
-Sometimes you may wish to log a message to a channel other than your application's default channel. You may use
-the `channel` method on the `Log` facade to retrieve and log to any channel defined in your configuration file:
+Sometimes you may wish to log a message to a channel other than your application's default channel. You may use the
+first parameter from the `Log` method to log to any channel defined in your configuration file:
 
-    Log::channel('slack')->info('Something happened!');
+    app.Log("slack").Alert("Something happened!");
 
-If you would like to create an on-demand logging stack consisting of multiple channels, you may use the `stack` method:
+If you would like to create an on-demand logging stack consisting of multiple channels, you may use multiple parameters:
 
-    Log::stack(['single', 'slack'])->info('Something happened!');
-
-<a name="advanced-syslog-channel-customization"></a>
-
-## Advanced Syslog Channel Customization
-
-<a name="customizing-syslog-for-channels"></a>
-
-### Customizing Syslog For Channels
-
-Sometimes you may need complete control over how Syslog is configured for an existing channel. For example, you may want
-to configure a custom Syslog `FormatterInterface` implementation for a given channel's handlers.
-
-To get started, define a `tap` array on the channel's configuration. The `tap` array should contain a list of classes
-that should have an opportunity to customize (or "tap" into) the Syslog instance after it is created:
-
-    'single' => [
-        'driver' => 'single',
-        'tap' => [App\Logging\CustomizeFormatter::class],
-        'path' => storage_path('logs/laravel.log'),
-        'level' => 'debug',
-    ],
-
-Once you have configured the `tap` option on your channel, you're ready to define the class that will customize your
-Syslog instance. This class only needs a single method: `__invoke`, which receives an `Illuminate\Log\Logger` instance.
-The `Illuminate\Log\Logger` instance proxies all method calls to the underlying Syslog instance:
-
-    <?php
-
-    namespace App\Logging;
-
-    use Syslog\Formatter\LineFormatter;
-
-    class CustomizeFormatter
-    {
-        /**
-         * Customize the given logger instance.
-         *
-         * @param  \Illuminate\Log\Logger  $logger
-         * @return void
-         */
-        public function __invoke($logger)
-        {
-            foreach ($logger->getHandlers() as $handler) {
-                $handler->setFormatter(new LineFormatter(
-                    '[%datetime%] %channel%.%level_name%: %message% %context% %extra%'
-                ));
-            }
-        }
-    }
-
-> {tip} All of your "tap" classes are resolved by the [service container](/docs/{{version}}/container), so any constructor dependencies they require will automatically be injected.
-
-<a name="creating-syslog-handler-channels"></a>
-
-### Creating Syslog Handler Channels
-
-Syslog has a variety of [available handlers](https://github.com/Seldaek/syslog/tree/master/src/Syslog/Handler). In some
-cases, the type of logger you wish to create is merely a Syslog driver with an instance of a specific handler. These
-channels can be created using the `syslog` driver.
-
-When using the `syslog` driver, the `handler` configuration option is used to specify which handler will be
-instantiated. Optionally, any constructor parameters the handler needs may be specified using the `with` configuration
-option:
-
-    'logentries' => [
-        'driver'  => 'syslog',
-        'handler' => Syslog\Handler\SyslogUdpHandler::class,
-        'with' => [
-            'host' => 'my.logentries.internal.datahubhost.company.com',
-            'port' => '10000',
-        ],
-    ],
-
-#### Syslog Formatters
-
-When using the `syslog` driver, the Syslog `LineFormatter` will be used as the default formatter. However, you may
-customize the type of formatter passed to the handler using the `formatter` and `formatter_with` configuration options:
-
-    'browser' => [
-        'driver' => 'syslog',
-        'handler' => Syslog\Handler\BrowserConsoleHandler::class,
-        'formatter' => Syslog\Formatter\HtmlFormatter::class,
-        'formatter_with' => [
-            'dateFormat' => 'Y-m-d',
-        ],
-    ],
-
-If you are using a Syslog handler that is capable of providing its own formatter, you may set the value of
-the `formatter` configuration option to `default`:
-
-    'newrelic' => [
-        'driver' => 'syslog',
-        'handler' => Syslog\Handler\NewRelicHandler::class,
-        'formatter' => 'default',
-    ],
-
-<a name="creating-channels-via-factories"></a>
-
-### Creating Channels Via Factories
-
-If you would like to define an entirely custom channel in which you have full control over Syslog's instantiation and
-configuration, you may specify a `custom` driver type in your `config/logging.go` configuration file. Your configuration
-should include a `via` option to point to the factory class which will be invoked to create the Syslog instance:
-
-    'channels' => [
-        'custom' => [
-            'driver' => 'custom',
-            'via' => App\Logging\CreateCustomLogger::class,
-        ],
-    ],
-
-Once you have configured the `custom` channel, you're ready to define the class that will create your Syslog instance.
-This class only needs a single method: `__invoke`, which should return the Syslog instance:
-
-    <?php
-
-    namespace App\Logging;
-
-    use Syslog\Logger;
-
-    class CreateCustomLogger
-    {
-        /**
-         * Create a custom Syslog instance.
-         *
-         * @param  array  $config
-         * @return \Syslog\Logger
-         */
-        public function __invoke(array $config)
-        {
-            return new Logger(...);
-        }
-    }
+    app.Log("single", "slack").Info("Something happened!");
