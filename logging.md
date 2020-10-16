@@ -132,11 +132,11 @@ interface `inter.Logger()`.
 
 Let's create a NewRelic channel:
 
-        "new_relic": new_relic.LogFacade{
-			AppName: App.Name,
-			Labels:  App.Env,
-			License: env.Str("NEW_RELIC_LICENSE"),
-		},
+    "new_relic": new_relic.LogFacade{
+        AppName: App.Name,
+        Labels:  App.Env,
+        License: env.Str("NEW_RELIC_LICENSE"),
+    },
 
 The logger `new_relic.LogFacade{}` only needs to support interface `inter.Logger{}`.
 
