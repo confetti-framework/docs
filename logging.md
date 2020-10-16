@@ -168,25 +168,30 @@ written to the default log channel as configured by your `config/logging.go` con
     )
     
     func ShowProfile(request inter.Request) inter.Response {
-        id := request.Parameter("user_id")
-        request.App().Log().Info("Showing user profile for user: " + id.String())
-    
-        user := User.FindOrFail(id.Number())
-        return outcome.View("user.profile", outcome.Options{"user:", user})
+        name := request.Parameter("name")
+        request.App().Log().Info("Showing user profile for user: %v", name.String())
+        //
     }
 
 #### Contextual Information
 
-An array of contextual data may also be passed to the log `...With()` methods. This contextual data will be formatted to
-JSON and displayed with the log message:
+If you have data that you want to include in the logs, you can use the other parameters. Use `%v` as a placeholder:
+
+    app.Log().Info("User %v visit page %v.", "Vapor", "/features")
+
+    logData := map[string]int{"name": "Horizon"}
+    app.Log().Info("User failed to login. %v", logData)
+
+More complex contextual data may also be passed to the log `...With()` methods. This contextual data will be
+formatted to JSON and displayed with the log message:
 
     logData := map[string]string{"id": id.String()}
-    request.App().Log().InfoWith("User failed to login.", logData)
+    app.Log().InfoWith("User failed to login.", logData)
 
-If you want to log data as prescribed by the standards, use StructuredData:
+If you want to log data as prescribed by the standards, use `syslog.StructuredData`:
 
     logData := syslog.StructuredData{syslog.SDElement{"id": id.String()}
-    request.App().Log().InfoWith("User failed to login.", logData)
+    app.Log().InfoWith("User failed to login.", logData)
 
 <a name="writing-to-specific-channels"></a>
 
