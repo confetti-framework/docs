@@ -83,22 +83,22 @@ As previously mentioned, the `stack` driver allows you to combine multiple chann
 illustrate how to use log stacks, let's take a look at an example configuration that you might see in a production
 application:
 
-	Channels: map[string]inter.Logger{
-		"stack": loggers.Stack{
-			Channels: []string{"daily", "slack"},
-		},
+    Channels: map[string]inter.Logger{
+        "stack": loggers.Stack{
+            Channels: []string{"daily", "slack"},
+        },
 
-		"daily": loggers.Syslog{
-			Path:     Path.Storage + "/logs/{yyyy-mm-dd}_default.log",
-			MinLevel: syslog.DEBUG,
-			MaxFiles: 14,
-		},
+        "daily": loggers.Syslog{
+            Path:     Path.Storage + "/logs/{yyyy-mm-dd}_default.log",
+            MinLevel: syslog.DEBUG,
+            MaxFiles: 14,
+        },
 
-		"slack": loggers.Slack{
-			WebhookUrl: env.StringOr("LOG_SLACK_WEBHOOK_URL", ""),
-			MinLevel:   syslog.CRIT,
-		},
-	},
+        "slack": loggers.Slack{
+            WebhookUrl: env.StringOr("LOG_SLACK_WEBHOOK_URL", ""),
+            MinLevel:   syslog.CRIT,
+        },
+    },
 
 Let's dissect this configuration. First, notice our `stack` channel aggregates two other channels via its `Channels`
 option: `daily` and `slack`. So, when logging messages, both of these channels will have the opportunity to log the
