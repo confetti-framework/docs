@@ -35,6 +35,7 @@ might be smart to split the channels. For example, you could create a channel na
 and a channel named `worker` for background jobs.
 
     "external": loggers.Syslog{
+        Type:     "external"
         Path:     Path.Storage + "/logs/{yyyy-mm-dd}_external.log",
         MinLevel: syslog.DEBUG,
         AppName:  App.Name,
@@ -64,7 +65,8 @@ Name | Description | Default
 `MinLevel` | The minimum "level" a message must be in order to be logged | EMERG
 `MaxFiles` | Automatically clean up old logs when overwriting x number of logs | 0 (off)
 `Facility` | Specify the type of program that is logging the message | 8 (USER)
-`Writer` | Define your own writer here | nil
+`Type` | Type/MSGID should identify the type of message and is intended for filtering |
+`Writer` | Define your own writer here |
 
 #### Configuring The Slack Channel
 
