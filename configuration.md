@@ -35,7 +35,8 @@ override the `.env` file when running tests ~~or executing Artisan commands with
 <a name="retrieving-environment-configuration"></a>
 ### Retrieving Environment Configuration
 
-All the variables listed in this file will be loaded when your application is running for the first time. However, you may use the `environment` package to retrieve values from these variables in your configuration files. In fact, if you review the Lanvard configuration files, you will notice several of the options already using this package:
+All the variables listed in this file will be loaded when your application is running for the first time. However,
+you may use the `env` package to retrieve values from these variables in your configuration files. In fact, if you view the Lanvard configuration files, you will notice several of the options already using this package:
 
     env.String("APP_URL"),
     env.StringOr("APP_URL", "http://localhost"),
