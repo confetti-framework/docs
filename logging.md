@@ -65,7 +65,7 @@ Name | Description | Default
 `MinLevel` | The minimum "level" a message must be in order to be logged | EMERG
 `MaxFiles` | Automatically clean up old logs when overwriting x number of logs | 0 (off)
 `Facility` | Specify the type of program that is logging the message | 8 (USER)
-`Type` | Type/MSGID should identify the type of message and is intended for filtering |
+`Type` | Type/MSGID should identify the type of the message and is intended for filtering |
 `Writer` | Define your own writer here |
 
 #### Configuring The Slack Channel
