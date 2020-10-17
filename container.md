@@ -17,32 +17,30 @@ The Lanvard service container is a powerful tool for managing struct dependencie
 
 Let's look at a simple example:
 
-```go
-package model
+    package model
 
-import (
-    "github.com/lanvard/contract/inter"
-"github.com/lanvard/foundation"
-    "lanvard/app/repository"
-)
+    import (
+        "github.com/lanvard/contract/inter"
+    "github.com/lanvard/foundation"
+        "lanvard/app/repository"
+    )
 
-type User struct {
-	app        inter.App
-	repository repository.User
-}
+    type User struct {
+        app        inter.App
+        repository repository.User
+    }
 
-func NewUser(app inter.App) User {
+    func NewUser(app inter.App) User {
 
-	// Receive the repository from the application container
-	userRepository := app.Make(repository.User{})(repository.User)
+        // Receive the repository from the application container
+        userRepository := app.Make(repository.User{})(repository.User)
 
-	return User{app: app, repository: userRepository}
-}
+        return User{app: app, repository: userRepository}
+    }
 
-func (u User) IsAdmin() bool {
-	return u.repository.HasRole(u, "admin")
-}
-```
+    func (u User) IsAdmin() bool {
+        return u.repository.HasRole(u, "admin")
+    }
 
 In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service is able to retrieve users. In this context, our `UserRepository` most likely uses [~~Eloquent~~](/docs/{{version}}/eloquent) to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
 
