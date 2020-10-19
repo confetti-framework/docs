@@ -90,24 +90,27 @@ This hasn't been built yet, but feel free to help: https://github.com/lanvard/la
 
 #### Retrieving An Input Value
 
-Using a few simple methods, you may access all of the user input from your `http.request` instance without worrying about which HTTP verb was used for the request. Regardless of the HTTP verb, the `Input` method may be used to retrieve user input:
+Using a few simple methods, you may access all of the user input from your `http.request` instance without worrying
+about which HTTP verb was used for the request. Regardless of the HTTP verb, the `Content` method may be used to
+retrieve user input:
 
-    name := request.Body("name").String()
+    name := request.Content("name").String()
 
-You may pass a default value as the second argument to the `BodyOr` method. This value will be returned if the requested input value is not present on the request:
+You may pass a default value as the second argument to the `ContentOr` method. This value will be returned if the
+requested input value is not present on the request:
 
-    name := request.BodyOr("name", "Sally").String()
+    name := request.ContentOr("name", "Sally").String()
 
 When working with forms that contain array inputs, use "dot" notation to access the arrays:
 
-    name := request.Body("name.1").String()
-    name, err := request.Body("name.1").StringE()
+    name := request.Content("name.1").String()
+    name, err := request.Content("name.1").StringE()
     
-    names := request.Body("name.*").Collection()
+    names := request.Content("name.*").Collection()
 
-You may call the `Body` method with an empty string in order to retrieve all of the input values as support.Map:
+You may call the `Content` method with an empty string in order to retrieve all of the input values as support.Map:
 
-    requestValues = request.Body("").Map()
+    requestValues = request.Content("").Map()
 
 #### Retrieving JSON Input Values
 
@@ -119,7 +122,7 @@ When sending JSON requests to your application, you may access the JSON data via
 
 To receive the data as it was sent, use the `Content` method. In that case you will always receive a string
 
-    rawContent := request.Content()
+    rawContent := request.Body()
 
 #### Retrieving Input From The Query String
 
