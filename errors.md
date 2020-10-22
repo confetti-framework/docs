@@ -9,6 +9,13 @@
 - [HTTP Exceptions](#http-exceptions)
     - [Custom HTTP Error Pages](#custom-http-error-pages)
 
+- panic vs return errors
+- wrap
+- stack strace
+- log level
+- http status
+- log errors (with or without stack trace)
+
 <a name="introduction"></a>
 
 ## Introduction
