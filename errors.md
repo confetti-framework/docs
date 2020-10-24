@@ -61,8 +61,13 @@ message.
 
 To receive the original error (after `Wrap`), you can use` Cause`:
 
+    err := errors.New("no user found").Wrap("validation error")
     err.Cause().Error()
     // no user found
+
+The default log level is `Emergency`. To determine the log level you can use the `Level` method:
+
+    New("username not found").Level(level.INFO)
 
 #### Panic
 
@@ -117,21 +122,10 @@ omgeving. Bekijk alle methods uit `"github.com/lanvard/support/errors"` om te zi
 
 --- @todo add all methods from pkg errors
 
-### Format
-
-### Stack Trace
-
-### Log Level
 
 ### Http Status
 
-## Wrap/Cause
-
-## Cause
-
 ## Is
-
-## As
 
 ## As
 
