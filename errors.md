@@ -53,16 +53,16 @@ If you want to use the default user when the error occurs, you could ignore the 
 
     user, _ := GetUser()
 
-By applying multiple layers, you can add more information to the error. You can use the `Wrap` function to suffix a
-message:
+By applying multiple layers, you can add more information to the error. You can use the `Wrap`method to suffix a
+message.
 
-    errors.Wrap(err, "validation error")
-
-    // Validation error: no user found
+    err.Wrap("validation error")
+    // validation error: no user found
 
 To receive the original error (after `Wrap`), you can use` Cause`:
 
-    originalError := err.Cause()
+    err.Cause().Error()
+    // no user found
 
 #### Panic
 
