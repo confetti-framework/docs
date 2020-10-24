@@ -7,18 +7,135 @@
     - [Rendering Exceptions](#rendering-exceptions)
     - [Reportable & Renderable Exceptions](#renderable-exceptions)
 - [HTTP Exceptions](#http-exceptions)
-    - [Custom HTTP Error Pages](#custom-http-error-pages)
-
-- panic vs return errors
-- wrap
-- stack strace
-- log level
-- http status
-- log errors (with or without stack trace)
+  - [Custom HTTP Error Pages](#custom-http-error-pages)
 
 <a name="introduction"></a>
 
 ## Introduction
+
+Error handling is very different in Golang than in other languages. With Golang the following applies: The more time you
+spend on errors, the faster bugs can be found. It therefore deserves its own chapter.
+
+## The Concept
+
+In other languages you throw an error (or exception). If the caller wants to do something based on that error, then you
+have to catch the error. This is very different with Golang. The idea is that the caller is made responsible for what to
+do with the error. That's because code causing the error usually doesn't know what to do with that error.
+
+### The Possibilities
+
+There are 2 ways to deal with errors. You can panic or return the error from the method.
+
+#### Return Errors
+
+The most common method is to return the error from the method:
+
+    var NoUserFound = errors.New("no user found")
+
+    func GetUser() (model.User, error) {
+        //
+    
+        if (user == nil) {
+            return users.NewUnregistredUser(), NoUserFound
+        }
+        
+        return user, nil
+    }
+
+The following example shows how the caller can handle the error.
+
+    user, err := GetUser()
+    if err == NoUserFound {
+        //
+    }
+
+If you want to use the default user when the error occurs, you could ignore the error by an underscore:
+
+    user, _ := GetUser()
+
+By applying multiple layers, you can add more information to the error. You can use the `Wrap` function to suffix a
+message:
+
+    errors.Wrap(err, "validation error")
+
+    // Validation error: no user found
+
+To receive the original error (after `Wrap`), you can use` Cause`:
+
+    originalError := err.Cause()
+
+#### Panic
+
+Heb je sitaties waarbij het heel onwaarschijnlijk is dat de caller er iets mee kan. Dan zou je ervoor kunnen kiezen
+om `panic` te gebruiken:
+
+    func GetUser() (model.User) {
+        con, err := db.Connection()
+        if (err != nil) {
+            panic(err)
+        }
+        
+        //
+    }
+
+Lanvard zorgt automatisch dat de juiste http response wordt gegenereerd.
+
+> {tip} Het gebruik van panic zal jou veel tijd schelen. Echter, als je een rubuste applicatie wil bouwen, gebruik `panic` dan alleen voor 'critical' en onverwachte errors.
+
+### The Possibilities
+
+Zoals je hierboven kan zien, kan de error nog bewerkt worden met meer informatie. Daarom is het een convention om geen
+hoofdletter te gebruiken aan het begin van een error. Ook een punt aan het einde van de zin kan ervoor zorgen dat de zin
+langer gemaakt kan worden. De errors worden uiteindelijk automatisch voorzien van een hoofdletter aan het begin van de
+zin.
+
+## Packages
+
+Er zijn verschillende packages om een error struct te genereren. Golang komt zelf met 2 packages. Daarnaast biedt
+Lanvard een package voor extra opties. Voel je vrij om er zelf een te maken die past bij jouw domein. Alle errors moeten
+aan de `error` interface voldoen.
+
+### Classic errors
+
+De classic error wordt importeren met `"errors"`. Deze package bevat niet veel debug informatie. Gebruik het vooral als
+je geen debug informatie nodig hebt.
+
+### Pkg errors
+
+Dit is een andere standaard package van Golang die je kan importeren met `"github.com/pkg/errors"`. Deze package bevat
+stack traces en de mogelijkheid om meerdere errors samen te voegen.
+
+### Lanvard errors
+
+Lanvard errors kan je importeren met `"github.com/lanvard/support/errors"`. Een Lanvard error is een wrapper om een Pkg
+error heen en biedt extra functionaliteiten om te loggen en om juiste response terug te geven.
+
+### Custom
+
+Het is in Golang heel gebruikelijk om zelf verschillende errors te maken om het perfect te laten passen in jouw
+omgeving. Bekijk alle methods uit `"github.com/lanvard/support/errors"` om te zien welke methods je al kan invullen.
+
+--- @todo add all methods from pkg errors
+
+### Format
+
+### Stack Trace
+
+### Log Level
+
+### Http Status
+
+## Wrap/Cause
+
+## Cause
+
+## Is
+
+## As
+
+## As
+
+## Log Errors
 
 When you start a new Laravel project, error and exception handling is already configured for you.
 The `App\Exceptions\Handler` class is where all exceptions triggered by your application are logged and then rendered
