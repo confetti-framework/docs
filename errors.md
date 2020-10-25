@@ -90,8 +90,41 @@ The default log level is `Emergency`. To determine the log level you can use the
 
 Do you want to add extra data to an error/exception? In other languages you would extend a class with an extra field. Go
 has a SOLID solution for this: Each error can be wrapped in multiple structs. To add data to an error you just have to
-create a struct yourself (which then also contains the original error). See `"github.com/lanvard/support/errors` to get
-some inspiration.
+create a struct yourself (which then also contains the original error). If you want to add an error code to your error,
+you can make te following:
+
+    func WithCode(err error, code string) *withCode {
+        if err == nil {
+            return nil
+        }
+        return &withCode{
+            err,
+            code,
+        }
+    }
+    
+    type withCode struct {
+      cause error
+      code string
+    }
+    
+    func (w *withCode) Error() string {
+      return w.cause.Error()
+    }
+    
+    func (w *withCode) Cause() error {
+        return w.cause
+    }
+    
+    func (w *withCode) Code() string {
+        return w.code
+    }
+
+Then the error can build up like this:
+
+    WithCode(errros.New("username not found"), "external_error")
+
+Then you can add a response decorator to ResponseServiceProvider to convert an error to the response.
 
 ### Panic
 
