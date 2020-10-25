@@ -13,22 +13,21 @@
 
 ## Introduction
 
-Error handling is very different in Golang than in other languages. With Golang the following applies: The more time you
-spend on errors, the faster bugs can be found. It therefore deserves its own chapter.
+Error handling is very different in Go than in other languages. With Go the following applies: The more time you spend
+on errors, the faster bugs can be found. It therefore deserves its own chapter.
 
-## The Concept
+## Panic And Return Errors
 
 In other languages you throw an error (or exception). If the caller wants to do something based on that error, then you
-have to catch the error. This is very different with Golang. The idea is that the caller is made responsible for what to
-do with the error. That's because code causing the error usually doesn't know what to do with that error.
+have to catch the error. This is very different with Go. The idea is that the caller is made responsible for what to do
+with the error. The error is passed on until you can do something with it. If you want to stop the process and just fire
+the error, you can use `panic`.
 
-### The Possibilities
+### Return Errors
 
-There are 2 ways to deal with errors. You can panic or return the error from the method.
+The most common way is to return the error from the function:
 
-#### Return Errors
-
-The most common method is to return the error from the method:
+    import "github.com/lanvard/errors"
 
     var NoUserFound = errors.New("no user found")
 
@@ -49,15 +48,22 @@ The following example shows how the caller can handle the error.
         //
     }
 
+#### Ignore Errors
+
 If you want to use the default user when the error occurs, you could ignore the error by an underscore:
 
     user, _ := GetUser()
 
-By applying multiple layers, you can add more information to the error. You can use the `Wrap`method to suffix a
+#### Wrap
+
+By applying multiple layers, you can add more information to the error. You can use the `Wrap` method to suffix a
 message.
 
+    user, err := GetUser()
     err.Wrap("validation error")
     // validation error: no user found
+
+#### Cause
 
 To receive the original error (after `Wrap`), you can use` Cause`:
 
@@ -65,14 +71,31 @@ To receive the original error (after `Wrap`), you can use` Cause`:
     err.Cause().Error()
     // no user found
 
+#### Apply Stack Trace
+
+If you have a standard error, it does not contain a stack trace. Use function `WithStack` or` Wrap` To put the trace on
+it:
+
+    con, err := db.Connection()
+    errors.Wrap(err, "asdf")
+    errors.WithStack(err)
+
+#### Log Level
+
 The default log level is `Emergency`. To determine the log level you can use the `Level` method:
 
-    New("username not found").Level(level.INFO)
+    errros.New("username not found").Level(level.INFO)
 
-#### Panic
+#### Custom
 
-Heb je sitaties waarbij het heel onwaarschijnlijk is dat de caller er iets mee kan. Dan zou je ervoor kunnen kiezen
-om `panic` te gebruiken:
+Do you want to add extra data to an error/exception? In other languages you would extend a class with an extra field. Go
+has a SOLID solution for this: Each error can be wrapped in multiple structs. To add data to an error you just have to
+create a struct yourself (which then also contains the original error). See `"github.com/lanvard/support/errors` to get
+some inspiration.
+
+### Panic
+
+In case of a server error where the request cannot proceed, you could choose to use `panic`:
 
     func GetUser() (model.User) {
         con, err := db.Connection()
@@ -83,45 +106,15 @@ om `panic` te gebruiken:
         //
     }
 
-Lanvard zorgt automatisch dat de juiste http response wordt gegenereerd.
+Lanvard automatically ensures that the correct http response is generated.
 
-> {tip} Het gebruik van panic zal jou veel tijd schelen. Echter, als je een rubuste applicatie wil bouwen, gebruik `panic` dan alleen voor 'critical' en onverwachte errors.
+> {tip} Using panic can save you a lot of time. However, if you want to build a robust application, use `panic` only for critical or unexpected errors.
 
-### The Possibilities
+### Message Convention
 
-Zoals je hierboven kan zien, kan de error nog bewerkt worden met meer informatie. Daarom is het een convention om geen
-hoofdletter te gebruiken aan het begin van een error. Ook een punt aan het einde van de zin kan ervoor zorgen dat de zin
-langer gemaakt kan worden. De errors worden uiteindelijk automatisch voorzien van een hoofdletter aan het begin van de
-zin.
-
-## Packages
-
-Er zijn verschillende packages om een error struct te genereren. Golang komt zelf met 2 packages. Daarnaast biedt
-Lanvard een package voor extra opties. Voel je vrij om er zelf een te maken die past bij jouw domein. Alle errors moeten
-aan de `error` interface voldoen.
-
-### Classic errors
-
-De classic error wordt importeren met `"errors"`. Deze package bevat niet veel debug informatie. Gebruik het vooral als
-je geen debug informatie nodig hebt.
-
-### Pkg errors
-
-Dit is een andere standaard package van Golang die je kan importeren met `"github.com/pkg/errors"`. Deze package bevat
-stack traces en de mogelijkheid om meerdere errors samen te voegen.
-
-### Lanvard errors
-
-Lanvard errors kan je importeren met `"github.com/lanvard/support/errors"`. Een Lanvard error is een wrapper om een Pkg
-error heen en biedt extra functionaliteiten om te loggen en om juiste response terug te geven.
-
-### Custom
-
-Het is in Golang heel gebruikelijk om zelf verschillende errors te maken om het perfect te laten passen in jouw
-omgeving. Bekijk alle methods uit `"github.com/lanvard/support/errors"` om te zien welke methods je al kan invullen.
-
---- @todo add all methods from pkg errors
-
+As you can see above, you can supplement the error with more information. Therefore, it is a convention to use a
+lowercase letter at the beginning of an error. Also, a dot at the end of the sentence can cause that the sentence can't
+be made longer. The errors are eventually automatically capitalized at the beginning of the sense.
 
 ### Http Status
 
