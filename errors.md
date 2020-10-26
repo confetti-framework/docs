@@ -63,12 +63,12 @@ message.
     err.Wrap("validation error")
     // validation error: no user found
 
-#### Cause
+#### Unwrap
 
-To receive the original error (after `Wrap`), you can use` Cause`:
+To receive the original error (after `Wrap`), you can use `Unwrap`:
 
     err := errors.New("no user found").Wrap("validation error")
-    err.Cause().Error()
+    err.Unwrap().Error()
     // no user found
 
 #### Apply Stack Trace
@@ -112,7 +112,7 @@ you can make te following:
       return w.cause.Error()
     }
     
-    func (w *withCode) Cause() error {
+    func (w *withCode) Unwrap() error {
         return w.cause
     }
     
