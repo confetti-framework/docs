@@ -84,7 +84,15 @@ it:
 
 The default log level is `Emergency`. To determine the log level you can use the `Level` method:
 
-    errros.New("username not found").Level(level.INFO)
+    errros.New("username not found").Level(log_level.INFO)
+
+#### HTTP Status
+
+The default HTTP status is `500 Internal Server Error`. To determine the response status you can use the `Status`
+method:
+
+    err := errros.New("username not found").Status(http.StatusNotFound)
+    return outcome.Html(err)
 
 #### Custom
 
@@ -124,7 +132,7 @@ Then the error can build up like this:
 
     WithCode(errros.New("username not found"), "external_error")
 
-Then you can add a response decorator to ResponseServiceProvider to convert an error to the response.
+Nou you can add a response decorator to ResponseServiceProvider to convert an error to the response.
 
 ### Panic
 
@@ -149,13 +157,41 @@ As you can see above, you can supplement the error with more information. Theref
 lowercase letter at the beginning of an error. Also, a dot at the end of the sentence can cause that the sentence can't
 be made longer. The errors are eventually automatically capitalized at the beginning of the sense.
 
-### Http Status
+## Helpers
 
-## Is
+### Is
 
-## As
+An error can be made up of several layers with structs. If you want to know if a certain struct is present, you can use
+the `Is` helper. In the running example, `validateUser()` returns a `validationError` error:
 
-## Log Errors
+    var noUserFound = New("no user found")
+    var validationError = Wrap(noUserFound, "validation error")
+
+    err := validateUser()
+    if errors.Is(err, noUserFound) {
+        // validationError contains noUserFound error
+    }
+
+### As
+
+If you want to retrieve a specific struct, you can use the `As` helper. Before calling `As`, you have to define what
+needs to be searched and filled (which may be a struct or an interface).
+
+    func FindCode(err error) (string, bool) {
+        var code string
+        var codeHolder *withCode
+    
+        if !As(err, &codeHolder) {
+            return "unkown code", false
+        }
+    
+        return codeHolder.code, true
+    }
+
+If you call As, a bool is returned on which you can check whether it was successful.
+
+
+__________
 
 When you start a new Laravel project, error and exception handling is already configured for you.
 The `App\Exceptions\Handler` class is where all exceptions triggered by your application are logged and then rendered
