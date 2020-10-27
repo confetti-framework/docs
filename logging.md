@@ -35,11 +35,12 @@ might be smart to split the channels. For example, you could create a channel na
 and a channel named `worker` for background jobs.
 
     "external": loggers.Syslog{
-        Type:     "external"
-        Path:     Path.Storage + "/logs/{yyyy-mm-dd}_external.log",
-        MinLevel: syslog.DEBUG,
-        AppName:  App.Name,
-        MaxFiles: 14,
+        Type:           "external"
+        Path:           Path.Storage + "/logs/{yyyy-mm-dd}_external.log",
+        MinLevel:       syslog.DEBUG,
+        AppName:        App.Name,
+        MaxFiles:       14,
+        HideStackTrace: true,
     },
 
 #### Preconceived Channels
@@ -64,6 +65,7 @@ Name | Description | Default
 `Permission` | The log file's permissions | `0644`
 `MinLevel` | The minimum "level" a message must be in order to be logged | EMERG
 `MaxFiles` | Automatically clean up old logs when overwriting x number of logs | 0 (off)
+`HideStackTrace` | If true, no stack trace will be logged | false
 `Facility` | Specify the type of program that is logging the message | 8 (USER)
 `Type` | Type/MSGID should identify the type of the message and is intended for filtering |
 `Writer` | Define your own writer here |
