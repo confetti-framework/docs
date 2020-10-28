@@ -122,7 +122,7 @@ When sending JSON requests to your application, you may access the JSON data via
 
 To receive the data as it was sent, use the `Content` method. In that case you will always receive a string
 
-    rawContent := request.Body()
+    rawContent := request.GetBody()
 
 #### Retrieving Input From The Query String
 
