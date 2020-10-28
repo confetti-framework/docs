@@ -191,6 +191,9 @@ needs to be searched and filled (which may be a struct or an interface).
 If you call As, a bool is returned on which you can check whether it was successful.
 
 
+
+
+
 __________
 
 When you start a new Laravel project, error and exception handling is already configured for you.
@@ -201,9 +204,9 @@ back to the user. We'll dive deeper into this class throughout this documentatio
 
 ## Configuration
 
-The `debug` option in your `config/app.php` configuration file determines how much information about an error is
-actually displayed to the user. By default, this option is set to respect the value of the `APP_DEBUG` environment
-variable, which is stored in your `.env` file.
+The `debug` option in your `config/app.go` configuration file determines how much information about an error is actually
+displayed to the user. By default, this option is set to respect the value of the `APP_DEBUG` environment variable,
+which is stored in your `.env` file.
 
 For local development, you should set the `APP_DEBUG` environment variable to `true`. In your production environment,
 this value should always be `false`. If the value is set to `true` in production, you risk exposing sensitive

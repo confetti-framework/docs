@@ -193,7 +193,7 @@ The Lanvard routing component allows all characters except `/`. You must explici
 Since Golang is a strict typed language, it can be difficult to convert a request into a struct. For simple transformation of a parameter to a model, you can bind a model to a parameter. You can use the RouteModelBinding middleware for this:
 
      func (b RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.Response {
-        request.App().Instance("user", func() model.User {
+        request.App().Bind("user", func() model.User {
             return model.User.Find(request.Value("user"))
         })
         
