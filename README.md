@@ -11,5 +11,6 @@
     - [Routing](routing.md)
     - [Middleware](middleware.md)
     - [Requests](requests.md)
+    - [Errors](errors.md)
     - [Logging](logging.md)
 
