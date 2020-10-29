@@ -196,7 +196,7 @@ If you call As, a bool is returned on which you can check whether it was success
 
 __________
 
-When you start a new Laravel project, error and exception handling is already configured for you.
+When you start a new Lanvard project, error and exception handling is already configured for you.
 The `App\Exceptions\Handler` class is where all exceptions triggered by your application are logged and then rendered
 back to the user. We'll dive deeper into this class throughout this documentation.
 
@@ -228,7 +228,7 @@ be logged based on your [logging](/docs/{{version}}/logging) configuration. Howe
 however you wish.
 
 For example, if you need to report different types of exceptions in different ways, you may use the `reportable` method
-to register a Closure that should be executed when an exception of a given type needs to be reported. Laravel will
+to register a Closure that should be executed when an exception of a given type needs to be reported. Lanvard will
 deduce what type of exception the Closure reports by examining the type-hint of the Closure:
 
     use App\Exceptions\CustomException;
@@ -245,7 +245,7 @@ deduce what type of exception the Closure reports by examining the type-hint of 
         });
     }
 
-When you register a custom exception reporting callback using the `reportable` method, Laravel will still log the
+When you register a custom exception reporting callback using the `reportable` method, Lanvard will still log the
 exception using the default logging configuration for the application. If you wish to stop the propagation of the
 exception to the default logging stack, you may use the `stop` method when defining your reporting callback:
 
@@ -257,7 +257,7 @@ exception to the default logging stack, you may use the `stop` method when defin
 
 #### Global Log Context
 
-If available, Laravel automatically adds the current user's ID to every exception's log message as contextual data. You
+If available, Lanvard automatically adds the current user's ID to every exception's log message as contextual data. You
 may define your own global contextual data by overriding the `context` method of your
 application's `App\Exceptions\Handler` class. This information will be included in every exception's log message written
 by your application:
@@ -313,9 +313,9 @@ files. You may add other exception types to this array as needed:
 
 ### Rendering Exceptions
 
-By default, the Laravel exception handler will convert exceptions into an HTTP response for you. However, you are free
+By default, the Lanvard exception handler will convert exceptions into an HTTP response for you. However, you are free
 to register a custom rendering Closure for exceptions of a given type. You may accomplish this via the `renderable`
-method of your exception handler. Laravel will deduce what type of exception the Closure renders by examining the
+method of your exception handler. Lanvard will deduce what type of exception the Closure renders by examining the
 type-hint of the Closure:
 
     use App\Exceptions\CustomException;
@@ -371,7 +371,7 @@ the framework:
     }
 
 If your exception contains custom reporting logic that only occurs when certain conditions are met, you may need to
-instruct Laravel to report the exception using the default exception handling configuration. To accomplish this, you may
+instruct Lanvard to report the exception using the default exception handling configuration. To accomplish this, you may
 return `false` from the exception's `report` method:
 
     /**
@@ -386,7 +386,7 @@ return `false` from the exception's `report` method:
         return false;
     }
 
-> {tip} You may type-hint any required dependencies of the `report` method and they will automatically be injected into the method by Laravel's [service container](/docs/{{version}}/container).
+> {tip} You may type-hint any required dependencies of the `report` method and they will automatically be injected into the method by Lanvard's [service container](/docs/{{version}}/container).
 
 <a name="http-exceptions"></a>
 
@@ -402,8 +402,8 @@ your application, you may use the `abort` helper:
 
 ### Custom HTTP Error Pages
 
-Laravel makes it easy to display custom an error page. In `ResponseServiceProvider` you can define your own template.
-The following variables can be used in the template:
+Lanvard makes it easy to display custom error pages. In `ResponseServiceProvider` you can define your own template. The
+following variables can be used when you create a custom template:
 
     {{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
     <html lang="{{.Locale}}">
