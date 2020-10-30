@@ -96,10 +96,10 @@ method:
 
 #### Custom
 
-Do you want to add extra data to an error/exception? In other languages you would extend a class with an extra field. Go
-has a SOLID solution for this: Each error can be wrapped in multiple structs. To add data to an error you just have to
-create a struct yourself (which then also contains the original error). If you want to add an error code to your error,
-you can make te following:
+Do you want to add extra data to an error/exception? In other languages you would extend a class. Go has a SOLID
+solution for this: Each error can be wrapped in multiple structs. To add data to an error you just have to create a
+struct yourself (which then also contains the original error). If you want to add an error code to your error, you can
+make te following:
 
     func WithCode(err error, code string) *withCode {
         if err == nil {
@@ -204,7 +204,7 @@ back to the user. We'll dive deeper into this class throughout this documentatio
 
 ## Configuration
 
-The `debug` option in your `config/app.go` configuration file determines how much information about an error is actually
+The `Debug` option in your `config/app.go` configuration file determines how much information about an error is actually
 displayed to the user. By default, this option is set to respect the value of the `APP_DEBUG` environment variable,
 which is stored in your `.env` file.
 
@@ -403,13 +403,13 @@ your application, you may use the `abort` helper:
 ### Custom HTTP Error Pages
 
 Lanvard makes it easy to display custom error pages. In `ResponseServiceProvider` you can define your own template. The
-following variables can be used when you create a custom template:
+following variables can be used when creating a custom template:
 
     {{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
     <html lang="{{.Locale}}">
     <h1>{{.AppName}}</h1>
-    <h1>{{.Status}}</h1>
-    <h1>{{.Message}}</h1>
+    <h2>{{.Status}} | {{.Message}}</h2>
+    <p>{{.StackTrace}}</p>
 
 If you want to have full control over how you convert errors to html, replace the `encoder.ErrorToHtml`
 in `ResponseServiceProvider` with your own encoder.
