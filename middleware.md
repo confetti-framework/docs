@@ -164,7 +164,7 @@ Middleware can also receive additional parameters. For example, if your applicat
     }
     
     func (c CheckRole) Handle(request inter.Request, next inter.Next) inter.Response {
-        if !adapter.User{request}.Current().HasRole(c.Role) {
+        if !adapter.CurrentUser(request).HasRole(c.Role) {
             return outcome.RedirectTemporary("/home")
         }
     
