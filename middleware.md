@@ -88,7 +88,9 @@ However, this middleware would perform its task **after** the request is handled
 <a name="global-middleware"></a>
 ### Global Middleware
 
-If you want a middleware to run during every HTTP request to your application, list the middleware struct in the `middlewares` variable in your `app/http/kernel.go`.
+If you want a middleware to run during every HTTP request to your application, list the middleware struct in
+the `globalMiddlewares` variable in your `providers.RouteServiceProvider` located
+in `app/providers/route_service_provider.go`.
 
 <a name="assigning-middleware-to-routes"></a>
 ### Assigning Middleware To Routes
