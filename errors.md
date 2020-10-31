@@ -96,8 +96,8 @@ method:
 
 #### Custom
 
-Do you want to add extra data to an error/error? In other languages you would extend a class. Go has a SOLID solution
-for this: Each error can be wrapped in multiple structs. To add data to an error you just have to create a struct
+Do you want to add extra data to an error? In other languages you would extend a class. Go has a SOLID solution for
+this: Each error can be wrapped in multiple structs. To add data to an error you just have to create a wrapper
 yourself (which then also contains the original error). If you want to add an error code to your error, you can make te
 following:
 
@@ -117,7 +117,7 @@ following:
     }
     
     func (w *withCode) Error() string {
-      return w.cause.Error()
+      return w.cause.Error() + " with code " + w.code
     }
     
     func (w *withCode) Unwrap() error {
@@ -132,7 +132,8 @@ Then the error can build up like this:
 
     WithCode(errros.New("username not found"), "external_error")
 
-Nou you can add a response decorator to ResponseServiceProvider to convert an error to the response.
+In the above, we have placed 'code' behind the message. But if you want to adjust the response, you can determine this
+in `ResponseServiceProvider`.
 
 ### Panic
 
@@ -190,19 +191,29 @@ needs to be searched and filled (which may be a struct or an interface).
 
 If you call As, a bool is returned on which you can check whether it was successful.
 
-
-
-
-
-__________
-
-When you start a new Lanvard project, error and error handling is already configured for you. The `App\Errors\Handler`
-class is where all errors triggered by your application are logged and then rendered back to the user. We'll dive deeper
-into this class throughout this documentation.
-
 <a name="configuration"></a>
 
 ## Configuration
+
+## Defining Errors
+
+For the sake of simplicity, you have seen examples where we place the errors above the functions. It would be better to
+have an overview of all errors that can occur in the system. You can define your errors in `app/report/errors.go`:
+
+    var UserNotFound = errors.New("user not found").Status(net.StatusBadRequest
+    var Unauthorized = UserError.Status(net.StatusUnauthorized)
+
+### Global Log Context
+
+If you want to add information to all errors, you can append that in `app/report/errors.go`. In the following example
+you can see that we apply `Status` and log `Level` globally:
+
+    var UserError = errors.New("").Status(net.StatusBadRequest).Level(log_level.INFO)
+    var Unauthorized = UserError.Status(net.StatusUnauthorized)
+    var SessionInvalid = Unauthorized.Wrap("session is not valid")
+    var SessionExpired = Unauthorized.Wrap("session expired")
+
+### Information Provision
 
 The `Debug` option in your `config/app.go` configuration file determines how much information about an error is actually
 displayed to the user. By default, this option is set to respect the value of the `APP_DEBUG` environment variable,
@@ -212,190 +223,16 @@ For local development, you should set the `APP_DEBUG` environment variable to `t
 this value should always be `false`. If the value is set to `true` in production, you risk exposing sensitive
 configuration values to your application's end users.
 
-<a name="the-error-handler"></a>
+### Ignoring Errors By Type
 
-## The Exception Handler
+The `NoLogging` field in `config/errors.go` contains a slice of errors that will not be logged. For example, errors
+resulting from 404 errors, as well as several other types of errors, are not written to your log files. You may add
+other error types to this array as needed:
 
-<a name="reporting-errors"></a>
-
-### Reporting Errors
-
-All errors are handled by the `App\Errors\Handler` class. This class contains a `register` method where you may register
-custom error reporter and renderer callbacks. We'll examine each of these concepts in detail. Exception reporting is
-used to log errors or send them to an external service like [Flare](https://flareapp.io)
-, [Bugsnag](https://bugsnag.com) or [Sentry](https://github.com/getsentry/sentry-laravel). By default, errors will be
-logged based on your [logging](/docs/{{version}}/logging) configuration. However, you are free to log errors however you
-wish.
-
-For example, if you need to report different types of errors in different ways, you may use the `reportable` method to
-register a Closure that should be executed when an error of a given type needs to be reported. Lanvard will deduce what
-type of error the Closure reports by examining the type-hint of the Closure:
-
-    use App\Errors\CustomException;
-
-    /**
-     * Register the error handling callbacks for the application.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->reportable(function (CustomException $e) {
-            //
-        });
-    }
-
-When you register a custom error reporting callback using the `reportable` method, Lanvard will still log the error
-using the default logging configuration for the application. If you wish to stop the propagation of the error to the
-default logging stack, you may use the `stop` method when defining your reporting callback:
-
-    $this->reportable(function (CustomException $e) {
-        //
-    })->stop();
-
-> {tip} To customize the error reporting for a given error, you may also consider using [reportable errors](/docs/{{version}}/errors#renderable-errors)
-
-#### Global Log Context
-
-If available, Lanvard automatically adds the current user's ID to every error's log message as contextual data. You may
-define your own global contextual data by overriding the `context` method of your application's `App\Errors\Handler`
-class. This information will be included in every error's log message written by your application:
-
-    /**
-     * Get the default context variables for logging.
-     *
-     * @return array
-     */
-    protected function context()
-    {
-        return array_merge(parent::context(), [
-            'foo' => 'bar',
-        ]);
-    }
-
-#### The `report` Helper
-
-Sometimes you may need to report an error but continue handling the current request. The `report` helper function allows
-you to quickly report an error using your error handler without rendering an error page:
-
-    public function isValid($value)
-    {
-        try {
-            // Validate the value...
-        } catch (Throwable $e) {
-            report($e);
-
-            return false;
-        }
-    }
-
-#### Ignoring Errors By Type
-
-The `$dontReport` property of the error handler contains a slice of errors types that will not be logged. For example,
-errors resulting from 404 errors, as well as several other types of errors, are not written to your log files. You may
-add other error types to this array as needed:
-
-    /**
-     * A list of the error types that should not be logged.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
-        \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-        \Illuminate\Validation\ValidationException::class,
-    ];
-
-<a name="rendering-errors"></a>
-
-### Rendering Errors
-
-By default, the Lanvard error handler will convert errors into an HTTP response for you. However, you are free to
-register a custom rendering Closure for errors of a given type. You may accomplish this via the `renderable`
-method of your error handler. Lanvard will deduce what type of error the Closure renders by examining the type-hint of
-the Closure:
-
-    use App\Errors\CustomException;
-
-    /**
-     * Register the error handling callbacks for the application.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->renderable(function (CustomException $e, $request) {
-            return response()->view('errors.custom', [], 500);
-        });
-    }
-
-<a name="renderable-errors"></a>
-
-### Reportable & Renderable Errors
-
-Instead of type-checking errors in the error handler's `report` and `render` methods, you may define `report`
-and `render` methods directly on your custom error. When these methods exist, they will be called automatically by the
-framework:
-
-    <?php
-
-    namespace App\Errors;
-
-    use Exception;
-
-    class RenderException extends Exception
-    {
-        /**
-         * Report the error.
-         *
-         * @return void
-         */
-        public function report()
-        {
-            //
-        }
-
-        /**
-         * Render the error into an HTTP response.
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function render($request)
-        {
-            return response(...);
-        }
-    }
-
-If your error contains custom reporting logic that only occurs when certain conditions are met, you may need to instruct
-Lanvard to report the error using the default error handling configuration. To accomplish this, you may return `false`
-from the error's `report` method:
-
-    /**
-     * Report the error.
-     *
-     * @return bool|void
-     */
-    public function report()
-    {
-        // Determine if the error needs custom reporting...
-
-        return false;
-    }
-
-> {tip} You may type-hint any required dependencies of the `report` method and they will automatically be injected into the method by Lanvard's [service container](/docs/{{version}}/container).
-
-<a name="http-errors"></a>
-
-## HTTP Errors
-
-Some errors describe HTTP error codes from the server. For example, this may be a "page not found" error (404), an "
-unauthorized error" (401) or even a developer generated 500 error. In order to generate such a response from anywhere in
-your application, you may use the `abort` helper:
-
-    abort(404);
+	NoLogging: []error{
+		report.ValidationError,
+		report.NotFoundError,
+	},
 
 <a name="custom-http-error-pages"></a>
 
