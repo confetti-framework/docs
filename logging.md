@@ -30,13 +30,10 @@ the [documentation below](#building-log-stacks).
 
 #### Configuring The Channel Name
 
-The name provided is for reference only, so you can log specifically to that channel. If you have a large system, it
-might be smart to split the channels. For example, you could create a channel named `external` for external connections,
-and a channel named `worker` for background jobs.
+The name provided is for reference only, so you can log specifically to that channel.
 
-    "external": loggers.Syslog{
-        Type:           "external"
-        Path:           Path.Storage + "/logs/{yyyy-mm-dd}_external.log",
+    "daily": loggers.Syslog{
+        Path:           Path.Storage + "/logs/{yyyy-mm-dd}_default.log",
         MinLevel:       syslog.DEBUG,
         AppName:        App.Name,
         MaxFiles:       14,
@@ -67,7 +64,6 @@ Name | Description | Default
 `MaxFiles` | Automatically clean up old logs when overwriting x number of logs | 0 (off)
 `HideStackTrace` | If true, no stack trace will be logged | false
 `Facility` | Specify the type of program that is logging the message | 8 (USER)
-`Type` | Type/MSGID should identify the type of the message and is intended for filtering |
 `Writer` | Define your own writer here |
 
 #### Configuring The Slack Channel
@@ -206,6 +202,22 @@ first parameter from the `Log` method to log to any channel defined in your conf
 
     app.Log("slack").Alert("Something happened!");
 
-If you would like to create an on-demand logging stack consisting of multiple channels, you may use multiple parameters:
+If you would like to create an on-demand logging stack consisting of multiple channels, you can use multiple parameters:
 
     app.Log("single", "slack").Info("Something happened!");
+
+### Groups
+
+If you have a large system, it might be smart to group logs together. This makes it easier to filter your logs. For
+example, you could create a group named `external` to log request and responses, and a group named `worker` for
+background jobs.
+
+    log := app.Log().Group("external");
+
+    log.Info("Task started")
+    log.Alert("Something happened!")
+
+The above example (in combination with `loggers.Syslog`) results in the following:
+
+    <6>1 2020-11-01T21:42:51.439+01:00 MacBook-Pro.local YourApp 95375 external [level severity="info"] Task started
+    <1>1 2020-11-01T21:42:52.134+01:00 MacBook-Pro.local YourApp 95375 external [level severity="alert"] Something happened! 
