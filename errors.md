@@ -247,5 +247,5 @@ following variables can be used when creating a custom template:
     <h2>{{.Status}} | {{.Message}}</h2>
     <p>{{.StackTrace}}</p>
 
-If you want to have full control over how you convert errors to html, replace the `encoder.ErrorToHtml`
+Do you want to have full control over how you convert errors to html? Than you can replace the `encoder.ErrorToHtml`
 in `ResponseServiceProvider` with your own encoder.
