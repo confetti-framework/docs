@@ -241,13 +241,13 @@ other error types to this array as needed:
 Lanvard makes it easy to display custom error pages. In `ResponseServiceProvider` you can define your own template. The
 following variables can be used when creating a custom template:
 
-    <!-- {% raw %} -->
+    {% raw %}
     {{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
     <html lang="{{.Locale}}">
     <h1>{{.AppName}}</h1>
     <h2>{{.Status}} | {{.Message}}</h2>
     <p>{{.StackTrace}}</p>
-    <!-- {% endraw %} -->
+    {% endraw %}
 
 Do you want to have full control over how you convert errors to html? Than you can replace the `encoder.ErrorToHtml`
 in `ResponseServiceProvider` with your own encoder.
