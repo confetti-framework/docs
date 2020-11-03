@@ -112,12 +112,12 @@ following:
     }
     
     type withCode struct {
-      cause error
-      code string
+        cause error
+        code string
     }
     
     func (w *withCode) Error() string {
-      return w.cause.Error() + " with code " + w.code
+        return w.cause.Error() + " with code " + w.code
     }
     
     func (w *withCode) Unwrap() error {
@@ -132,8 +132,8 @@ Then the error can build up like this:
 
     WithCode(errros.New("username not found"), "external_error")
 
-In the above, we have placed 'code' behind the message. But if you want to adjust the response, you can determine this
-in `ResponseServiceProvider`.
+In method `Error()` above, we put 'code' behind the message. But if you want to adjust the response, you can determine
+this in `ResponseServiceProvider`.
 
 ### Panic
 
@@ -241,11 +241,13 @@ other error types to this array as needed:
 Lanvard makes it easy to display custom error pages. In `ResponseServiceProvider` you can define your own template. The
 following variables can be used when creating a custom template:
 
-    {{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
-    <html lang="{{.Locale}}">
-    <h1>{{.AppName}}</h1>
-    <h2>{{.Status}} | {{.Message}}</h2>
-    <p>{{.StackTrace}}</p>
+```
+{{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
+<html lang="{{.Locale}}">
+<h1>{{.AppName}}</h1>
+<h2>{{.Status}} | {{.Message}}</h2>
+<p>{{.StackTrace}}</p>
+```
 
 Do you want to have full control over how you convert errors to html? Than you can replace the `encoder.ErrorToHtml`
 in `ResponseServiceProvider` with your own encoder.

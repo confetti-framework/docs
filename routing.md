@@ -290,15 +290,15 @@ If the named route defines parameters, you may pass the parameters as the third 
     
 
 If you also want to build a query string, use the 4th parameter, those key / value pairs will automatically be added to the generated URL's query string:
-    
+
     Get("/user/{id}", controller.User.Show).Name("user")
     
     routing.UrlByName(
-            app,
-            "user",
-            routing.Parameters{"id": 12},
-            routing.Parameters{"order_by": "name", "size": 50},
-        )
+        app,
+        "user",
+        routing.Parameters{"id": 12},
+        routing.Parameters{"order_by": "name", "size": 50},
+    )
 
     /user/12?order_by=name&size=50
 
@@ -376,11 +376,11 @@ The `Name` method may be used to prefix each route name in the group with a give
 Using the `Route::fallback` method, you may define a route that will be executed when no other route matches the incoming request. Typically, unhandled requests will automatically render a "404" page via your application's exception handler. However, since you may define the `fallback` route within your `routes/web.php` file, all middleware in the `web` middleware group will apply to the route. You are free to add additional middleware to this route as needed:
 
     Group(
-		Get("/users", controller.User.Show).Name("users"),
-		Fallback(func(request inter.Request) inter.Response {
-			return outcome.Html("404 Page not found")
-		}),
-	)
+        Get("/users", controller.User.Show).Name("users"),
+        Fallback(func(request inter.Request) inter.Response {
+            return outcome.Html("404 Page not found")
+        }),
+    )
 
 > {note} The fallback route should always be the last route registered by your application.
 
