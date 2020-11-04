@@ -238,8 +238,8 @@ other error types to this array as needed:
 
 ### Custom HTTP Error Pages
 
-Lanvard makes it easy to display custom error pages. In `ResponseServiceProvider` you can define your own template. The
-following variables can be used when creating a custom template:
+Lanvard makes it easy to display custom error pages. You can edit template `resources/views/error.gohtml` design your
+own error page. The following variables can be used when using this template:
 
     {% raw %}
     {{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
@@ -249,5 +249,6 @@ following variables can be used when creating a custom template:
     <p>{{.StackTrace}}</p>
     {% endraw %}
 
-Do you want to have full control over how you convert errors to html? Than you can replace the `encoder.ErrorToHtml`
-in `ResponseServiceProvider` with your own encoder.
+To add your own variables, you can edit the view placed in `resources/views/error.go`. Do you want to have even more
+control over how you convert errors to html? Than you can replace the `encoder.ErrorToHtml` in `ResponseServiceProvider`
+with your own encoder.

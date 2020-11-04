@@ -2,7 +2,7 @@
 
 - [Creating Views](#creating-views)
 - [Passing Data To Views](#passing-data-to-views)
-    - [Sharing Data With All Views](#sharing-data-with-all-views)
+  - [Sharing Data With All Views](#sharing-data-with-all-views)
 - [View Composers](#view-composers)
 - [Optimizing Views](#optimizing-views)
 
@@ -12,28 +12,76 @@
 
 > {tip} Looking for more information on how to write Go templates? Check out the [Text template documentation](https://golang.org/pkg/text/template/#hdr-Text_and_spaces) and subsequent [HTML template documentation](https://golang.org/pkg/html/template/) to get started.
 
-Views contain the HTML served by your application and separate your controller / application logic from your
-presentation logic. Views are stored in the `resources/views` directory. A simple view might look something like this:
+Views and templates are there to separate your controller / application logic from your presentation logic. A templates
+consists of HTML, while a view contains data that you can use in a Template or a JSON response. Views and templates are
+stored in the `resources/views` directory.
 
-    <!-- View stored in resources/views/greeting.blade.php -->
+### HTML response
 
+A simple view for a HTML response might look something like this:
+
+    package views
+    
+    import (
+        "github.com/lanvard/contract/inter"
+        "lanvard/config"
+    )
+    
+    type homepage struct {
+        Name    string
+        template string
+    }
+    
+    func Homepage(name string) *homepage {
+        return &homepage{
+            Name:     name,
+            template: config.Path.Views + "/homepage.gohtml",
+        }
+    }
+    
+    func (e homepage) Template() string {
+        return e.template
+    }
+
+Since the view is stored at `resources/views/homepage.go` and method `Template` points to `homepage.gohtml`, you have to
+create `resources/views/homepage.gohtml`:
+
+    {% raw %}
     <html>
         <body>
-            <h1>Hello, {{ $name }}</h1>
+            <h1>Hello, {{ .Name }}</h1>
         </body>
     </html>
+    {% raw %}
 
-Since this view is stored at `resources/views/greeting.blade.php`, we may return it using the global `view` helper like
-so:
+In a controller you can then return the view as a response.
 
-    Route::get('/', function () {
-        return view('greeting', ['name' => 'James']);
-    });
+    func Welcome(request inter.Request) inter.Response {
+        return outcome.Html(views.Homepage("James"))
+    }
 
-As you can see, the first argument passed to the `view` helper corresponds to the name of the view file in
-the `resources/views` directory. The second argument is an array of data that should be made available to the view. In
-this case, we are passing the `name` variable, which is displayed in the view
-using [Blade syntax](/docs/{{version}}/blade).
+### JSON response
+
+You can also use a view for JSON responses. Then the struct do not need to contain a `Template` method.
+Use `json:"title"` to specify the field that will be included in the json response:
+
+    package views
+
+    type book struct {
+        Title string `json:"title"`
+    }
+    
+    func Book(title string) *book {
+        return &book{
+            Title: title,
+        }
+    }
+
+You can then use the view as a json response:
+
+    func ShowBook(request inter.Request) inter.Response {
+        return outcome.Json(views.Book("James"))
+    }
 
 Views may also be nested within subdirectories of the `resources/views` directory. "Dot" notation may be used to
 reference nested views. For example, if your view is stored at `resources/views/admin/profile.blade.php`, you may
