@@ -9,9 +9,32 @@
   - [Service Providers](providers.md)
 
 ## The Basics
-  - [Routing](routing.md)
-  - [Middleware](middleware.md)
-  - [Requests](requests.md)
-  - [Errors](errors.md)
-  - [Logging](logging.md)
+
+- [Routing](routing.md)
+- [Middleware](middleware.md)
+- [Requests](requests.md)
+- [Errors](errors.md)
+- [Logging](logging.md)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
