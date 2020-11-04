@@ -52,7 +52,7 @@ create `resources/views/homepage.gohtml`:
             <h1>Hello, {{ .Name }}</h1>
         </body>
     </html>
-    {% raw %}
+    {% endraw %}
 
 In a controller you can then return the view as a response.
 
