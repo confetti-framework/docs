@@ -44,7 +44,7 @@ A simple view for a HTML response might look something like this:
     }
 
 Since the view is stored at `resources/views/homepage.go` and method `Template` points to `homepage.gohtml`, you have to
-create `resources/views/homepage.gohtml`:
+create the `resources/views/homepage.gohtml` file:
 
     {% raw %}
     <html>
@@ -83,17 +83,41 @@ You can then use the view as a json response:
         return outcome.Json(views.Book("James"))
     }
 
-Views may also be nested within subdirectories of the `resources/views` directory. "Dot" notation may be used to
-reference nested views. For example, if your view is stored at `resources/views/admin/profile.blade.php`, you may
-reference it like so:
+## Combine Multiple Views
 
-    return view('admin.profile', $data);
+Each website consists of several small templates. For example, you need a menu and footer on every page of your website.
+Lanvard makes it easy to reuse predefined templates.
 
-> {note} View directory names should not contain the `.` character.
+### Define Reusable Templates
 
-#### Combine Multiple Views
+You can define a template by using the tag `define` with a reference name. A template that you want to reuse later can
+look like this:
 
-// @todo
+    {% raw %}
+    {{ define "footer" }}
+        <footer>No. 1 Bistro<br/>Elgin Street<br/>Lancashire</footer>
+    {{end}}
+    {% endraw %}
+
+### Use Defined Templates
+
+You can use the `template` tag to import predefined templates:
+
+    {% raw %}
+    <html>
+        <body>
+            <h1>Mackays Hotel</h1>
+            {{template "footer"}}
+        </body>
+    </html>
+    {% endraw %}
+
+### Template Builder
+
+By default, all templates are loaded from `resources/views` 5 directories deep. If you want to expand it or just want to
+use very specific templates, you can customize `template_builder` in `providers.ViewServiceProvider`. Here you can
+adjust the built-in Golang `*Template`. For more information on all possible methods, take a look
+at [the manual](https://golang.org/pkg/text/template/#Template.AddParseTree).
 
 ## Cache Views
 
