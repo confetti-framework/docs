@@ -95,7 +95,7 @@ look like this:
 
     {% raw %}
     {{ define "footer" }}
-        <footer>No. 1 Bistro<br/>Elgin Street<br/>Lancashire</footer>
+        <footer>Mackays Hotel<br/>No. 1 Bistro<br/>Elgin Street<br/>Lancashire</footer>
     {{end}}
     {% endraw %}
 
@@ -106,7 +106,7 @@ You can use the `template` tag to import predefined templates:
     {% raw %}
     <html>
         <body>
-            <h1>Mackays Hotel</h1>
+            <h1>World's shortest street</h1>
             {{template "footer"}}
         </body>
     </html>
