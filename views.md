@@ -119,3 +119,10 @@ use very specific templates, you can customize `template_builder` in `providers.
 adjust the built-in Golang `*Template`. For more information on all possible methods, take a look
 at [the manual](https://golang.org/pkg/text/template/#Template.AddParseTree).
 
+## Content By View
+
+You may want to use the view for a different purpose. You can get the content of a view by using the `view_helper`
+package:
+
+    builder := app.Make("template_builder").(inter.TemplateBuilder)
+    result := view_helper.ContentByView(view, builder)
