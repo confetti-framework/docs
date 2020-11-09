@@ -2,7 +2,7 @@
 
 - [Introduction](#introduction)
 - [Defining Middleware](#defining-middleware)
-    - [Before & After Middleware](#before-&-after-middleware)
+  - [Before & After Middleware](#before--after-middleware)
 - [Registering Middleware](#registering-middleware)
     - [Global Middleware](#global-middleware)
     - [Assigning Middleware To Routes](#assigning-middleware-to-routes)
