@@ -4,17 +4,13 @@
 - [Environment Configuration](#environment-configuration)
     - [Retrieving Environment Configuration](#retrieving-environment-configuration)
     - [Determining The Current Environment](#determining-the-current-environment)
-    - [Hiding Environment Variables From Debug Pages](#hiding-environment-variables-from-debug)
 - [Accessing Configuration Values](#accessing-configuration-values)
 - [Configuration Caching](#configuration-caching)
-- [~~Maintenance Mode~~](#maintenance-mode)
 
-<a name="introduction"></a>
 ## Introduction
 
 All the configuration files for the Lanvard framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
-<a name="environment-configuration"></a>
 ## Environment Configuration
 
 It is often helpful to have different configuration values based on the environment where the application is running. For example, you may wish to use a different cache driver locally than you do on your production server.
@@ -32,7 +28,6 @@ override the `.env` file when running tests ~~or executing Artisan commands with
 
 > {tip} Any variable in your `.env` file can be set by external environment variables such as server-level or system-level environment variables.
 
-<a name="retrieving-environment-configuration"></a>
 ### Retrieving Environment Configuration
 
 All the variables listed in this file will be loaded when your application is running for the first time. However,
@@ -46,7 +41,6 @@ you may use the `env` package to retrieve values from these variables in your co
 The second value passed to the `StringOr` function is the "default value". This value will be used if no environment
 variable exists for the given key.
 
-<a name="determining-the-current-environment"></a>
 ### Determining The Current Environment
 
 The current application environment is determined via the `APP_ENV` variable from your `.env` file. You may access this value via the `Environment` method on the `Application` struct:
@@ -65,7 +59,6 @@ You may also pass arguments to the `IsEnvironment` method to check if the enviro
 
 > {tip} The current application environment detection can be overridden by a server-level `APP_ENV` environment variable. This can be useful when you need to share the same application for different environment configurations, so you can set up a given host to match a given environment in your server's configurations.
 
-<a name="accessing-configuration-values"></a>
 ## Accessing Configuration Values
 
 Retrieving a configuration is very easy. Because of strict typing you have fully autocomplete:
@@ -77,8 +70,6 @@ If you are a developer of a package, you can get the configuration from an `inte
     app.Make("config.App.LineSeparator").(string)
 
 > {note} To get configuration from `inter.App`, the config must be present in the `config/index.go` file
-
-<a name="configuration-caching"></a>
 
 ## Configuration Caching
 
