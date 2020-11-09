@@ -1,18 +1,35 @@
 # HTTP Requests
 
 - [Accessing The Request](#accessing-the-request)
-    - [net http.Request](#default-net-httprequest)
-    - [Request Path & Method](#request-path-and-method)
-- [Input Trimming & Normalization](#input-trimming-and-normalization)
-- [Retrieving Input Values](#retrieving-input-values)
-    - [~~Old Input~~](#old-input)
+    - [Accessing The Request Via Route Closures](#accessing-the-request-via-route-closures)
+    - [net http.Request](#net-http-request)
+    - [Request Path & Method](#request-path & method)
+        - [Retrieving The Request Path](#retrieving-the-request-path)
+        - [Retrieving The Request URL](#retrieving-the-request-url)
+        - [Retrieving The Request Method](#retrieving-the-request-method)
+- [Input Trimming & Normalization](#input-trimming & normalization)
+- [Retrieving Input Value](#retrieving-input-value)
+    - [Retrieving An Input Value](#retrieving-an-input-value)
+    - [Retrieving JSON Input Values](#retrieving-json-input-values)
+    - [Retrieving Raw Content Data](#retrieving-raw-content-data)
+    - [Retrieving Input From The Query String](#retrieving-input-from-the-query-string)
+    - [Retrieving Boolean Input Values](#retrieving-boolean-input-values)
+    - [Retrieving A Portion Of The Input Data](#retrieving-a-portion-of-the-input-data)
+    - [Determining If An Input Value Is Present](#determining-if-an-input-value-is-present)
+    - [Old Input](#old-input)
+        - [Flashing Input To The Session](#flashing-input-to-the-session)
+        - [Flashing Input Then Redirecting](#flashing-input-then-redirecting)
+        - [Retrieving Old Input](#retrieving-old-input)
     - [Cookies](#cookies)
+        - [Retrieving Cookies From Requests](#retrieving-cookies-from-requests)
 - [Files](#files)
     - [Retrieving Uploaded Files](#retrieving-uploaded-files)
+        - [File Paths & Extensions](#file-paths & extensions)
+        - [Other File Methods](#other-file-methods)
     - [Storing Uploaded Files](#storing-uploaded-files)
 - [Configuring Trusted Proxies](#configuring-trusted-proxies)
+    - [Trusting All Proxies](#trusting-all-proxies)
 
-<a name="accessing-the-request"></a>
 ## Accessing The Request
 
 In the parameter from a controller you get a `inter.Request` instance. From the request you can view all information that has been sent to you. Think for example of ~~cookies~~, headers, body and query parameters.
@@ -49,7 +66,6 @@ If you need to use net http.request for a library, or you want information that 
 
     request.Source().URL.Scheme
 
-<a name="request-path-and-method"></a>
 ### Request Path & Method
 
 The `inter.Request` instance provides a variety of methods for examining the HTTP request for your application. We will discuss a few of the most important methods below.
@@ -80,12 +96,10 @@ The `Method` method will return the HTTP verb for the request. You may use the `
         //
     }
 
-<a name="input-trimming-and-normalization"></a>
 ## Input Trimming & Normalization
 
 This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/65
 
-<a name="retrieving-input-values"></a>
 ## Retrieving Input Value
 
 #### Retrieving An Input Value
@@ -193,7 +207,6 @@ If you would like to determine if a value is present on the request and is not e
 
 > {tip} If you have a slice with multiple keys, you can use the spread operator: `.Has(keys...)`
 
-<a name="old-input"></a>
 ### Old Input
 
 ~~Lanvard allows you to keep input from one request during the next request. This feature is particularly useful for re-populating forms after detecting validation errors. However, if you are using Lanvard's included [validation features](/docs/{{version}}/validation), it is unlikely you will need to manually use these methods, as some of Lanvard's built-in validation facilities will call them automatically.~~
@@ -230,7 +243,6 @@ If you would like to determine if a value is present on the request and is not e
 
     <input type="text" name="username" value="{{ old('username') }}">
 
-<a name="cookies"></a>
 ### Cookies
 
 #### Retrieving Cookies From Requests
@@ -244,10 +256,8 @@ All cookies created by the Lanvard framework are encrypted and signed with an au
 
 > {tip} If you want to receive all original cookies, you can use the cookies from source by `request.Source().Cookies()`
 
-<a name="files"></a>
 ## Files
 
-<a name="retrieving-uploaded-files"></a>
 ### Retrieving Uploaded Files
 
 You may access uploaded files from a `inter.Request` instance using the `File` method. The `File` method returns an instance of the `support.File`, which holds the Go `multipart.File` interface and provides a variety of methods for interacting with the file:
@@ -282,7 +292,6 @@ from the extension that was supplied by the client:
 
 There are a variety of other methods available on `UploadedFile` instances. Check out the [API documentation for the class](https://api.symfony.com/3.0/Symfony/Component/HttpFoundation/File/UploadedFile.html) for more information regarding these methods.
 
-<a name="storing-uploaded-files"></a>
 ### Storing Uploaded Files
 
 To store an uploaded file, you will typically use one of your configured [filesystems](/docs/{{version}}/filesystem). The `UploadedFile` class has a `store` method which will move an uploaded file to one of your disks, which may be a location on your local filesystem or even a cloud storage location like Amazon S3.
@@ -301,7 +310,6 @@ If you do not want a file name to be automatically generated, you may use the `s
 
     $path = $request->photo->storeAs('images', 'filename.jpg', 's3');
 
-<a name="configuring-trusted-proxies"></a>
 ## Configuring Trusted Proxies
 
 When running your applications behind a load balancer that terminates TLS / SSL certificates, you may notice your application sometimes does not generate HTTPS links. Typically this is because your application is being forwarded traffic from your load balancer on port 80 and does not know it should generate secure links.

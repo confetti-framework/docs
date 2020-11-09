@@ -1,15 +1,26 @@
 # Error Handling
 
 - [Introduction](#introduction)
+- [Panic And Return Errors](#panic-and-return-errors)
+    - [Return Errors](#return-errors)
+        - [Ignore Errors](#ignore-errors)
+        - [Wrap](#wrap)
+        - [Unwrap](#unwrap)
+        - [Apply Stack Trace](#apply-stack-trace)
+        - [Log Level](#log-level)
+        - [HTTP Status](#http-status)
+        - [Custom](#custom)
+    - [Panic](#panic)
+    - [Message Convention](#message-convention)
+- [Helpers](#helpers)
+    - [Is](#is)
+    - [As](#as)
 - [Configuration](#configuration)
-- [The Exception Handler](#the-error-handler)
-  - [Reporting Errors](#reporting-errors)
-  - [Rendering Errors](#rendering-errors)
-  - [Reportable & Renderable Errors](#renderable-errors)
-- [HTTP Errors](#http-errors)
-  - [Custom HTTP Error Pages](#custom-http-error-pages)
-
-<a name="introduction"></a>
+- [Defining Errors](#defining-errors)
+    - [Global Log Context](#global-log-context)
+    - [Information Provision](#information-provision)
+    - [Ignoring Errors By Type](#ignoring-errors-by-type)
+    - [Custom HTTP Error Pages](#custom-http-error-pages)
 
 ## Introduction
 
@@ -191,8 +202,6 @@ needs to be searched and filled (which may be a struct or an interface).
 
 If you call As, a bool is returned on which you can check whether it was successful.
 
-<a name="configuration"></a>
-
 ## Configuration
 
 ## Defining Errors
@@ -233,8 +242,6 @@ other error types to this array as needed:
 		report.ValidationError,
 		report.NotFoundError,
 	},
-
-<a name="custom-http-error-pages"></a>
 
 ### Custom HTTP Error Pages
 

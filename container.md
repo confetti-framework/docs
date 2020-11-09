@@ -2,15 +2,15 @@
 
 - [Introduction](#introduction)
 - [Binding](#binding)
-    - [Binding Basics](#binding-basics)
-    - [Binding Interfaces To Implementations](#binding-interfaces-to-implementations)
-    - [Binding without abstract](#binding-without-abstract)
+  - [Binding Basics](#binding-basics)
+    - [Simple Bindings](#simple-bindings)
+    - [Binding A Singleton](#binding-a-singleton)
+    - [Binding Instances](#binding-instances)
+  - [Binding Interfaces To Implementations](#binding-interfaces-to-implementations)
+  - [Binding Without Abstract](#binding-without-abstract)
+  - [Extending Bindings](#extending-bindings)
 - [Resolving](#resolving)
-    - [The Make Method](#the-make-method)
-    - [Automatic Injection](#automatic-injection)
-- [Container Events](#container-events)
 
-<a name="introduction"></a>
 ## Introduction
 
 The Lanvard service container is a powerful tool for managing struct dependencies and performing dependency injection. Dependency injection is a fancy phrase that essentially means this: struct dependencies are "injected" into the struct via the constructor or, in some cases, "setter" methods.
@@ -46,10 +46,8 @@ In this example, the `User` struct needs to retrieve users from a data source. S
 
 A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well as for contributing to the Lanvard core itself.
 
-<a name="binding"></a>
 ## Binding
 
-<a name="binding-basics"></a>
 ### Binding Basics
 
 Almost all of your service container bindings will be registered within [service providers](/docs/{{version}}/providers), so most of these examples will demonstrate using the container in that context.
@@ -84,7 +82,6 @@ You may also bind an existing object instance into the container using the `Inst
 	user := model.NewUser()
 	app.Instance("admin.User", user)
 
-<a name="binding-interfaces-to-implementations"></a>
 ### Binding Interfaces To Implementations
 
 A very powerful feature of the service container is its ability to bind an interface to a given implementation. For example, let's assume we have an `contract.EventPusher` interface and a `redis.EventPusher` implementation. Once we have coded our `redis.EventPusher` implementation of this interface, we can register it with the service container like so:
@@ -98,8 +95,7 @@ This statement tells the container that it should inject the `redis.EventPusher`
 
 	eventPusher := app.Make((*contract.EventPusher)(nil))(contract.EventPusher)
 
-<a name="binding-without-abstract"></a>
-### Binding without abstract
+### Binding Without Abstract
 
 If you want to bind a struct, but do not want to use an abstract, you can also omit the abstract:
 
@@ -107,7 +103,6 @@ If you want to bind a struct, but do not want to use an abstract, you can also o
 
 	client := app.Make(http.Client{}).(http.Client)
 
-<a name="extending-bindings"></a>
 ### Extending Bindings
 
 The `Extend` method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The `Extend` method accepts a Closure, which should return the modified service, as its only argument. The Closure receives the service being resolved and the container instance:
@@ -119,17 +114,12 @@ The `Extend` method allows the modification of resolved services. For example, w
 		return service
 	})
 
-<a name="resolving"></a>
 ## Resolving
-
-<a name="the-make-method"></a>
-#### The `Make` Method
 
 You may use the `Make` method to resolve a struct instance out of the container. The `Make` method accepts the name of the struct or interface you wish to resolve:
 
     kernel := app.Make("http.kernel").(http.Kernel)
 
-<a name="container-events"></a>
 ~~## Container Events~~
 
 ~~The service container fires an event each time it resolves an object. You may listen to this event using the `resolving` method:~~

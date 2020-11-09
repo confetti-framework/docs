@@ -2,12 +2,17 @@
 
 - [Introduction](#introduction)
 - [Configuration](#configuration)
+  - [Configuring The Channel Name](#configuring-the-channel-name)
+  - [Preconceived Channels](#preconceived-channels)
+  - [Configuring Most Common Loggers](#configuring-most-common-loggers)
+  - [Configuring The Slack Channel](#configuring-the-slack-channel)
   - [Building Log Stacks](#building-log-stacks)
+  - [Log Levels](#log-levels)
   - [Creating Custom Channels And Loggers](#creating-custom-channels-and-loggers)
 - [Writing Log Messages](#writing-log-messages)
+  - [Contextual Information](#contextual-information)
   - [Writing To Specific Channels](#writing-to-specific-channels)
-
-<a name="introduction"></a>
+  - [Groups](#groups)
 
 ## Introduction
 
@@ -15,8 +20,6 @@ To help you learn more about what's happening within your application, Lanvard p
 
 Under the hood, Lanvard utilizes the [Syslog](https://github.com/lanvard/syslog) library, which provides support for
 a variety of powerful log handlers. Lanvard makes it a cinch to configure these handlers, allowing you to mix and match them to customize your application's log handling.
-
-<a name="configuration"></a>
 
 ## Configuration
 
@@ -28,7 +31,7 @@ By default, Lanvard will use the `stack` channel when logging messages. The `sta
 multiple log channels into a single channel. For more information on building stacks, check out
 the [documentation below](#building-log-stacks).
 
-#### Configuring The Channel Name
+### Configuring The Channel Name
 
 The name provided is for reference only, so you can log specifically to that channel.
 
@@ -40,7 +43,7 @@ The name provided is for reference only, so you can log specifically to that cha
         HideStackTrace: true,
     },
 
-#### Preconceived Channels
+### Preconceived Channels
 
 Name | Description
 ------------- | -------------
@@ -52,7 +55,7 @@ Name | Description
 
 > {tip} It is very easy to create a channel yourself. Use an existing logger or create your own. The loggers only need to implement interface `inter.Logger`.
 
-#### Configuring Most Common Loggers
+### Configuring Most Common Loggers
 
 Most channels are based on `loggers.Syslog`. This logger can write files, but can also be used by any ʻio.Writer`.
 
@@ -66,14 +69,12 @@ Name | Description | Default
 `Facility` | Specify the type of program that is logging the message | 8 (USER)
 `Writer` | Define your own writer here |
 
-#### Configuring The Slack Channel
+### Configuring The Slack Channel
 
 The `slack` channel requires a `WebhookUrl` configuration option. This URL should match a URL for
 an [incoming webhook](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks) that you have configured for your Slack team.
 By default, Slack will only receive logs at the `critical` level and above; however, you can adjust this in
 your `logging` configuration file.
-
-<a name="building-log-stacks"></a>
 
 ### Building Log Stacks
 
@@ -102,7 +103,7 @@ Let's dissect this configuration. First, notice our `stack` channel aggregates t
 option: `daily` and `slack`. So, when logging messages, both of these channels will have the opportunity to log the
 message.
 
-#### Log Levels
+### Log Levels
 
 Take note of the `MinLevel` configuration option present on the `daily` and `slack` channel configurations in the
 example above. This option determines the minimum "level" a message must be in order to be logged by the channel.
@@ -120,8 +121,6 @@ both the system log and Slack since the `emergency` level is above our minimum l
 
     app.Log().Emergency("The system is down!")
 
-<a name="creating-custom-channels-and-loggers"></a>
-
 ### Creating Custom Channels And Loggers
 
 As indicated earlier: it is very easy to create channels and loggers yourself. A channel is a combination between a
@@ -137,8 +136,6 @@ Let's create a NewRelic channel:
     },
 
 The logger `new_relic.LogFacade{}` only needs to support interface `inter.Logger{}`.
-
-<a name="writing-log-messages"></a>
 
 ## Writing Log Messages
 
@@ -173,7 +170,7 @@ written to the default log channel as configured by your `config/logging.go` con
         //
     }
 
-#### Contextual Information
+### Contextual Information
 
 If you have data that you want to include in the logs, you can use the other parameters. Use `%v` as a placeholder:
 
@@ -192,8 +189,6 @@ If you want to log data as prescribed by the standards, use `syslog.StructuredDa
 
     logData := syslog.StructuredData{syslog.SDElement{"id": id.String()}
     app.Log().InfoWith("User failed to login.", logData)
-
-<a name="writing-to-specific-channels"></a>
 
 ### Writing To Specific Channels
 

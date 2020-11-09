@@ -2,6 +2,7 @@
 
 - [Introduction](#introduction)
 - [Defining Middleware](#defining-middleware)
+    - [Before & After Middleware](#before-&-after-middleware)
 - [Registering Middleware](#registering-middleware)
     - [Global Middleware](#global-middleware)
     - [Assigning Middleware To Routes](#assigning-middleware-to-routes)
@@ -9,7 +10,6 @@
 - [Middleware Parameters](#middleware-parameters)
 - [Terminable Middleware](#terminable-middleware)
 
-<a name="introduction"></a>
 ## Introduction
 
 Middleware provide a convenient mechanism for filtering HTTP requests entering your application. For example, ~~Lanvard includes a middleware that verifies the user of your application is authenticated.~~ If the user is not authenticated, the middleware will redirect the user to the login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application.
@@ -18,7 +18,6 @@ Additional middleware can be written to perform a variety of tasks besides authe
 
 There are several middleware included in the Lanvard framework, including middleware for ~~authentication and CSRF protection~~. All of these middleware are located in the `app/http/middleware` directory.
 
-<a name="defining-middleware"></a>
 ## Defining Middleware
 
 Let's place a new `CheckAge` struct within your `app/http/middleware` directory. In this middleware, we will only allow access to the route if the supplied `age` is greater than 200. Otherwise, we will redirect the users back to the `home` URI:
@@ -82,17 +81,14 @@ However, this middleware would perform its task **after** the request is handled
     	return response
     }
 
-<a name="registering-middleware"></a>
 ## Registering Middleware
 
-<a name="global-middleware"></a>
 ### Global Middleware
 
 If you want a middleware to run during every HTTP request to your application, list the middleware struct in
 the `globalMiddlewares` variable in your `providers.RouteServiceProvider` located
 in `app/providers/route_service_provider.go`.
 
-<a name="assigning-middleware-to-routes"></a>
 ### Assigning Middleware To Routes
 
 If you would like to assign middleware to specific routes, you should pass the struct of the middleware:
@@ -116,7 +112,6 @@ When assigning middleware to a group of routes, you may occasionally need to pre
 
 The `WithoutMiddleware` method can only remove route middleware and does not apply to [global middleware](#global-middleware). Supply parameters to the struct of WithoutMiddleware has no effect and is therefore superfluous.
 
-<a name="middleware-groups"></a>
 ### Middleware Groups
 
 Sometimes you may want to group several middleware under a single key to make them easier to assign to routes. We call this Middleware Groups.
@@ -146,7 +141,6 @@ Middleware groups can be loaded by using the spread operator in the `Middleware`
 
 > {tip} Out of the box, the `Web` middleware group is automatically applied to your web routes by `routes/web.go`.
 
-<a name="middleware-parameters"></a>
 ## Middleware Parameters
 
 Middleware can also receive additional parameters. For example, if your application needs to verify that the authenticated user has a given "role" before performing a given action, you could create a `CheckRole` middleware that receives a role name as an additional public field.
@@ -177,7 +171,6 @@ You can pass the parameters to the public fields of the middleware:
         //
     ).Middleware(middleware.CheckRole{Role: "editor"})
 
-<a name="terminable-middleware"></a>
 ## Terminable Middleware
 
 This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/63

@@ -6,7 +6,6 @@
     - [The Boot Method](#the-boot-method)
 - [Registering Providers](#registering-providers)
 
-<a name="introduction"></a>
 ## Introduction
 
 Service providers are the central place of all Lanvard application bootstrapping. Your own application, as well as all of Lanvard's core services are bootstrapped via service providers.
@@ -19,12 +18,10 @@ If you open the `app/providers/provider.go` file included with Lanvard, you will
 
 In this overview you will learn how to write your own service providers and register them with your Lanvard application.
 
-<a name="writing-service-providers"></a>
 ## Writing Service Providers
 
 All service providers implements the `inter.RegisterServiceProvider` or `inter.BootServiceProvider` interface. The service providers contain a `Register` and/or a `Boot` method. Within the `Register` method, you should **only bind things into the [service container](/docs/{{version}}/container)**. You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. You can have a service provider with a register and a boot method. Then you have to add this service to the RegisterProviders slice, and the BootProviders slice.
 
-<a name="the-register-method"></a>
 ### The Register Method
 
 As mentioned previously, within the `Register` method, you should only bind things into the [service container](/docs/{{version}}/container). You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. Otherwise, you may accidentally use a service that is provided by a service provider which has not loaded yet.
@@ -52,7 +49,6 @@ Let's take a look at a basic service provider. Within any of your service provid
 
 This service provider only defines a `Register` method, and uses that method to define an implementation of `riak` in the service container. If you don't understand how the service container works, check out [its documentation](/docs/{{version}}/container).
 
-<a name="the-boot-method"></a>
 ### The Boot Method
 
 So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#view-composers) within our service provider? This should be done within the `Boot` method. **This method is called after all other service providers have been registered**, meaning you have access to all other services that have been registered by the framework:
@@ -90,7 +86,6 @@ You may use Container for your dependencies in your service provider's `Boot` me
         return app
     }
 
-<a name="registering-providers"></a>
 ## Registering Providers
 
 All service providers are registered in the `app/providers/provider.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Lanvard core service providers are listed in this struct. These providers bootstrap the core Lanvard components, such as the mailer, queue, cache, and others.

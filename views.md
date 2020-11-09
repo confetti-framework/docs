@@ -1,12 +1,13 @@
 # Views
 
 - [Creating Views](#creating-views)
-- [Passing Data To Views](#passing-data-to-views)
-  - [Sharing Data With All Views](#sharing-data-with-all-views)
-- [View Composers](#view-composers)
-- [Optimizing Views](#optimizing-views)
-
-<a name="creating-views"></a>
+  - [HTML response](#html-response)
+  - [JSON response](#json-response)
+- [Combine Multiple Views](#combine-multiple-views)
+  - [Define Templates](#define-templates)
+  - [Use Defined Templates](#use-defined-templates)
+  - [Template Builder](#template-builder)
+- [Content By View](#content-by-view)
 
 ## Creating Views
 
