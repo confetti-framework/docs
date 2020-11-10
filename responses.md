@@ -39,32 +39,34 @@ function `outcome.Json`. The framework will automatically convert the slice into
 
 #### Response Objects
 
-Functions `outcome.Html` and `outcome.Json` return an object with interface `inter.Response`. That allows you to
-customize the response's HTTP status code and headers:
+Functions `outcome.Html`, `outcome.Jsone` and `outcome.Content` return an object with interface `inter.Response`. That
+allows you to customize the response's HTTP status code and headers:
 
-    Route::get('home', function () {
-        return response('Hello World', 200)
-                      ->header('Content-Type', 'text/plain');
-    });
+	Get("home", func(_ inter.Request) inter.Response {
+		return outcome.Html("Hello World").
+			Status(200).
+			Headers(http.Header{"Content-Type": {"text/plain"}})
+	}),
+
+`outcome.Html` and `outcome.Json` will add a Content-Type header. Use `outcome.Content` to add headers yourself.
 
 #### Attaching Headers To Responses
 
 Keep in mind that most response methods are chainable, allowing for the fluent construction of response instances. For
-example, you may use the `header` method to add a series of headers to the response before sending it back to the user:
+example, you may use the `Header` method to add a series of headers to the response before sending it back to the user:
 
-    return response($content)
-                ->header('Content-Type', $type)
-                ->header('X-Header-One', 'Header Value')
-                ->header('X-Header-Two', 'Header Value');
+    return outcome.Content("%PDF-1.5").
+		Header("Content-Type", "application/pdf").
+		Header("Content-Type", "charset=UTF-8")
+		Header("X-Header-One", "Header Value").
 
-Or, you may use the `withHeaders` method to specify an array of headers to be added to the response:
+Or, you may use the `Headers` method to specify an slice of headers to be added to the response:
 
-    return response($content)
-                ->withHeaders([
-                    'Content-Type' => $type,
-                    'X-Header-One' => 'Header Value',
-                    'X-Header-Two' => 'Header Value',
-                ]);
+    return outcome.Content("%PDF-1.5").
+		Headers(http.Header{
+            "Content-Type": {"application/pdf", "charset=UTF-8"},
+            "X-Header-One": {"Header Value"},
+        }).
 
 #### Cache Control Middleware
 
