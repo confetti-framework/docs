@@ -145,18 +145,17 @@ the response's content, you can use the `outcome.Html` method with a created vie
 
 ### File Downloads
 
-The `download` method may be used to generate a response that forces the user's browser to download the file at the
-given path. The `download` method accepts a file name as the second argument to the method, which will determine the
-file name that is seen by the user downloading the file. Finally, you may pass an array of HTTP headers as the third
-argument to the method:
+The `Download` method may be used to generate a response that forces the user's browser to download the file at the
+given path. The `Download` method accepts a file name, which will determine the file name that is seen by the user
+downloading the file. Finally, you may pass an array of HTTP headers as the third argument to the method:
 
     return outcome.Download(filePath)
 
     return outcome.Download(filePath).Filename("label.pdf").Header("Content-Type", "application/pdf")
 
     response, err := outcome.DownloadE(filePath)
-    if errors.Is(err, report.FileNotFoundError) {
-        //
+    if err != nil {
+        return err.Level(log_level.NOTICE)
     }
 
 > {note} The file being downloaded need to have an ASCII file name.
