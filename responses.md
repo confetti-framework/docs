@@ -1,24 +1,24 @@
 # HTTP Responses
 
 - [Creating Responses](#creating-responses)
-    - [Attaching Headers To Responses](#attaching-headers-to-responses)
-    - [Attaching Cookies To Responses](#attaching-cookies-to-responses)
-    - [Cookies & Encryption](#cookies-and-encryption)
+  - [Strings & Slices](#strings--slices)
+  - [Response Objects](#response-objects)
+  - [Attaching Headers To Responses](#attaching-headers-to-responses)
+  - [Attaching Cookies To Responses](#attaching-cookies-to-responses)
 - [Redirects](#redirects)
-    - [Redirecting To Named Routes](#redirecting-named-routes)
-    - [Redirecting To Controller Actions](#redirecting-controller-actions)
-    - [Redirecting To External Domains](#redirecting-external-domains)
-    - [Redirecting With Flashed Session Data](#redirecting-with-flashed-session-data)
+  - [Redirecting To External Domains](#redirecting-to-external-domains)
+  - [Redirecting To Named Routes](#redirecting-to-named-routes)
+  - [Redirecting To Controller Actions](#redirecting-to-controller-actions)
 - [Other Response Types](#other-response-types)
-    - [View Responses](#view-responses)
-    - [JSON Responses](#json-responses)
-    - [File Downloads](#file-downloads)
-    - [File Responses](#file-responses)
-- [Response Macros](#response-macros)
+  - [JSON Responses](#json-responses)
+  - [View Responses](#view-responses)
+  - [File Downloads](#file-downloads)
+  - [Streamed Downloads](#streamed-downloads)
+  - [Show In Browser](#show-in-browser)
 
 ## Creating Responses
 
-#### Strings & Slices
+### Strings & Slices
 
 All routes and controllers should return a response to be sent back to the user's browser. Lanvard provides several
 different ways to return responses. The most basic response is returning a string from a route or controller with
@@ -37,7 +37,7 @@ function `outcome.Json`. The framework will automatically convert the slice into
 
 > {tip} Did you know you can also return `[support.Collection](/docs/{{version}}/collections)` and `[support.Map](/docs/{{version}}/collections)` from your routes or controllers? They will automatically be converted to JSON. Give it a shot!
 
-#### Response Objects
+### Response Objects
 
 Functions `outcome.Html`, `outcome.Jsone` and `outcome.Content` return an object with interface `inter.Response`. That
 allows you to customize the response's HTTP status code and headers:
@@ -51,17 +51,16 @@ allows you to customize the response's HTTP status code and headers:
 `outcome.Html` and `outcome.Json` will add a Content-Type header. Use `outcome.Content` to add `Content-Type` header
 yourself.
 
-#### Attaching Headers To Responses
+### Attaching Headers To Responses
 
 Keep in mind that most response methods are chainable, allowing for the fluent construction of response instances. For
 example, you may use the `Header` method to add a series of headers to the response before sending it back to the user:
 
     return outcome.Content("# Cool Stuff").
-		Header("Content-Type", "application/markdown").
-		Header("Content-Type", "charset=UTF-8").
+		Header("Content-Type", "application/markdown", "charset=UTF-8").
 		Header("X-Header-One", "Header Value")
 
-Or, you may use the `Headers` method to specify an slice of headers to be added to the response:
+Or, you may use the `Headers` method to specify a slice of headers to be added to the response:
 
     return outcome.Content("# Cool Stuff").
 		Headers(http.Header{
@@ -69,13 +68,12 @@ Or, you may use the `Headers` method to specify an slice of headers to be added 
             "X-Header-One": {"Header Value"},
         })
 
-#### Attaching Cookies To Responses
+### Attaching Cookies To Responses
 
 The `Cookie` method on response instances allows you to easily attach cookies to the response. For example, you may use
 the `Cookie` method to generate a cookie and fluently attach it to the response instance like so:
 
-    return outcome.Content("# Cool Stuff").
-		Header("Content-Type", "application/markdown").
+    return outcome.Html("Hello World").
 		Cookie(http.Cookie{Name: "flow_id", Value: "aGdsf89hA3jr2"})
 
 ## Redirects
@@ -145,13 +143,15 @@ the response's content, you can use the `outcome.Html` method with a created vie
 
 ### File Downloads
 
-The `Download` method may be used to generate a response that forces the user's browser to download the file at the
-given path. The `Download` method accepts a file name, which will determine the file name that is seen by the user
-downloading the file. Finally, you may pass an array of HTTP headers as the third argument to the method:
+Function `Download` may be used to generate a response that forces the user's browser to download the file at the given
+path. The response of the `Download` method accepts the method `Filename`, which will determine the file name that is
+seen by the user downloading the file. Finally, you can use the `Header` method to add the content type heade:
 
     return outcome.Download(filePath)
 
     return outcome.Download(filePath).Filename("label.pdf").Header("Content-Type", "application/pdf")
+
+The file may not be found. Instead of a panic, `DownloadE` allows you to choose to handle your errors with more love.
 
     response, err := outcome.DownloadE(filePath)
     if err != nil {
@@ -160,11 +160,10 @@ downloading the file. Finally, you may pass an array of HTTP headers as the thir
 
 > {note} The file being downloaded need to have an ASCII file name.
 
-#### Streamed Downloads
+### Streamed Downloads
 
 Sometimes you may wish to turn the string response of a given operation into a downloadable response without having to
-write the contents of the operation to disk. You may use the `streamDownload` method in this scenario. This method
-accepts a callback, file name, and an optional array of headers as its arguments:
+write the contents of the operation to disk. You may use the `Content` function in this scenario:
 
     return outcome.Content("%PDF-1.5").
 		Header("Content-Type", "application/pdf").
@@ -172,43 +171,9 @@ accepts a callback, file name, and an optional array of headers as its arguments
 
 ### Show In Browser
 
-The `file` method may be used to display a file, such as an image or PDF, directly in the user's browser instead of
-initiating a download. This method accepts the path to the file as its first argument and an array of headers as its
-second argument:
+Function `ShowInBrowser` may be used to display a file, such as an image or PDF, directly in the user's browser instead
+of initiating a download:
 
     return outcome.Content("%PDF-1.5").
         Header("Content-Type", "application/pdf").
         ShowInBrowser()
-
-## Response Macros
-
-If you would like to define a custom response that you can re-use in a variety of your routes and controllers, you may
-use the `macro` method on the `Response` facade. For example, from
-a [service provider's](/docs/{{version}}/providers) `boot` method:
-
-    <?php
-
-    namespace App\Providers;
-
-    use Illuminate\Support\Facades\Response;
-    use Illuminate\Support\ServiceProvider;
-
-    class ResponseMacroServiceProvider extends ServiceProvider
-    {
-        /**
-         * Register the application's response macros.
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            Response::macro('caps', function ($value) {
-                return Response::make(strtoupper($value));
-            });
-        }
-    }
-
-The `macro` function accepts a name as its first argument, and a Closure as its second. The macro's Closure will be
-executed when calling the macro name from a `ResponseFactory` implementation or the `response` helper:
-
-    return response()->caps('foo');
