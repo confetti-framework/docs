@@ -56,16 +56,16 @@ yourself.
 Keep in mind that most response methods are chainable, allowing for the fluent construction of response instances. For
 example, you may use the `Header` method to add a series of headers to the response before sending it back to the user:
 
-    return outcome.Content("%PDF-1.5").
-		Header("Content-Type", "application/pdf").
+    return outcome.Content("# Cool Stuff").
+		Header("Content-Type", "application/markdown").
 		Header("Content-Type", "charset=UTF-8").
 		Header("X-Header-One", "Header Value")
 
 Or, you may use the `Headers` method to specify an slice of headers to be added to the response:
 
-    return outcome.Content("%PDF-1.5").
+    return outcome.Content("# Cool Stuff").
 		Headers(http.Header{
-            "Content-Type": {"application/pdf", "charset=UTF-8"},
+            "Content-Type": {"application/markdown", "charset=UTF-8"},
             "X-Header-One": {"Header Value"},
         })
 
@@ -74,8 +74,8 @@ Or, you may use the `Headers` method to specify an slice of headers to be added 
 The `Cookie` method on response instances allows you to easily attach cookies to the response. For example, you may use
 the `Cookie` method to generate a cookie and fluently attach it to the response instance like so:
 
-    return outcome.Content("%PDF-1.5").
-		Header("Content-Type", "application/pdf").
+    return outcome.Content("# Cool Stuff").
+		Header("Content-Type", "application/markdown").
 		Cookie(http.Cookie{Name: "flow_id", Value: "aGdsf89hA3jr2"})
 
 ## Redirects
@@ -150,13 +150,16 @@ given path. The `download` method accepts a file name as the second argument to 
 file name that is seen by the user downloading the file. Finally, you may pass an array of HTTP headers as the third
 argument to the method:
 
-    return response()->download($pathToFile);
+    return outcome.Download(filePath)
 
-    return response()->download($pathToFile, $name, $headers);
+    return outcome.Download(filePath).Filename("label.pdf").Header("Content-Type", "application/pdf")
 
-    return response()->download($pathToFile)->deleteFileAfterSend();
+    response, err := outcome.DownloadE(filePath)
+    if errors.Is(err, report.FileNotFoundError) {
+        //
+    }
 
-> {note} Symfony HttpFoundation, which manages file downloads, requires the file being downloaded to have an ASCII file name.
+> {note} The file being downloaded need to have an ASCII file name.
 
 #### Streamed Downloads
 
@@ -164,21 +167,19 @@ Sometimes you may wish to turn the string response of a given operation into a d
 write the contents of the operation to disk. You may use the `streamDownload` method in this scenario. This method
 accepts a callback, file name, and an optional array of headers as its arguments:
 
-    return response()->streamDownload(function () {
-        echo GitHub::api('repo')
-                    ->contents()
-                    ->readme('laravel', 'laravel')['contents'];
-    }, 'laravel-readme.md');
+    return outcome.Content("%PDF-1.5").
+		Header("Content-Type", "application/pdf").
+        FileName("readme.md")
 
-### File Responses
+### Show In Browser
 
 The `file` method may be used to display a file, such as an image or PDF, directly in the user's browser instead of
 initiating a download. This method accepts the path to the file as its first argument and an array of headers as its
 second argument:
 
-    return response()->file($pathToFile);
-
-    return response()->file($pathToFile, $headers);
+    return outcome.Content("%PDF-1.5").
+        Header("Content-Type", "application/pdf").
+        ShowInBrowser()
 
 ## Response Macros
 
