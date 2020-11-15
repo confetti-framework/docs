@@ -3,7 +3,6 @@
 - [Basic Routing](#basic-routing)
   - [The Default Route Files](#the-default-route-files)
   - [Available Router Methods](#available-router-methods)
-  - [~~CSRF Protection~~](#~~csrf-protection~~)
   - [Redirect Routes](#redirect-routes)
   - [View Routes](#view-routes)
 - [Route Parameters](#route-parameters)
@@ -26,7 +25,6 @@
 - [Rate Limiting](#rate-limiting)
 - [Form Method Spoofing](#form-method-spoofing)
 - [Accessing The Current Route](#accessing-the-current-route)
-- [Cross-Origin Resource Sharing (CORS)](#cross-origin-resource-sharing (cors))
 
 ## Basic Routing
 
@@ -66,15 +64,6 @@ Sometimes you may need to register a route that responds to multiple HTTP verbs.
 
     Any("/photos/{photo}", controller.Photos),
 
-### ~~CSRF Protection~~
-
-~~Any HTML forms pointing to `POST`, `PUT`, `PATCH`, or `DELETE` routes that are defined in the `web` routes file should include a CSRF token field. Otherwise, the request will be rejected. You can read more about CSRF protection in the [CSRF documentation](/docs/{{version}}/csrf):~~
-
-    <form method="POST" action="/profile">
-        @csrf
-        ...
-    </form>
-
 ### Redirect Routes
 
 If you are defining a route that redirects to another URI, you may use `Redirect`. This function provides a convenient shortcut so that you do not have to define a full route or controller for performing a simple redirect:
@@ -91,11 +80,11 @@ Or the `RedirectPermanent` method to return a `301` status code:
 
 ### View Routes
 
-~~If your route only needs to return a view, you may use the `Route::view` method. Like the `redirect` method, this method provides a simple shortcut so that you do not have to define a full route or controller. The `view` method accepts a URI as its first argument and a view name as its second argument. In addition, you may provide an array of data to pass to the view as an optional third argument:~~
+If your route only needs to return a view, you may use the `View` method. Like the `Redirect` method, this method
+provides a simple shortcut so that you do not have to define a full route or controller. The `View` method accepts a URI
+as its first argument, and a view name as its second argument:
 
-    Route::view('/welcome', 'welcome');
-
-    Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+    View('/homepage', views.Homepage("James"));
 
 ## Route Parameters
 
@@ -402,9 +391,3 @@ You may use the `Name`, `Method` and `Domain` methods on the `Route` facade to a
     name := request.Route().Name()
 
     domain := request.Route().Domain
-
-## Cross-Origin Resource Sharing (CORS)
-
-~~Lanvard can automatically respond to CORS OPTIONS requests with values that you configure. All CORS settings may be configured in your `cors` configuration file and OPTIONS requests will automatically be handled by the `HandleCors` middleware that is included by default in your global middleware stack.~~
-
-~~> {tip} For more information on CORS and CORS headers, please consult the [MDN web documentation on CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers).~~

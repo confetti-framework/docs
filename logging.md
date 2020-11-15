@@ -145,13 +145,13 @@ the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**
 warning**, **notice**, **info** and **debug**:
 
     app.Log().Emergency(message)
-    app.Log().Alert(message);
-    app.Log().Critical(message);
-    app.Log().Error(message);
-    app.Log().Warning(message);
-    app.Log().Notice(message);
-    app.Log().Info(message);
-    app.Log().Debug(message);
+    app.Log().Alert(message)
+    app.Log().Critical(message)
+    app.Log().Error(message)
+    app.Log().Warning(message)
+    app.Log().Notice(message)
+    app.Log().Info(message)
+    app.Log().Debug(message)
     app.Log().Log(syslog.ALERT, message)
 
 So, you may call any of these methods to log a message for the corresponding level. By default, the message will be
@@ -195,11 +195,11 @@ If you want to log data as prescribed by the standards, use `syslog.StructuredDa
 Sometimes you may wish to log a message to a channel other than your application's default channel. You may use the
 first parameter from the `Log` method to log to any channel defined in your configuration file:
 
-    app.Log("slack").Alert("Something happened!");
+    app.Log("slack").Alert("Something happened!")
 
 If you would like to create an on-demand logging stack consisting of multiple channels, you can use multiple parameters:
 
-    app.Log("single", "slack").Info("Something happened!");
+    app.Log("single", "slack").Info("Something happened!")
 
 ### Groups
 
@@ -207,7 +207,7 @@ If you have a large system, it might be smart to group logs together. This makes
 example, you could create a group named `external` to log request and responses, and a group named `worker` for
 background jobs.
 
-    log := app.Log().Group("external");
+    log := app.Log().Group("external")
 
     log.Info("Task started")
     log.Alert("Something happened!")
