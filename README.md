@@ -13,6 +13,7 @@
 - [Routing](routing.md)
 - [Middleware](middleware.md)
 - [Requests](requests.md)
+- [Responses](responses.md)
 - [Views](views.md)
 - [Errors](errors.md)
 - [Logging](logging.md)
