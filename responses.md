@@ -57,7 +57,7 @@ Keep in mind that most response methods are chainable, allowing for the fluent c
 example, you may use the `Header` method to add a series of headers to the response before sending it back to the user:
 
     return outcome.Content("# Cool Stuff").
-		Header("Content-Type", "application/markdown", "charset=UTF-8").
+		Header("Content-Type", "text/markdown", "charset=UTF-8").
 		Header("X-Header-One", "Header Value")
 
 Or, you may use the `Headers` method to specify a slice of headers to be added to the response:
@@ -145,11 +145,12 @@ the response's content, you can use the `outcome.Html` method with a created vie
 
 Function `Download` may be used to generate a response that forces the user's browser to download the file at the given
 path. The response of the `Download` method accepts the method `Filename`, which will determine the file name that is
-seen by the user downloading the file. Finally, you can use the `Header` method to add the content type heade:
+seen by the user downloading the file. `Content-Type` with MIME type is automatically filled in based on the file
+extension.
 
     return outcome.Download(filePath)
 
-    return outcome.Download(filePath).Filename("label.pdf").Header("Content-Type", "application/pdf")
+    return outcome.Download(filePath).Filename("label.pdf")
 
 The file may not be found. Instead of a panic, `DownloadE` allows you to choose to handle your errors with more love.
 
