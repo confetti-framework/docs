@@ -38,9 +38,13 @@ The most basic Lanvard routes accept a URI and a `Closure`, providing a very sim
 
 ### The Default Route Files
 
-All Lanvard routes are defined in your route files, which are located in the `routes` directory. These files are automatically loaded by the framework. The `routes/web.php` file defines routes that are for your web interface. These routes are assigned the `web` middleware group, which provides features like ~~session state~~ and ~~CSRF protection~~. The routes in `routes/api.go` are stateless and are assigned the `api` middleware group.
+All Lanvard routes are defined in your route files, which are located in the `routes` directory. These files are
+automatically loaded by the framework. The `routes/web.go` file defines routes that are for your web interface. These
+routes are assigned the `web` middleware group, which provides features like ~~session state~~ and ~~CSRF protection~~.
+The routes in `routes/api.go` are stateless and are assigned the `api` middleware group.
 
-The routes defined in `routes/web.go` may be accessed by entering the defined route's URL in your browser. For example, you may access the following route by navigating to `http://your-app.test/user` in your browser:
+The routes defined in `routes/web.go` may be accessed by entering the defined route's URL in your browser. For example,
+you may access the following route by navigating to `http://your-app.test/user` in your browser:
 
     Get("/user", controller.User.Index),
 
@@ -361,7 +365,10 @@ The `Name` method may be used to prefix each route name in the group with a give
 
 ## Fallback Routes
 
-Using the `Route::fallback` method, you may define a route that will be executed when no other route matches the incoming request. Typically, unhandled requests will automatically render a "404" page via your application's exception handler. However, since you may define the `fallback` route within your `routes/web.php` file, all middleware in the `web` middleware group will apply to the route. You are free to add additional middleware to this route as needed:
+Using the `Route::fallback` method, you may define a route that will be executed when no other route matches the
+incoming request. Typically, unhandled requests will automatically render a "404" page via your application's exception
+handler. However, since you may define the `fallback` route within your `routes/web.go` file, all middleware in
+the `web` middleware group will apply to the route. You are free to add additional middleware to this route as needed:
 
     Group(
         Get("/users", controller.User.Show).Name("users"),
