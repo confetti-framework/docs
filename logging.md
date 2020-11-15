@@ -139,9 +139,9 @@ The logger `new_relic.LogFacade{}` only needs to support interface `inter.Logger
 
 ## Writing Log Messages
 
-You may write information to the logs using the `Log` [~~facade~~](/docs/{{version}}/facades). As previously mentioned,
-the logger provides the eight logging levels defined in
-the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**, **critical**, **error**, **
+You may write information to the logs using the `Log` facade. As previously mentioned, the logger provides the eight
+logging levels defined in the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**
+, **critical**, **error**, **
 warning**, **notice**, **info** and **debug**:
 
     app.Log().Emergency(message)

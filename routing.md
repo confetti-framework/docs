@@ -38,8 +38,8 @@ The most basic Lanvard routes accept a URI and a `Closure`, providing a very sim
 
 All Lanvard routes are defined in your route files, which are located in the `routes` directory. These files are
 automatically loaded by the framework. The `routes/web.go` file defines routes that are for your web interface. These
-routes are assigned the `web` middleware group, which provides features like ~~session state~~ and ~~CSRF protection~~.
-The routes in `routes/api.go` are stateless and are assigned the `api` middleware group.
+routes are assigned the `Web` middleware group. The routes in `routes/api.go` are stateless and are assigned the `Api`
+middleware group.
 
 The routes defined in `routes/web.go` may be accessed by entering the defined route's URL in your browser. For example,
 you may access the following route by navigating to `http://your-app.test/user` in your browser:
@@ -288,8 +288,6 @@ If you also want to build a query string, use the 4th parameter, those key / val
     )
 
     /user/12?order_by=name&size=50
-
-~~> {tip} Sometimes, you may wish to specify request-wide default values for URL parameters, such as the current locale. To accomplish this, you may use the [`URL::defaults` method](/docs/{{version}}/urls#default-values).~~
 
 ### Inspecting The Current Route
 

@@ -114,8 +114,7 @@ If your route has parameters, you may pass them as an extra argument to the meth
 
 ### Redirecting To Controller Actions
 
-You may also generate redirects the request to [~~controller actions~~](/docs/{{version}}/controllers). To do so, simply
-call the controller:
+You may also generate redirects the request to controller actions. To do so, simply call the controller:
 
     return controller.Homepage(request)
 

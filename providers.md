@@ -51,26 +51,18 @@ This service provider only defines a `Register` method, and uses that method to 
 
 ### The Boot Method
 
-So, what if we need to register a [~~view composer~~](/docs/{{version}}/views#view-composers) within our service provider? This should be done within the `Boot` method. **This method is called after all other service providers have been registered**, meaning you have access to all other services that have been registered by the framework:
-    
-    package providers
-    
-    import (
-        "github.com/lanvard/foundation"
-        "github.com/lanvard/view"
-        user_repository "lanvard/app/repository/user"
-    )
-    
-    type ComposerServiceProvider struct{}
-    
-    // Register any application services.
-    func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {
+The `Boot` method is called after all other service providers have been registered, meaning you have access to all other
+services that have been registered by the framework:
 
-        view.Composer("all_users", func() {
-            return user_repository.AllUsers()
-        })
-
-        return app
+    type DataDog struct{}
+    
+    func (d DataDog) Boot(container inter.Container) inter.Container {
+        _, err := statsd.New("127.0.0.1:8125")
+        if err != nil {
+            panic(err)
+        }
+    
+        return container
     }
 
 #### Boot Method Dependency Injection

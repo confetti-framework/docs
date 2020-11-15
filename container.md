@@ -119,7 +119,3 @@ The `Extend` method allows the modification of resolved services. For example, w
 You may use the `Make` method to resolve a struct instance out of the container. The `Make` method accepts the name of the struct or interface you wish to resolve:
 
     kernel := app.Make("http.kernel").(http.Kernel)
-
-~~## Container Events~~
-
-~~The service container fires an event each time it resolves an object. You may listen to this event using the `resolving` method:~~

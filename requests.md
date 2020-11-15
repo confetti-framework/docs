@@ -24,7 +24,7 @@
 ## Accessing The Request
 
 In the parameter from a controller you get a `inter.Request` instance. From the request you can view all information
-that has been sent to you. Think for example of ~~cookies~~, headers, body and query parameters.
+that has been sent to you. Think for example of cookies, headers, body and query parameters.
 
     package controller
     

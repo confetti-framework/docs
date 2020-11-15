@@ -24,7 +24,7 @@ an intruder gains access to your source control repository, since any sensitive 
 If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By
 putting placeholder values in the example configuration file, other developers on your team can clearly see which
 environment variables are needed to run your application. You may also create a `.env.testing` file. This file will
-override the `.env` file when running tests ~~or executing Artisan commands with the `--env=testing` option.~~
+override the `.env` file when running tests.
 
 > {tip} Any variable in your `.env` file can be set by external environment variables such as server-level or system-level environment variables.
 

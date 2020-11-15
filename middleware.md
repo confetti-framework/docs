@@ -12,11 +12,12 @@
 
 ## Introduction
 
-Middleware provide a convenient mechanism for filtering HTTP requests entering your application. For example, ~~Lanvard includes a middleware that verifies the user of your application is authenticated.~~ If the user is not authenticated, the middleware will redirect the user to the login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application.
+Middleware provide a convenient mechanism for filtering HTTP requests entering your application. Additional middleware
+can be written to perform a variety of tasks. A CORS middleware might be responsible for adding the proper headers to
+all responses leaving your application. A logging middleware might log all incoming requests to your application.
 
-Additional middleware can be written to perform a variety of tasks besides authentication. A CORS middleware might be responsible for adding the proper headers to all responses leaving your application. A logging middleware might log all incoming requests to your application.
-
-There are several middleware included in the Lanvard framework, including middleware for ~~authentication and CSRF protection~~. All of these middleware are located in the `app/http/middleware` directory.
+There are several middleware included in the Lanvard framework. All of these middleware are located in
+the `app/http/middleware` directory.
 
 ## Defining Middleware
 
