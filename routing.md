@@ -376,7 +376,7 @@ This hasn't been built yet, but feel free to help: https://github.com/lanvard/la
 
 ## Accessing The Current Route
 
-You can remove the current router from the container:
+You can get the current router from the container:
 
      yourStruct.App().Make("route").(inter.Route)
      
