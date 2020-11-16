@@ -70,9 +70,7 @@ services that have been registered by the framework:
 You may use Container for your dependencies in your service provider's `Boot` method. The [service container](/docs/{{version}}/container) will automatically inject any dependencies you need:
 
     func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {
-
         eventPusher := app.Make("EventPusher")(contract.EventPusher)
-        
         //
 
         return app
@@ -86,7 +84,7 @@ To register your provider, add it to the slices:
 
 	RegisterProviders: []decorator.RegisterServiceProvider{
 	    providers.AppServiceProvider{},
-		providers.ComposerServiceProvider{},
+	    providers.ComposerServiceProvider{},
 		
 		//
 	},
