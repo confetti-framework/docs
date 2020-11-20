@@ -16,5 +16,10 @@
             val.Field("body", rule.Required()),
         )
 
+        validatedData := request.Content().Validate(
+            val.Verify("title", rule.Required(), custom_rule.Unique("posts"), rule.Max(255)),
+            val.Verify("body", rule.Required()),
+        )
+
         //
     }
