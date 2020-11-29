@@ -32,9 +32,8 @@
 
 ## Introduction
 
-Lanvard provides several different approaches to validate your application's incoming data. By default, Lanvard's base
-controller class uses a `ValidatesRequests` trait which provides a convenient method to validate incoming HTTP requests
-with a variety of powerful validation rules.
+Good validation prevents bugs and will make your application more secure. Lanvard provides several different approaches
+to validate your application's incoming data.
 
 <a name="validation-quickstart"></a>
 
@@ -47,13 +46,20 @@ displaying the error messages back to the user.
 
 ### Defining The Routes
 
-First, let's assume we have the following routes defined in our `routes/web.php` file:
+First, let's assume we have the following routes defined in our `routes/web.go` file:
 
-    use App\Http\Controllers\PostController;
+    package routes
 
-    Route::get('post/create', [PostController::class, 'create']);
+    import (
+      . "github.com/lanvard/routing"
+      "lanvard/app/http/controllers"
+      "lanvard/app/http/middleware"
+    )
 
-    Route::post('post', [PostController::class, 'store']);
+    var Web = Group(
+        Get("post/create", controllers.PostCreate),
+        Post("post", controllers.PostStore),
+    ).Middleware(middleware.Web...)
 
 The `GET` route will display a form for the user to create a new blog post, while the `POST` route will store the new
 blog post in the database.
@@ -62,50 +68,37 @@ blog post in the database.
 
 ### Creating The Controller
 
-Next, let's take a look at a simple controller that handles these routes. We'll leave the `store` method empty for now:
+Next, let's take a look at a simple controller that handles these routes. We'll leave the `PostStore` method empty for
+now:
 
-    <?php
+    package controllers
 
-    namespace App\Http\Controllers;
-
-    use App\Http\Controllers\Controller;
-    use Illuminate\Http\Request;
-
-    class PostController extends Controller
-    {
-        /**
-         * Show the form to create a new blog post.
-         *
-         * @return Response
-         */
-        public function create()
-        {
-            return view('post.create');
-        }
-
-        /**
-         * Store a new blog post.
-         *
-         * @param  Request  $request
-         * @return Response
-         */
-        public function store(Request $request)
-        {
-            // Validate and store the blog post...
-        }
+    import (
+        "github.com/lanvard/contract/inter"
+        "github.com/lanvard/routing/outcome"
+        "lanvard/resources/views"
+    )
+    
+    // Show the form to create a new blog post.
+    func PostCreate(request inter.Request) inter.Response {
+        return outcome.Html(views.PostCreate(request.App()))
     }
+    
+    // Store a new blog post.
+    func PostStore(request inter.Request) inter.Response {
+        // Validate and store the blog post...
+    }
+
 
 <a name="quick-writing-the-validation-logic"></a>
 
 ### Writing The Validation Logic
 
-Now we are ready to fill in our `store` method with the logic to validate the new blog post. To do this, we will use
-the `validate` method provided by the `Illuminate\Http\Request` object. If the validation rules pass, your code will
-keep executing normally; however, if validation fails, an exception will be thrown and the proper error response will
-automatically be sent back to the user. In the case of a traditional HTTP request, a redirect response will be
-generated, while a JSON response will be sent for AJAX requests.
+Now we are ready to fill in our `PostStore` method with the logic to validate the new blog post. To do this, we will use
+the `Validate` method provided by the `inter.Request` object. If a test fail, you will receive an error. You can choose
+to return the errors directly or to process them in a view.
 
-To get a better understanding of the `validate` method, let's jump back into the `store` method:
+To get a better understanding of the `Validate` method, let's jump back into the `PostStore` method:
 
     /**
      * Store a new blog post.
@@ -195,7 +188,7 @@ object, [check out its documentation](#working-with-error-messages).
 So, in our example, the user will be redirected to our controller's `create` method when validation fails, allowing us
 to display the error messages in the view:
 
-    <!-- /resources/views/post/create.blade.php -->
+    <!-- /resources/views/post/create.blade.go -->
 
     <h1>Create Post</h1>
 
@@ -219,7 +212,7 @@ You may also use the `@error` [Blade](/docs/{{version}}/blade) directive to quic
 exist for a given attribute. Within an `@error` directive, you may echo the `$message` variable to display the error
 message:
 
-    <!-- /resources/views/post/create.blade.php -->
+    <!-- /resources/views/post/create.blade.go -->
 
     <label for="title">Post Title</label>
 
@@ -640,7 +633,7 @@ Specify the attribute's name first, followed by the rule:
 #### Specifying Custom Messages In Language Files
 
 In most cases, you will probably specify your custom messages in a language file instead of passing them directly to
-the `Validator`. To do so, add your messages to `custom` array in the `resources/lang/xx/validation.php` language file.
+the `Validator`. To do so, add your messages to `custom` array in the `resources/lang/xx/validation.go` language file.
 
     'custom' => [
         'email' => [
@@ -653,7 +646,7 @@ the `Validator`. To do so, add your messages to `custom` array in the `resources
 #### Specifying Custom Attribute Values
 
 If you would like the `:attribute` portion of your validation message to be replaced with a custom attribute name, you
-may specify the custom name in the `attributes` array of your `resources/lang/xx/validation.php` language file:
+may specify the custom name in the `attributes` array of your `resources/lang/xx/validation.go` language file:
 
     'attributes' => [
         'email' => 'email address',
@@ -904,8 +897,7 @@ The field under validation must be equal to the given date. The dates will be pa
 #### date_format:_format_
 
 The field under validation must match the given _format_. You should use **either** `date` or `date_format` when
-validating a field, not both. This validation rule supports all formats supported by
-PHP's [DateTime](https://www.php.net/manual/en/class.datetime.php) class.
+validating a field, not both. This validation rule supports all formats supported by PHP's [~~DateTime~~]() class.
 
 <a name="rule-different"></a>
 
