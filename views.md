@@ -120,6 +120,24 @@ use very specific templates, you can customize `template_builder` in `providers.
 adjust the built-in Golang `*Template`. For more information on all possible methods, take a look
 at [the manual](https://golang.org/pkg/text/template/#Template.AddParseTree).
 
+#### Add Functions
+
+You can also define functions in providers.ViewServiceProvider. You can use those functions in any template:
+
+    templateBuilder.Funcs(template.FuncMap{
+		return templateBuilder.Funcs(template.FuncMap{
+            "Replace": func(input, from, to string) string {
+                return strings.Replace(input, from, to, -1)
+            },
+            "Trim": strings.Trim,
+        })
+	})
+
+You can then use that function in the template. Use the function followed by the parameters:
+
+    <h1>{{ Trim .Title " " }}</h1>
+    <p>{{ Replace .Description " " "_" }}</p>
+
 ## Content By View
 
 You may want to use the view for a different purpose. You can get the content of a view by using the `view_helper`
