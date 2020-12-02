@@ -28,183 +28,100 @@
     - [Using Extensions](#using-extensions)
     - [Implicit Extensions](#implicit-extensions)
 
-<a name="introduction"></a>
-
 ## Introduction
 
 Good validation prevents bugs and will make your application more secure. Lanvard provides several different approaches
 to validate your application's incoming data.
 
-<a name="validation-quickstart"></a>
-
-## Validation Quickstart
-
-To learn about Lanvard's powerful validation features, let's look at a complete example of validating a form and
-displaying the error messages back to the user.
-
-<a name="quick-defining-the-routes"></a>
-
-### Defining The Routes
-
-First, let's assume we have the following routes defined in our `routes/web.go` file:
-
-    package routes
-
-    import (
-      . "github.com/lanvard/routing"
-      "lanvard/app/http/controllers"
-      "lanvard/app/http/middleware"
-    )
-
-    var Web = Group(
-        Get("post/create", controllers.PostCreate),
-        Post("post", controllers.PostStore),
-    ).Middleware(middleware.Web...)
-
-The `GET` route will display a form for the user to create a new blog post, while the `POST` route will store the new
-blog post in the database.
-
-<a name="quick-creating-the-controller"></a>
-
-### Creating The Controller
-
-Next, let's take a look at a simple controller that handles these routes. We'll leave the `PostStore` method empty for
-now:
-
-    package controllers
-
-    import (
-        "github.com/lanvard/contract/inter"
-        "github.com/lanvard/routing/outcome"
-        "lanvard/resources/views"
-    )
-    
-    // Show the form to create a new blog post.
-    func PostCreate(request inter.Request) inter.Response {
-        return outcome.Html(views.PostCreate(request.App()))
-    }
-    
-    // Store a new blog post.
-    func PostStore(request inter.Request) inter.Response {
-        // Validate and store the blog post...
-    }
-
-
-<a name="quick-writing-the-validation-logic"></a>
-
 ### Writing The Validation Logic
 
-Now we are ready to fill in our `PostStore` method with the logic to validate the new blog post. To do this, we will use
-the `Validate` method provided by the `inter.Request` object. If a test fail, you will receive an error. You can choose
-to return the errors directly or to process them in a view.
+With Lanvard it is very easy to validate incoming data. With the first parameter you enter the data you want to
+validate. Furthermore, you enter fields with rules.
 
-To get a better understanding of the `Validate` method, let's jump back into the `PostStore` method:
+	failures := val.Validate(
+        request.Content(),
+		val.Verify("name", rule.Required{}, rule.MaxCharacters{Max: 255}),
+		val.Verify("email", rule.Required{}, rule.Email{}),
+	)
 
-    /**
-     * Store a new blog post.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
-        ]);
+If a validation error occurs, you will receive a slice with errors.
 
-        // The blog post is valid...
-    }
+#### Nested Attributes
 
-As you can see, we pass the desired validation rules into the `validate` method. Again, if the validation fails, the
-proper response will automatically be generated. If the validation passes, our controller will continue executing
-normally.
+If your data contains "nested" parameters, you may specify them in your validation rules using "dot" syntax:
 
-Alternatively, validation rules may be specified as arrays of rules instead of a single `|` delimited string:
+    failures := val.Validate(request.Content(),
+		val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
+		val.Verify("author.name", rule.Required{}),
+		val.Verify("author.description", rule.Required{}),
+	)
 
-    $validatedData = $request->validate([
-        'title' => ['required', 'unique:posts', 'max:255'],
-        'body' => ['required'],
-    ]);
+If you want to validate all fields in a slice or in a map, you can use an asterisk:
 
-You may use the `validateWithBag` method to validate a request and store any error messages within
-a [named error bag](#named-error-bags):
-
-    $validatedData = $request->validateWithBag('post', [
-        'title' => ['required', 'unique:posts', 'max:255'],
-        'body' => ['required'],
-    ]);
-
-<a name="stopping-on-first-validation-failure"></a>
-
-#### Stopping On First Validation Failure
-
-Sometimes you may wish to stop running validation rules on an attribute after the first validation failure. To do so,
-assign the `bail` rule to the attribute:
-
-    $request->validate([
-        'title' => 'bail|required|unique:posts|max:255',
-        'body' => 'required',
-    ]);
-
-In this example, if the `unique` rule on the `title` attribute fails, the `max` rule will not be checked. Rules will be
-validated in the order they are assigned.
-
-<a name="a-note-on-nested-attributes"></a>
-
-#### A Note On Nested Attributes
-
-If your HTTP request contains "nested" parameters, you may specify them in your validation rules using "dot" syntax:
-
-    $request->validate([
-        'title' => 'required|unique:posts|max:255',
-        'author.name' => 'required',
-        'author.description' => 'required',
-    ]);
-
-On the other hand, if your field name contains a literal period, you can explicitly prevent this from being interpreted
-as "dot" syntax by escaping the period with a backslash:
-
-    $request->validate([
-        'title' => 'required|unique:posts|max:255',
-        'v1\.0' => 'required',
-    ]);
-
-<a name="quick-displaying-the-validation-errors"></a>
+    failures := val.Validate(request.Content(),
+		val.Verify("orders", rule.Sum{Sum: 3}),
+		val.Verify("orders.*.street", rule.Required{}, rule.MaxCharacters{Max: 255}),
+	)
 
 ### Displaying The Validation Errors
 
-So, what if the incoming request parameters do not pass the given validation rules? As mentioned previously, Lanvard
-will automatically redirect the user back to their previous location. In addition, all of the validation errors will
-automatically be [flashed to the session](/docs/{{version}}/session#flash-data).
+So, what if the incoming request parameters do not pass the given validation rules? As mentioned previously, after
+validation you will receive the errors in a slice.
 
-Again, notice that we did not have to explicitly bind the error messages to the view in our `GET` route. This is because
-Lanvard will check for errors in the session data, and automatically bind them to the view if they are available.
-The `$errors` variable will be an instance of `Illuminate\Support\MessageBag`. For more information on working with this
-object, [check out its documentation](#working-with-error-messages).
+#### Return Errors As Response
 
-> {tip} The `$errors` variable is bound to the view by the `Illuminate\View\Middleware\ShareErrorsFromSession` middleware, which is provided by the `web` middleware group. **When this middleware is applied an `$errors` variable will always be available in your views**, allowing you to conveniently assume the `$errors` variable is always defined and can be safely used.
+You can choose to return the errors immediately. In that case, the customer will immediately see the correct HTTP page
+or JSON response.
 
-So, in our example, the user will be redirected to our controller's `create` method when validation fails, allowing us
-to display the error messages in the view:
+    func UserStore(request inter.Request) inter.Response {
+        failures := val.Validate(request.Content(),
+            val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
+        )
+        if len(failures) > 0 {
+            return outcome.Html(failures)
+        }
 
-    <!-- /resources/views/post/create.blade.go -->
+        //
+    }
 
+> {tip} You can edit the error view yourself in response_service_provider.go. For more information about adjusting error responses, I refer you to the [error documentation](errors.md#custom-http-error-pages).
+
+#### Use Errors In Views
+
+Or you pass the errors to a view. That way you can, for example, place the errors next to the fields in a form:
+
+    func UserStore(request inter.Request) inter.Response {
+        content := request.Content()
+        failures := val.Validate(
+            content,
+            val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
+        )
+    
+        return outcome.Html(views.UserCreate(
+            request.App(),
+            failures,
+            content.Get("title").String(),
+        ))
+    }
+
+Once in the template you can do whatever you want with the errors:
+
+    {{- /*gotype: lanvard/resources/views.UserCreateView*/ -}}
+    
     <h1>Create Post</h1>
-
-    @if ($errors->any())
+    
+    {{if .Failures}}
         <div class="alert alert-danger">
             <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+            {{ range $key, $value := .Failures }}
+                <li>{{ $value }}</li>
+            {{ end }}
             </ul>
         </div>
-    @endif
-
-    <!-- Create Post Form -->
-
-<a name="the-at-error-directive"></a>
+    {{ end }}
+    
+    
+    <!-- Create Post Form --> 
 
 #### The `@error` Directive
 
@@ -222,8 +139,6 @@ message:
         <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
-<a name="a-note-on-optional-fields"></a>
-
 ### A Note On Optional Fields
 
 By default, Lanvard includes the `TrimStrings` and `ConvertEmptyStringsToNull` middleware in your application's global
@@ -240,16 +155,12 @@ values as invalid. For example:
 In this example, we are specifying that the `publish_at` field may be either `null` or a valid date representation. If
 the `nullable` modifier is not added to the rule definition, the validator would consider `null` an invalid date.
 
-<a name="quick-ajax-requests-and-validation"></a>
-
 #### AJAX Requests & Validation
 
 In this example, we used a traditional form to send data to the application. However, many applications use AJAX
 requests. When using the `validate` method during an AJAX request, Lanvard will not generate a redirect response.
 Instead, Lanvard generates a JSON response containing all of the validation errors. This JSON response will be sent with
 a 422 HTTP status code.
-
-<a name="form-request-validation"></a>
 
 ## Form Request Validation
 
@@ -259,8 +170,6 @@ a 422 HTTP status code.
     --         "body": []inter.rule{rule.Required{}},
     --     )
     -- }
-
-<a name="creating-form-requests"></a>
 
 ### Creating Form Requests
 
@@ -309,8 +218,6 @@ If validation fails, a redirect response will be generated to send the user back
 will also be flashed to the session so they are available for display. If the request was an AJAX request, an HTTP
 response with a 422 status code will be returned to the user including a JSON representation of the validation errors.
 
-<a name="adding-after-hooks-to-form-requests"></a>
-
 #### Adding After Hooks To Form Requests
 
 If you would like to add an "after" hook to a form request, you may use the `withValidator` method. This method receives
@@ -331,8 +238,6 @@ evaluated:
             }
         });
     }
-
-<a name="authorizing-form-requests"></a>
 
 ### Authorizing Form Requests
 
@@ -375,8 +280,6 @@ If you plan to have authorization logic in another part of your application, ret
 
 > {tip} You may type-hint any dependencies you need within the `authorize` method's signature. They will automatically be resolved via the Lanvard [service container](/docs/{{version}}/container).
 
-<a name="customizing-the-error-messages"></a>
-
 ### Customizing The Error Messages
 
 You may customize the error messages used by the form request by overriding the `messages` method. This method should
@@ -394,8 +297,6 @@ return an array of attribute / rule pairs and their corresponding error messages
             'body.required' => 'A message is required',
         ];
     }
-
-<a name="customizing-the-validation-attributes"></a>
 
 ### Customizing The Validation Attributes
 
@@ -415,8 +316,6 @@ name pairs:
         ];
     }
 
-<a name="prepare-input-for-validation"></a>
-
 ### Prepare Input For Validation
 
 If you need to sanitize any data from the request before you apply your validation rules, you can use
@@ -435,8 +334,6 @@ the `prepareForValidation` method:
             'slug' => Str::slug($this->slug),
         ]);
     }
-
-<a name="manually-creating-validators"></a>
 
 ## Manually Creating Validators
 
@@ -484,8 +381,6 @@ session. When using this method, the `$errors` variable will automatically be sh
 allowing you to easily display them back to the user. The `withErrors` method accepts a validator, a `MessageBag`, or a
 PHP `array`.
 
-<a name="automatic-redirection"></a>
-
 ### Automatic Redirection
 
 If you would like to create a validator instance manually but still take advantage of the automatic redirection offered
@@ -505,8 +400,6 @@ validation fails:
         'body' => 'required',
     ])->validateWithBag('post');
 
-<a name="named-error-bags"></a>
-
 ### Named Error Bags
 
 If you have multiple forms on a single page, you may wish to name the `MessageBag` of errors, allowing you to retrieve
@@ -518,8 +411,6 @@ the error messages for a specific form. Pass a name as the second argument to `w
 You may then access the named `MessageBag` instance from the `$errors` variable:
 
     {{ $errors->login->first('email') }}
-
-<a name="after-validation-hook"></a>
 
 ### After Validation Hook
 
@@ -539,15 +430,11 @@ method on a validator instance:
         //
     }
 
-<a name="working-with-error-messages"></a>
-
 ## Working With Error Messages
 
 After calling the `errors` method on a `Validator` instance, you will receive an `Illuminate\Support\MessageBag`
 instance, which has a variety of convenient methods for working with error messages. The `$errors` variable that is
 automatically made available to all views is also an instance of the `MessageBag` class.
-
-<a name="retrieving-the-first-error-message-for-a-field"></a>
 
 #### Retrieving The First Error Message For A Field
 
@@ -556,8 +443,6 @@ To retrieve the first error message for a given field, use the `first` method:
     $errors = $validator->errors();
 
     echo $errors->first('email');
-
-<a name="retrieving-all-error-messages-for-a-field"></a>
 
 #### Retrieving All Error Messages For A Field
 
@@ -574,8 +459,6 @@ the `*` character:
         //
     }
 
-<a name="retrieving-all-error-messages-for-all-fields"></a>
-
 #### Retrieving All Error Messages For All Fields
 
 To retrieve an array of all messages for all fields, use the `all` method:
@@ -584,8 +467,6 @@ To retrieve an array of all messages for all fields, use the `all` method:
         //
     }
 
-<a name="determining-if-messages-exist-for-a-field"></a>
-
 #### Determining If Messages Exist For A Field
 
 The `has` method may be used to determine if any error messages exist for a given field:
@@ -593,8 +474,6 @@ The `has` method may be used to determine if any error messages exist for a give
     if ($errors->has('email')) {
         //
     }
-
-<a name="custom-error-messages"></a>
 
 ### Custom Error Messages
 
@@ -617,8 +496,6 @@ also utilize other placeholders in validation messages. For example:
         'in' => 'The :attribute must be one of the following types: :values',
     ];
 
-<a name="specifying-a-custom-message-for-a-given-attribute"></a>
-
 #### Specifying A Custom Message For A Given Attribute
 
 Sometimes you may wish to specify a custom error message only for a specific field. You may do so using "dot" notation.
@@ -627,8 +504,6 @@ Specify the attribute's name first, followed by the rule:
     $messages = [
         'email.required' => 'We need to know your e-mail address!',
     ];
-
-<a name="localization"></a>
 
 #### Specifying Custom Messages In Language Files
 
@@ -640,8 +515,6 @@ the `Validator`. To do so, add your messages to `custom` array in the `resources
             'required' => 'We need to know your e-mail address!',
         ],
     ],
-
-<a name="specifying-custom-attribute-values"></a>
 
 #### Specifying Custom Attribute Values
 
@@ -659,8 +532,6 @@ You may also pass the custom attributes as the fourth argument to the `Validator
     ];
 
     $validator = Validator::make($input, $rules, $messages, $customAttributes);
-
-<a name="specifying-custom-values-in-language-files"></a>
 
 #### Specifying Custom Values In Language Files
 
@@ -688,8 +559,6 @@ language file by defining a `values` array:
 Now if the validation rule fails it will produce the following message:
 
     The credit card number field is required when payment type is credit card.
-
-<a name="available-validation-rules"></a>
 
 ## Available Validation Rules
 
@@ -778,21 +647,15 @@ Below is a list of all available validation rules and their function:
 
 </div>
 
-<a name="rule-accepted"></a>
-
 #### accepted
 
 The field under validation must be _yes_, _on_, _1_, or _true_. This is useful for validating "Terms of Service"
 acceptance.
 
-<a name="rule-active-url"></a>
-
 #### active_url
 
 The field under validation must have a valid A or AAAA record according to the `dns_get_record` PHP function. The
 hostname of the provided URL is extracted using the `parse_url` PHP function before being passed to `dns_get_record`.
-
-<a name="rule-after"></a>
 
 #### after:_date_
 
@@ -806,44 +669,30 @@ date:
 
     'finish_date' => 'required|date|after:start_date'
 
-<a name="rule-after-or-equal"></a>
-
 #### after\_or\_equal:_date_
 
 The field under validation must be a value after or equal to the given date. For more information, see
 the [after](#rule-after) rule.
 
-<a name="rule-alpha"></a>
-
 #### alpha
 
 The field under validation must be entirely alphabetic characters.
-
-<a name="rule-alpha-dash"></a>
 
 #### alpha_dash
 
 The field under validation may have alpha-numeric characters, as well as dashes and underscores.
 
-<a name="rule-alpha-num"></a>
-
 #### alpha_num
 
 The field under validation must be entirely alpha-numeric characters.
-
-<a name="rule-array"></a>
 
 #### array
 
 The field under validation must be a PHP `array`.
 
-<a name="rule-bail"></a>
-
 #### bail
 
 Stop running validation rules after the first validation failure.
-
-<a name="rule-before"></a>
 
 #### before:_date_
 
@@ -851,73 +700,51 @@ The field under validation must be a value preceding the given date. The dates w
 function. In addition, like the [`after`](#rule-after) rule, the name of another field under validation may be supplied
 as the value of `date`.
 
-<a name="rule-before-or-equal"></a>
-
 #### before\_or\_equal:_date_
 
 The field under validation must be a value preceding or equal to the given date. The dates will be passed into the
 PHP `strtotime` function. In addition, like the [`after`](#rule-after) rule, the name of another field under validation
 may be supplied as the value of `date`.
 
-<a name="rule-between"></a>
-
 #### between:_min_,_max_
 
 The field under validation must have a size between the given _min_ and _max_. Strings, numerics, arrays, and files are
 evaluated in the same fashion as the [`size`](#rule-size) rule.
-
-<a name="rule-boolean"></a>
 
 #### boolean
 
 The field under validation must be able to be cast as a boolean. Accepted input are `true`, `false`, `1`, `0`, `"1"`,
 and `"0"`.
 
-<a name="rule-confirmed"></a>
-
 #### confirmed
 
 The field under validation must have a matching field of `foo_confirmation`. For example, if the field under validation
 is `password`, a matching `password_confirmation` field must be present in the input.
 
-<a name="rule-date"></a>
-
 #### date
 
 The field under validation must be a valid, non-relative date according to the `strtotime` PHP function.
 
-<a name="rule-date-equals"></a>
-
 #### date_equals:_date_
 
 The field under validation must be equal to the given date. The dates will be passed into the PHP `strtotime` function.
-
-<a name="rule-date-format"></a>
 
 #### date_format:_format_
 
 The field under validation must match the given _format_. You should use **either** `date` or `date_format` when
 validating a field, not both. This validation rule supports all formats supported by PHP's [~~DateTime~~]() class.
 
-<a name="rule-different"></a>
-
 #### different:_field_
 
 The field under validation must have a different value than _field_.
-
-<a name="rule-digits"></a>
 
 #### digits:_value_
 
 The field under validation must be _numeric_ and must have an exact length of _value_.
 
-<a name="rule-digits-between"></a>
-
 #### digits_between:_min_,_max_
 
 The field under validation must be _numeric_ and must have a length between the given _min_ and _max_.
-
-<a name="rule-dimensions"></a>
 
 #### dimensions
 
@@ -943,15 +770,11 @@ Since this rule requires several arguments, you may use the `Rule::dimensions` m
         ],
     ]);
 
-<a name="rule-distinct"></a>
-
 #### distinct
 
 When working with arrays, the field under validation must not have any duplicate values.
 
     'foo.*.id' => 'distinct'
-
-<a name="rule-email"></a>
 
 #### email
 
@@ -975,41 +798,29 @@ styles you can apply:
 The `filter` validator, which uses PHP's `filter_var` function under the hood, ships with Lanvard and is Lanvard's
 pre-5.8 behavior. The `dns` and `spoof` validators require the PHP `intl` extension.
 
-<a name="rule-ends-with"></a>
-
 #### ends_with:_foo_,_bar_,...
 
 The field under validation must end with one of the given values.
-
-<a name="rule-exclude-if"></a>
 
 #### exclude_if:_anotherfield_,_value_
 
 The field under validation will be excluded from the request data returned by the `validate` and `validated` methods if
 the _anotherfield_ field is equal to _value_.
 
-<a name="rule-exclude-unless"></a>
-
 #### exclude_unless:_anotherfield_,_value_
 
 The field under validation will be excluded from the request data returned by the `validate` and `validated` methods
 unless _anotherfield_'s field is equal to _value_.
 
-<a name="rule-exists"></a>
-
 #### exists:_table_,_column_
 
 The field under validation must exist on a given database table.
-
-<a name="basic-usage-of-exists-rule"></a>
 
 #### Basic Usage Of Exists Rule
 
     'state' => 'exists:states'
 
 If the `column` option is not specified, the field name will be used.
-
-<a name="specifying-a-custom-column-name"></a>
 
 #### Specifying A Custom Column Name
 
@@ -1040,39 +851,27 @@ to delimit them:
         ],
     ]);
 
-<a name="rule-file"></a>
-
 #### file
 
 The field under validation must be a successfully uploaded file.
 
-<a name="rule-filled"></a>
-
 #### filled
 
 The field under validation must not be empty when it is present.
-
-<a name="rule-gt"></a>
 
 #### gt:_field_
 
 The field under validation must be greater than the given _field_. The two fields must be of the same type. Strings,
 numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
 
-<a name="rule-gte"></a>
-
 #### gte:_field_
 
 The field under validation must be greater than or equal to the given _field_. The two fields must be of the same type.
 Strings, numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
 
-<a name="rule-image"></a>
-
 #### image
 
 The file under validation must be an image (jpeg, png, bmp, gif, svg, or webp)
-
-<a name="rule-in"></a>
 
 #### in:_foo_,_bar_,...
 
@@ -1088,13 +887,9 @@ an array, the `Rule::in` method may be used to fluently construct the rule:
         ],
     ]);
 
-<a name="rule-in-array"></a>
-
 #### in_array:_anotherfield_.*
 
 The field under validation must exist in _anotherfield_'s values.
-
-<a name="rule-integer"></a>
 
 #### integer
 
@@ -1102,52 +897,36 @@ The field under validation must be an integer.
 
 > {note} This validation rule does not verify that the input is of the "integer" variable type, only that the input is a string or numeric value that contains an integer.
 
-<a name="rule-ip"></a>
-
 #### ip
 
 The field under validation must be an IP address.
-
-<a name="ipv4"></a>
 
 #### ipv4
 
 The field under validation must be an IPv4 address.
 
-<a name="ipv6"></a>
-
 #### ipv6
 
 The field under validation must be an IPv6 address.
 
-<a name="rule-json"></a>
-
 #### json
 
 The field under validation must be a valid JSON string.
-
-<a name="rule-lt"></a>
 
 #### lt:_field_
 
 The field under validation must be less than the given _field_. The two fields must be of the same type. Strings,
 numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
 
-<a name="rule-lte"></a>
-
 #### lte:_field_
 
 The field under validation must be less than or equal to the given _field_. The two fields must be of the same type.
 Strings, numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
 
-<a name="rule-max"></a>
-
 #### max:_value_
 
 The field under validation must be less than or equal to a maximum _value_. Strings, numerics, arrays, and files are
 evaluated in the same fashion as the [`size`](#rule-size) rule.
-
-<a name="rule-mimetypes"></a>
 
 #### mimetypes:_text/plain_,...
 
@@ -1158,13 +937,9 @@ The file under validation must match one of the given MIME types:
 To determine the MIME type of the uploaded file, the file's contents will be read and the framework will attempt to
 guess the MIME type, which may be different from the client provided MIME type.
 
-<a name="rule-mimes"></a>
-
 #### mimes:_foo_,_bar_,...
 
 The file under validation must have a MIME type corresponding to one of the listed extensions.
-
-<a name="basic-usage-of-mime-rule"></a>
 
 #### Basic Usage Of MIME Rule
 
@@ -1176,20 +951,14 @@ reading the file's contents and guessing its MIME type.
 A full listing of MIME types and their corresponding extensions may be found at the following
 location: [https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types](https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types)
 
-<a name="rule-min"></a>
-
 #### min:_value_
 
 The field under validation must have a minimum _value_. Strings, numerics, arrays, and files are evaluated in the same
 fashion as the [`size`](#rule-size) rule.
 
-<a name="multiple-of"></a>
-
 #### multiple_of:_value_
 
 The field under validation must be a multiple of _value_.
-
-<a name="rule-not-in"></a>
 
 #### not_in:_foo_,_bar_,...
 
@@ -1205,8 +974,6 @@ fluently construct the rule:
         ],
     ]);
 
-<a name="rule-not-regex"></a>
-
 #### not_regex:_pattern_
 
 The field under validation must not match the given regular expression.
@@ -1217,20 +984,14 @@ by `preg_match` and thus also include valid delimiters. For example: `'email' =>
 **Note:** When using the `regex` / `not_regex` patterns, it may be necessary to specify rules in an array instead of
 using pipe delimiters, especially if the regular expression contains a pipe character.
 
-<a name="rule-nullable"></a>
-
 #### nullable
 
 The field under validation may be `null`. This is particularly useful when validating primitive such as strings and
 integers that can contain `null` values.
 
-<a name="rule-numeric"></a>
-
 #### numeric
 
 The field under validation must be numeric.
-
-<a name="rule-password"></a>
 
 #### password
 
@@ -1239,13 +1000,9 @@ the rule's first parameter:
 
     'password' => 'password:api'
 
-<a name="rule-present"></a>
-
 #### present
 
 The field under validation must be present in the input data but can be empty.
-
-<a name="rule-regex"></a>
 
 #### regex:_pattern_
 
@@ -1256,8 +1013,6 @@ by `preg_match` and thus also include valid delimiters. For example: `'email' =>
 
 **Note:** When using the `regex` / `not_regex` patterns, it may be necessary to specify rules in an array instead of
 using pipe delimiters, especially if the regular expression contains a pipe character.
-
-<a name="rule-required"></a>
 
 #### required
 
@@ -1272,8 +1027,6 @@ following conditions are true:
 - The value is an uploaded file with no path.
 
 </div>
-
-<a name="rule-required-if"></a>
 
 #### required_if:_anotherfield_,_value_,...
 
@@ -1295,43 +1048,29 @@ to indicate if the field under validation is required:
         }),
     ]);
 
-<a name="rule-required-unless"></a>
-
 #### required_unless:_anotherfield_,_value_,...
 
 The field under validation must be present and not empty unless the _anotherfield_ field is equal to any _value_.
-
-<a name="rule-required-with"></a>
 
 #### required_with:_foo_,_bar_,...
 
 The field under validation must be present and not empty _only if_ any of the other specified fields are present.
 
-<a name="rule-required-with-all"></a>
-
 #### required_with_all:_foo_,_bar_,...
 
 The field under validation must be present and not empty _only if_ all of the other specified fields are present.
-
-<a name="rule-required-without"></a>
 
 #### required_without:_foo_,_bar_,...
 
 The field under validation must be present and not empty _only when_ any of the other specified fields are not present.
 
-<a name="rule-required-without-all"></a>
-
 #### required_without_all:_foo_,_bar_,...
 
 The field under validation must be present and not empty _only when_ all of the other specified fields are not present.
 
-<a name="rule-same"></a>
-
 #### same:_field_
 
 The given _field_ must match the field under validation.
-
-<a name="rule-size"></a>
 
 #### size:_value_
 
@@ -1352,27 +1091,19 @@ corresponds to the file size in kilobytes. Let's look at some examples:
     // Validate that an uploaded file is exactly 512 kilobytes...
     'image' => 'file|size:512';
 
-<a name="rule-starts-with"></a>
-
 #### starts_with:_foo_,_bar_,...
 
 The field under validation must start with one of the given values.
-
-<a name="rule-string"></a>
 
 #### string
 
 The field under validation must be a string. If you would like to allow the field to also be `null`, you should assign
 the `nullable` rule to the field.
 
-<a name="rule-timezone"></a>
-
 #### timezone
 
 The field under validation must be a valid timezone identifier according to the `timezone_identifiers_list` PHP
 function.
-
-<a name="rule-unique"></a>
 
 #### unique:_table_,_column_,_except_,_idColumn_
 
@@ -1443,23 +1174,15 @@ add a constraint that verifies the `account_id` is `1`:
         return $query->where('account_id', 1);
     })
 
-<a name="rule-url"></a>
-
 #### url
 
 The field under validation must be a valid URL.
-
-<a name="rule-uuid"></a>
 
 #### uuid
 
 The field under validation must be a valid RFC 4122 (version 1, 3, 4, or 5) universally unique identifier (UUID).
 
-<a name="conditionally-adding-rules"></a>
-
 ## Conditionally Adding Rules
-
-<a name="skipping-validation-when-fields-have-certain-values"></a>
 
 #### Skipping Validation When Fields Have Certain Values
 
@@ -1482,8 +1205,6 @@ value:
         'doctor_name' => 'exclude_unless:has_appointment,true|required|string',
     ]);
 
-<a name="validating-when-present"></a>
-
 #### Validating When Present
 
 In some situations, you may wish to run validation checks against a field **only** if that field is present in the input
@@ -1496,8 +1217,6 @@ array. To quickly accomplish this, add the `sometimes` rule to your rule list:
 In the example above, the `email` field will only be validated if it is present in the `$data` array.
 
 > {tip} If you are attempting to validate a field that should always be present but may be empty, check out [this note on optional fields](#a-note-on-optional-fields)
-
-<a name="complex-conditional-validation"></a>
 
 #### Complex Conditional Validation
 
@@ -1531,8 +1250,6 @@ validations for several fields at once:
 
 > {tip} The `$input` parameter passed to your `Closure` will be an instance of `Illuminate\Support\Fluent` and may be used to access your input and files.
 
-<a name="validating-arrays"></a>
-
 ## Validating Arrays
 
 Validating array based form input fields doesn't have to be a pain. You may use "dot notation" to validate attributes
@@ -1560,11 +1277,7 @@ breeze to use a single validation message for array based fields:
         ]
     ],
 
-<a name="custom-validation-rules"></a>
-
 ## Custom Validation Rules
-
-<a name="using-rule-objects"></a>
 
 ### Using Rule Objects
 
@@ -1633,8 +1346,6 @@ other validation rules:
         'name' => ['required', 'string', new Uppercase],
     ]);
 
-<a name="using-closures"></a>
-
 ### Using Closures
 
 If you only need the functionality of a custom rule once throughout your application, you may use a Closure instead of a
@@ -1652,8 +1363,6 @@ called if validation fails:
             },
         ],
     ]);
-
-<a name="using-extensions"></a>
 
 ### Using Extensions
 
@@ -1700,8 +1409,6 @@ You may also pass a class and method to the `extend` method instead of a Closure
 
     Validator::extend('foo', 'FooValidator@validate');
 
-<a name="defining-the-error-message"></a>
-
 #### Defining The Error Message
 
 You will also need to define an error message for your custom rule. You can do so either using an inline custom message
@@ -1732,8 +1439,6 @@ the `Validator` facade. You may do this within the `boot` method of a [service p
         });
     }
 
-<a name="implicit-extensions"></a>
-
 ### Implicit Extensions
 
 By default, when an attribute being validated is not present or contains an empty string, normal validation rules,
@@ -1754,8 +1459,6 @@ an "implicit" extension, use the `Validator::extendImplicit()` method:
     });
 
 > {note} An "implicit" extension only _implies_ that the attribute is required. Whether it actually invalidates a missing or empty attribute is up to you.
-
-<a name="implicit-rule-objects"></a>
 
 #### Implicit Rule Objects
 
