@@ -110,7 +110,7 @@ Once in the template you can do whatever you want with the errors:
     
     <h1>Create Post</h1>
     
-    {{if .Failures}}
+    {{ if .Failures }}
         <div class="alert alert-danger">
             <ul>
             {{ range $key, $value := .Failures }}
@@ -123,21 +123,25 @@ Once in the template you can do whatever you want with the errors:
     
     <!-- Create Post Form --> 
 
-#### The `@error` Directive
+#### Fetch Error By Field
 
-You may also use the `@error` [Blade](/docs/{{version}}/blade) directive to quickly check if validation error messages
-exist for a given attribute. Within an `@error` directive, you may echo the `$message` variable to display the error
-message:
+You may also use the `Error` function to quickly check if validation error messages exist for a given field:
 
-    <!-- /resources/views/post/create.blade.go -->
+    {{- /*gotype: lanvard/resources/views.UserCreateView*/ -}}
 
-    <label for="title">Post Title</label>
+    <label for="name">User Name</label>
 
-    <input id="title" type="text" class="@error('title') is-invalid @enderror">
+    <input id="name" type="text" class="{{ if Error .Failures "name" }} is-invalid {{ end }}">
 
-    @error('title')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
+    {{ if Error .Failures "name" }}
+        <div class="alert">{{ Error .Failures "name" }}</div>
+    {{ end }}
+
+To prefix your error with the key, you kan use the `FullError` function:
+
+    {{ if Error .Failures "name" }}
+        <div class="alert">{{ FullError .Failures "name" }}</div>
+    {{ end }}
 
 ### A Note On Optional Fields
 
