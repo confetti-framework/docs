@@ -229,6 +229,8 @@ Below is a list of all available validation rules and their function:
 The field under validation must be _yes_, _on_, _1_, or _true_. This is useful for validating "Terms of Service"
 acceptance.
 
+    rule.Accepted{}
+
 #### active_url
 
 The field under validation must have a valid A or AAAA record according to the `dns_get_record` PHP function. The
