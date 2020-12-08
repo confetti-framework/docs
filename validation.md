@@ -223,14 +223,14 @@ Below is a list of all available validation rules and their function:
 
 </div>
 
-#### accepted
+#### Accepted
 
 The field under validation must be _yes_, _on_, _1_, or _true_. This is useful for validating "Terms of Service"
 acceptance.
 
     rule.Accepted{}
 
-#### after:_date_
+#### After
 
 The field under validation must be a value after a given date:
 
