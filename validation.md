@@ -232,15 +232,17 @@ acceptance.
 
 #### after:_date_
 
-The field under validation must be a value after a given date. The dates will be passed into the `strtotime` PHP
-function:
+The field under validation must be a value after a given date:
 
-    'start_date' => 'required|date|after:tomorrow'
+    val.Verify("start_date", rule.Required{}, rule.Date{}, rule.After{Date: carbon.Now().AddDay()}),
 
-Instead of passing a date string to be evaluated by `strtotime`, you may specify another field to compare against the
-date:
+Beside `Date`, you can enter a normal datetime format (default `yyyy-MM-dd HH:mm:ss`) and a timezone (default `Local`):
 
-    'finish_date' => 'required|date|after:start_date'
+    rule.After{
+		Date:     carbon.Now().AddDay(),
+		Format:   "yyyy-MM-dd HH:mm:ss Z",
+		TimeZone: "UTC",
+	}
 
 #### after\_or\_equal:_date_
 
