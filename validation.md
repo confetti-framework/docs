@@ -236,11 +236,12 @@ The field under validation must be a value after a given date:
 
     val.Verify("start_date", rule.Required{}, rule.Date{}, rule.After{Date: carbon.Now().AddDay()}),
 
-Beside `Date`, you can enter a normal datetime format (default `yyyy-MM-dd HH:mm:ss`) and a timezone (default `Local`):
+Beside `Date`, you can enter a normal datetime format (default `yyyy-mm-dd HH:MM:SS` / `2006-01-02 15:04:05`) and a
+timezone (default `Local`):
 
     rule.After{
 		Date:     carbon.Now().AddDay(),
-		Format:   "yyyy-MM-dd HH:mm:ss Z",
+		Format:   "yyyy-mm-dd HH:MM:SS Z",
 		TimeZone: "UTC",
 	}
 
