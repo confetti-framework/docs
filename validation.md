@@ -245,47 +245,19 @@ timezone (default `Local`):
 		TimeZone: "UTC",
 	}
 
-#### after\_or\_equal:_date_
+#### After Or Equal
 
 The field under validation must be a value after or equal to the given date. For more information, see
-the [after](#rule-after) rule.
+the [After](#after) rule.
 
-#### alpha
+#### Before
 
-The field under validation must be entirely alphabetic characters.
+The field under validation must be a value after a given date. For more information, see the [After](#after) rule.
 
-#### alpha_dash
+#### Before Or Equal
 
-The field under validation may have alpha-numeric characters, as well as dashes and underscores.
-
-#### alpha_num
-
-The field under validation must be entirely alpha-numeric characters.
-
-#### array
-
-The field under validation must be a PHP `array`.
-
-#### bail
-
-Stop running validation rules after the first validation failure.
-
-#### before:_date_
-
-The field under validation must be a value preceding the given date. The dates will be passed into the PHP `strtotime`
-function. In addition, like the [`after`](#rule-after) rule, the name of another field under validation may be supplied
-as the value of `date`.
-
-#### before\_or\_equal:_date_
-
-The field under validation must be a value preceding or equal to the given date. The dates will be passed into the
-PHP `strtotime` function. In addition, like the [`after`](#rule-after) rule, the name of another field under validation
-may be supplied as the value of `date`.
-
-#### between:_min_,_max_
-
-The field under validation must have a size between the given _min_ and _max_. Strings, numerics, arrays, and files are
-evaluated in the same fashion as the [`size`](#rule-size) rule.
+The field under validation must be a value preceding or equal to the given date. For more information, see
+the [After](#after) rule.
 
 #### boolean
 
@@ -666,6 +638,10 @@ corresponds to the file size in kilobytes. Let's look at some examples:
 
     // Validate that an uploaded file is exactly 512 kilobytes...
     'image' => 'file|size:512';
+
+#### Slice
+
+The field under validation must be a `slice`.
 
 #### starts_with:_foo_,_bar_,...
 
