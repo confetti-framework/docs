@@ -247,19 +247,25 @@ timezone (default `Local`):
 
 #### After Or Equal
 
-The field under validation must be a value after or equal to the given date. For more information, see
-the [After](#after) rule.
+The field under validation must be a value after or equal to the given date. For more options, see the [After](#after)
+rule.
+
+    rule.AfterOrEqual{Date: carbon.Now().AddDay()}
 
 #### Before
 
-The field under validation must be a value after a given date. For more information, see the [After](#after) rule.
+The field under validation must be a value after a given date. For more options, see the [After](#after) rule.
+
+    rule.Before{Date: carbon.Now().AddDay()}
 
 #### Before Or Equal
 
-The field under validation must be a value preceding or equal to the given date. For more information, see
+The field under validation must be a value preceding or equal to the given date. For more options, see
 the [After](#after) rule.
 
-#### boolean
+    rule.BeforeOrEqual{Date: carbon.Now().AddDay()}
+
+#### Boolean
 
 The field under validation must be able to be cast as a boolean. Accepted input are `true`, `false`, `1`, `0`, `"1"`,
 and `"0"`.
