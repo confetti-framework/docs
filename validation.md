@@ -283,11 +283,6 @@ The field under validation must be a valid date according to the format (default
 
 The field under validation must be equal to the given date. The dates will be passed into the PHP `strtotime` function.
 
-#### date_format:_format_
-
-The field under validation must match the given _format_. You should use **either** `date` or `date_format` when
-validating a field, not both. This validation rule supports all formats supported by PHP's [~~DateTime~~]() class.
-
 #### ends_with:_foo_,_bar_,...
 
 The field under validation must end with one of the given values.
