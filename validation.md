@@ -234,7 +234,7 @@ acceptance.
 
 The field under validation must be a value after a given date:
 
-    val.Verify("start_date", rule.Required{}, rule.Date{}, rule.After{Date: carbon.Now().AddDay()}),
+    val.Verify("start_date", rule.Required{}, rule.After{Date: carbon.Now().AddDay()}),
 
 Beside `Date`, you can enter a normal datetime format (default `yyyy-mm-dd HH:MM:SS` / `2006-01-02 15:04:05`) and a
 timezone (default `Local`):
@@ -272,9 +272,12 @@ and `"0"`.
 
     rule.Boolean{}
 
-#### date
+#### Date
 
-The field under validation must be a valid, non-relative date according to the `strtotime` PHP function.
+The field under validation must be a valid date according to the format (default `yyyy-mm-dd HH:MM:SS`
+/ `2006-01-02 15:04:05`).
+
+    rule.Date{Format: carbon.HourMinuteFormat}
 
 #### date_equals:_date_
 
