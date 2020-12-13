@@ -270,10 +270,7 @@ the [After](#after) rule.
 The field under validation must be able to be cast as a boolean. Accepted input are `true`, `false`, `1`, `0`, `"1"`,
 and `"0"`.
 
-#### confirmed
-
-The field under validation must have a matching field of `foo_confirmation`. For example, if the field under validation
-is `password`, a matching `password_confirmation` field must be present in the input.
+    rule.Boolean{}
 
 #### date
 
@@ -288,126 +285,9 @@ The field under validation must be equal to the given date. The dates will be pa
 The field under validation must match the given _format_. You should use **either** `date` or `date_format` when
 validating a field, not both. This validation rule supports all formats supported by PHP's [~~DateTime~~]() class.
 
-#### different:_field_
-
-The field under validation must have a different value than _field_.
-
-#### digits:_value_
-
-The field under validation must be _numeric_ and must have an exact length of _value_.
-
-#### digits_between:_min_,_max_
-
-The field under validation must be _numeric_ and must have a length between the given _min_ and _max_.
-
-#### dimensions
-
-The file under validation must be an image meeting the dimension constraints as specified by the rule's parameters:
-
-    'avatar' => 'dimensions:min_width=100,min_height=200'
-
-Available constraints are: _min\_width_, _max\_width_, _min\_height_, _max\_height_, _width_, _height_, _ratio_.
-
-A _ratio_ constraint should be represented as width divided by height. This can be specified either by a statement
-like `3/2` or a float like `1.5`:
-
-    'avatar' => 'dimensions:ratio=3/2'
-
-Since this rule requires several arguments, you may use the `Rule::dimensions` method to fluently construct the rule:
-
-    use Illuminate\Validation\Rule;
-
-    Validator::make($data, [
-        'avatar' => [
-            'required',
-            Rule::dimensions()->maxWidth(1000)->maxHeight(500)->ratio(3 / 2),
-        ],
-    ]);
-
-#### distinct
-
-When working with arrays, the field under validation must not have any duplicate values.
-
-    'foo.*.id' => 'distinct'
-
-#### email
-
-The field under validation must be formatted as an e-mail address. Under the hood, this validation rule makes use of
-the [`egulias/email-validator`](https://github.com/egulias/EmailValidator) package for validating the email address. By
-default the `RFCValidation` validator is applied, but you can apply other validation styles as well:
-
-    'email' => 'email:rfc,dns'
-
-The example above will apply the `RFCValidation` and `DNSCheckValidation` validations. Here's a full list of validation
-styles you can apply:
-
-<div class="content-list" markdown="1">
-- `rfc`: `RFCValidation`
-- `strict`: `NoRFCWarningsValidation`
-- `dns`: `DNSCheckValidation`
-- `spoof`: `SpoofCheckValidation`
-- `filter`: `FilterEmailValidation`
-</div>
-
-The `filter` validator, which uses PHP's `filter_var` function under the hood, ships with Lanvard and is Lanvard's
-pre-5.8 behavior. The `dns` and `spoof` validators require the PHP `intl` extension.
-
 #### ends_with:_foo_,_bar_,...
 
 The field under validation must end with one of the given values.
-
-#### exclude_if:_anotherfield_,_value_
-
-The field under validation will be excluded from the request data returned by the `validate` and `validated` methods if
-the _anotherfield_ field is equal to _value_.
-
-#### exclude_unless:_anotherfield_,_value_
-
-The field under validation will be excluded from the request data returned by the `validate` and `validated` methods
-unless _anotherfield_'s field is equal to _value_.
-
-#### exists:_table_,_column_
-
-The field under validation must exist on a given database table.
-
-#### Basic Usage Of Exists Rule
-
-    'state' => 'exists:states'
-
-If the `column` option is not specified, the field name will be used.
-
-#### Specifying A Custom Column Name
-
-    'state' => 'exists:states,abbreviation'
-
-Occasionally, you may need to specify a specific database connection to be used for the `exists` query. You can
-accomplish this by prepending the connection name to the table name using "dot" syntax:
-
-    'email' => 'exists:connection.staff,email'
-
-Instead of specifying the table name directly, you may specify the Eloquent model which should be used to determine the
-table name:
-
-    'user_id' => 'exists:App\Models\User,id'
-
-If you would like to customize the query executed by the validation rule, you may use the `Rule` class to fluently
-define the rule. In this example, we'll also specify the validation rules as an array instead of using the `|` character
-to delimit them:
-
-    use Illuminate\Validation\Rule;
-
-    Validator::make($data, [
-        'email' => [
-            'required',
-            Rule::exists('staff')->where(function ($query) {
-                $query->where('account_id', 1);
-            }),
-        ],
-    ]);
-
-#### file
-
-The field under validation must be a successfully uploaded file.
 
 #### filled
 
@@ -441,10 +321,6 @@ an array, the `Rule::in` method may be used to fluently construct the rule:
         ],
     ]);
 
-#### in_array:_anotherfield_.*
-
-The field under validation must exist in _anotherfield_'s values.
-
 #### integer
 
 The field under validation must be an integer.
@@ -466,16 +342,6 @@ The field under validation must be an IPv6 address.
 #### json
 
 The field under validation must be a valid JSON string.
-
-#### lt:_field_
-
-The field under validation must be less than the given _field_. The two fields must be of the same type. Strings,
-numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
-
-#### lte:_field_
-
-The field under validation must be less than or equal to the given _field_. The two fields must be of the same type.
-Strings, numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
 
 #### max:_value_
 
@@ -509,10 +375,6 @@ location: [https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.typ
 
 The field under validation must have a minimum _value_. Strings, numerics, arrays, and files are evaluated in the same
 fashion as the [`size`](#rule-size) rule.
-
-#### multiple_of:_value_
-
-The field under validation must be a multiple of _value_.
 
 #### not_in:_foo_,_bar_,...
 
@@ -582,50 +444,6 @@ following conditions are true:
 
 </div>
 
-#### required_if:_anotherfield_,_value_,...
-
-The field under validation must be present and not empty if the _anotherfield_ field is equal to any _value_.
-
-If you would like to construct a more complex condition for the `required_if` rule, you may use the `Rule::requiredIf`
-method. This methods accepts a boolean or a Closure. When passed a Closure, the Closure should return `true` or `false`
-to indicate if the field under validation is required:
-
-    use Illuminate\Validation\Rule;
-
-    Validator::make($request->all(), [
-        'role_id' => Rule::requiredIf($request->user()->is_admin),
-    ]);
-
-    Validator::make($request->all(), [
-        'role_id' => Rule::requiredIf(function () use ($request) {
-            return $request->user()->is_admin;
-        }),
-    ]);
-
-#### required_unless:_anotherfield_,_value_,...
-
-The field under validation must be present and not empty unless the _anotherfield_ field is equal to any _value_.
-
-#### required_with:_foo_,_bar_,...
-
-The field under validation must be present and not empty _only if_ any of the other specified fields are present.
-
-#### required_with_all:_foo_,_bar_,...
-
-The field under validation must be present and not empty _only if_ all of the other specified fields are present.
-
-#### required_without:_foo_,_bar_,...
-
-The field under validation must be present and not empty _only when_ any of the other specified fields are not present.
-
-#### required_without_all:_foo_,_bar_,...
-
-The field under validation must be present and not empty _only when_ all of the other specified fields are not present.
-
-#### same:_field_
-
-The given _field_ must match the field under validation.
-
 #### size:_value_
 
 The field under validation must have a size matching the given _value_. For string data, _value_ corresponds to the
@@ -663,75 +481,6 @@ the `nullable` rule to the field.
 The field under validation must be a valid timezone identifier according to the `timezone_identifiers_list` PHP
 function.
 
-#### unique:_table_,_column_,_except_,_idColumn_
-
-The field under validation must not exist within the given database table.
-
-**Specifying A Custom Table / Column Name:**
-
-Instead of specifying the table name directly, you may specify the Eloquent model which should be used to determine the
-table name:
-
-    'email' => 'unique:App\Models\User,email_address'
-
-The `column` option may be used to specify the field's corresponding database column. If the `column` option is not
-specified, the field name will be used.
-
-    'email' => 'unique:users,email_address'
-
-**Custom Database Connection**
-
-Occasionally, you may need to set a custom connection for database queries made by the Validator. As seen above,
-setting `unique:users` as a validation rule will use the default database connection to query the database. To override
-this, specify the connection and the table name using "dot" syntax:
-
-    'email' => 'unique:connection.users,email_address'
-
-**Forcing A Unique Rule To Ignore A Given ID:**
-
-Sometimes, you may wish to ignore a given ID during the unique check. For example, consider an "update profile" screen
-that includes the user's name, e-mail address, and location. You will probably want to verify that the e-mail address is
-unique. However, if the user only changes the name field and not the e-mail field, you do not want a validation error to
-be thrown because the user is already the owner of the e-mail address.
-
-To instruct the validator to ignore the user's ID, we'll use the `Rule` class to fluently define the rule. In this
-example, we'll also specify the validation rules as an array instead of using the `|` character to delimit the rules:
-
-    use Illuminate\Validation\Rule;
-
-    Validator::make($data, [
-        'email' => [
-            'required',
-            Rule::unique('users')->ignore($user->id),
-        ],
-    ]);
-
-> {note} You should never pass any user controlled request input into the `ignore` method. Instead, you should only pass a system generated unique ID such as an auto-incrementing ID or UUID from an Eloquent model instance. Otherwise, your application will be vulnerable to an SQL injection attack.
-
-Instead of passing the model key's value to the `ignore` method, you may pass the entire model instance. Lanvard will
-automatically extract the key from the model:
-
-    Rule::unique('users')->ignore($user)
-
-If your table uses a primary key column name other than `id`, you may specify the name of the column when calling
-the `ignore` method:
-
-    Rule::unique('users')->ignore($user->id, 'user_id')
-
-By default, the `unique` rule will check the uniqueness of the column matching the name of the attribute being
-validated. However, you may pass a different column name as the second argument to the `unique` method:
-
-    Rule::unique('users', 'email_address')->ignore($user->id),
-
-**Adding Additional Where Clauses:**
-
-You may also specify additional query constraints by customizing the query using the `where` method. For example, let's
-add a constraint that verifies the `account_id` is `1`:
-
-    'email' => Rule::unique('users')->where(function ($query) {
-        return $query->where('account_id', 1);
-    })
-
 #### url
 
 The field under validation must be a valid URL.
@@ -739,74 +488,6 @@ The field under validation must be a valid URL.
 #### uuid
 
 The field under validation must be a valid RFC 4122 (version 1, 3, 4, or 5) universally unique identifier (UUID).
-
-## Conditionally Adding Rules
-
-#### Skipping Validation When Fields Have Certain Values
-
-You may occasionally wish to not validate a given field if another field has a given value. You may accomplish this
-using the `exclude_if` validation rule. In this example, the `appointment_date` and `doctor_name` fields will not be
-validated if the `has_appointment` field has a value of `false`:
-
-    $v = Validator::make($data, [
-        'has_appointment' => 'required|bool',
-        'appointment_date' => 'exclude_if:has_appointment,false|required|date',
-        'doctor_name' => 'exclude_if:has_appointment,false|required|string',
-    ]);
-
-Alternatively, you may use the `exclude_unless` rule to not validate a given field unless another field has a given
-value:
-
-    $v = Validator::make($data, [
-        'has_appointment' => 'required|bool',
-        'appointment_date' => 'exclude_unless:has_appointment,true|required|date',
-        'doctor_name' => 'exclude_unless:has_appointment,true|required|string',
-    ]);
-
-#### Validating When Present
-
-In some situations, you may wish to run validation checks against a field **only** if that field is present in the input
-array. To quickly accomplish this, add the `sometimes` rule to your rule list:
-
-    $v = Validator::make($data, [
-        'email' => 'sometimes|required|email',
-    ]);
-
-In the example above, the `email` field will only be validated if it is present in the `$data` array.
-
-> {tip} If you are attempting to validate a field that should always be present but may be empty, check out [this note on optional fields](#a-note-on-optional-fields)
-
-#### Complex Conditional Validation
-
-Sometimes you may wish to add validation rules based on more complex conditional logic. For example, you may wish to
-require a given field only if another field has a greater value than 100. Or, you may need two fields to have a given
-value only when another field is present. Adding these validation rules doesn't have to be a pain. First, create
-a `Validator` instance with your _static rules_ that never change:
-
-    $v = Validator::make($data, [
-        'email' => 'required|email',
-        'games' => 'required|numeric',
-    ]);
-
-Let's assume our web application is for game collectors. If a game collector registers with our application and they own
-more than 100 games, we want them to explain why they own so many games. For example, perhaps they run a game resale
-shop, or maybe they just enjoy collecting. To conditionally add this requirement, we can use the `sometimes` method on
-the `Validator` instance.
-
-    $v->sometimes('reason', 'required|max:500', function ($input) {
-        return $input->games >= 100;
-    });
-
-The first argument passed to the `sometimes` method is the name of the field we are conditionally validating. The second
-argument is a list of the rules we want to add. If the `Closure` passed as the third argument returns `true`, the rules
-will be added. This method makes it a breeze to build complex conditional validations. You may even add conditional
-validations for several fields at once:
-
-    $v->sometimes(['reason', 'cost'], 'required', function ($input) {
-        return $input->games >= 100;
-    });
-
-> {tip} The `$input` parameter passed to your `Closure` will be an instance of `Illuminate\Support\Fluent` and may be used to access your input and files.
 
 ## Validating Arrays
 
@@ -904,69 +585,6 @@ other validation rules:
         'name' => ['required', 'string', new Uppercase],
     ]);
 
-### Using Closures
-
-If you only need the functionality of a custom rule once throughout your application, you may use a Closure instead of a
-rule object. The Closure receives the attribute's name, the attribute's value, and a `$fail` callback that should be
-called if validation fails:
-
-    $validator = Validator::make($request->all(), [
-        'title' => [
-            'required',
-            'max:255',
-            function ($attribute, $value, $fail) {
-                if ($value === 'foo') {
-                    $fail($attribute.' is invalid.');
-                }
-            },
-        ],
-    ]);
-
-### Using Extensions
-
-Another method of registering custom validation rules is using the `extend` method on
-the `Validator` [facade](/docs/{{version}}/facades). Let's use this method within
-a [service provider](/docs/{{version}}/providers) to register a custom validation rule:
-
-    <?php
-
-    namespace App\Providers;
-
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Support\Facades\Validator;
-
-    class AppServiceProvider extends ServiceProvider
-    {
-        /**
-         * Register any application services.
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * Bootstrap any application services.
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            Validator::extend('foo', function ($attribute, $value, $parameters, $validator) {
-                return $value == 'foo';
-            });
-        }
-    }
-
-The custom validator Closure receives four arguments: the name of the `$attribute` being validated, the `$value` of the
-attribute, an array of `$parameters` passed to the rule, and the `Validator` instance.
-
-You may also pass a class and method to the `extend` method instead of a Closure:
-
-    Validator::extend('foo', 'FooValidator@validate');
-
 #### Defining The Error Message
 
 You will also need to define an error message for your custom rule. You can do so either using an inline custom message
@@ -996,30 +614,3 @@ the `Validator` facade. You may do this within the `boot` method of a [service p
             return str_replace(...);
         });
     }
-
-### Implicit Extensions
-
-By default, when an attribute being validated is not present or contains an empty string, normal validation rules,
-including custom extensions, are not run. For example, the [`unique`](#rule-unique) rule will not be run against an
-empty string:
-
-    $rules = ['name' => 'unique:users,name'];
-
-    $input = ['name' => ''];
-
-    Validator::make($input, $rules)->passes(); // true
-
-For a rule to run even when an attribute is empty, the rule must imply that the attribute is required. To create such
-an "implicit" extension, use the `Validator::extendImplicit()` method:
-
-    Validator::extendImplicit('foo', function ($attribute, $value, $parameters, $validator) {
-        return $value == 'foo';
-    });
-
-> {note} An "implicit" extension only _implies_ that the attribute is required. Whether it actually invalidates a missing or empty attribute is up to you.
-
-#### Implicit Rule Objects
-
-If you would like a rule object to run when an attribute is empty, you should implement
-the `Illuminate\Contracts\Validation\ImplicitRule` interface. This interface serves as a "marker interface" for the
-validator; therefore, it does not contain any methods you need to implement.
