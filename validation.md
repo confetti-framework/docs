@@ -274,14 +274,16 @@ and `"0"`.
 
 #### Date
 
-The field under validation must be a valid date according to the format (default `yyyy-mm-dd HH:MM:SS`
+The field under validation must be a valid date according to the format (default format is `yyyy-mm-dd HH:MM:SS`
 / `2006-01-02 15:04:05`).
 
     rule.Date{Format: carbon.HourMinuteFormat}
 
-#### date_equals:_date_
+#### Date Equals
 
-The field under validation must be equal to the given date. The dates will be passed into the PHP `strtotime` function.
+The field under validation must be equal to the given date. For more options, see the [After](#after) rule.
+
+    rule.DateEqual{Date: carbon.Now(), Format: carbon.DateFormat}
 
 #### ends_with:_foo_,_bar_,...
 
