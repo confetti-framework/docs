@@ -285,27 +285,17 @@ The field under validation must be equal to the given date. For more options, se
 
     rule.DateEqual{Date: carbon.Now(), Format: carbon.DateFormat}
 
-#### ends_with:_foo_,_bar_,...
+#### Ends With
 
 The field under validation must end with one of the given values.
+
+    rule.Ends{}.With(".com", ".nl")
 
 #### filled
 
 The field under validation must not be empty when it is present.
 
-#### gt:_field_
-
-The field under validation must be greater than the given _field_. The two fields must be of the same type. Strings,
-numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
-
-#### gte:_field_
-
-The field under validation must be greater than or equal to the given _field_. The two fields must be of the same type.
-Strings, numerics, arrays, and files are evaluated using the same conventions as the [`size`](#rule-size) rule.
-
-#### image
-
-The file under validation must be an image (jpeg, png, bmp, gif, svg, or webp)
+    rule.Filled{}
 
 #### in:_foo_,_bar_,...
 
