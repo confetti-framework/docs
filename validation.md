@@ -307,6 +307,8 @@ The field under validation must be included in the given list of values.
 
 The field under validation must be an integer.
 
+    rule.Integer{}
+
 > {note} This validation rule does not verify that the input is of the "integer" variable type, only that the input is a string or numeric value that contains an integer.
 
 #### ip
