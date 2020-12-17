@@ -291,25 +291,17 @@ The field under validation must end with one of the given values.
 
     rule.Ends{}.With(".com", ".nl")
 
-#### filled
+#### Filled
 
 The field under validation must not be empty when it is present.
 
     rule.Filled{}
 
-#### in:_foo_,_bar_,...
+#### In
 
-The field under validation must be included in the given list of values. Since this rule often requires you to `implode`
-an array, the `Rule::in` method may be used to fluently construct the rule:
+The field under validation must be included in the given list of values.
 
-    use Illuminate\Validation\Rule;
-
-    Validator::make($data, [
-        'zones' => [
-            'required',
-            Rule::in(['first-zone', 'second-zone']),
-        ],
-    ]);
+    rule.In{}.With("admin", "manager")
 
 #### integer
 
