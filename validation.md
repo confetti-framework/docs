@@ -73,7 +73,7 @@ You can choose to return the errors immediately. In that case, the customer will
 or JSON response.
 
     func UserStore(request inter.Request) inter.Response {
-        failures := val.Validate(request.Content(),
+        failures := val.Validate(request.App(), request.Content(),
             val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
         )
         if len(failures) > 0 {
@@ -90,13 +90,14 @@ or JSON response.
 Or you pass the errors to a view. That way you can, for example, place the errors next to the fields in a form:
 
     func UserStore(request inter.Request) inter.Response {
+        app := request.App()
         content := request.Content()
-        failures := val.Validate(request.App(), content,
+        failures := val.Validate(app, content,
             val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
         )
     
         return outcome.Html(views.UserCreate(
-            request.App(),
+            app,
             failures,
             content.Get("title").String(),
         ))
@@ -309,15 +310,18 @@ The field under validation must be an integer.
 
 > {note} This validation rule does not verify that the input is of the "integer" variable type, only that the input is a string or numeric value that contains an integer.
 
-#### max
+#### Max
 
-The field under validation must be less than or equal to a maximum _value_. Strings, numerics, arrays, and files are
-evaluated in the same fashion as the [`size`](#rule-size) rule.
+The field under validation must be less than or equal to a maximum number or amount of items in a map or slice.
 
-#### max Character
+    val.Verify("age", rule.Integer{}, rule.Max{Len: 120}),
+    val.Verify("items", rule.Slice{}, rule.Max{Len: 5}),
 
-The field under validation must be less than or equal to a maximum _value_. Strings
-evaluated in the same fashion as the [`size`](#rule-size) rule.
+#### Max Character
+
+The field to be validated must be less than or equal to a maximum number of characters.
+
+    //
 
 #### min:_value_
 
@@ -382,6 +386,8 @@ following conditions are true:
 </div>
 
 #### size:_value_
+
+#### size Character
 
 The field under validation must have a size matching the given _value_. For string data, _value_ corresponds to the
 number of characters. For numeric data, _value_ corresponds to a given integer value (the attribute must also have
