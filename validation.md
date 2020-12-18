@@ -387,7 +387,9 @@ following conditions are true:
 
 #### Size
 
-     // Validate that a provided integer equals 10...
+The field under validation must have a size matching the given value.
+
+    // Validate that a provided integer equals 10...
     val.Verify("age", rule.Integer{}, rule.Size{Len: 120}),
 
     // Validate that an slice has exactly 5 elements...
@@ -395,22 +397,7 @@ following conditions are true:
 
 #### size Character
 
-The field under validation must have a size matching the given _value_. For string data, _value_ corresponds to the
-number of characters. For numeric data, _value_ corresponds to a given integer value (the attribute must also have
-the `numeric` or `integer` rule). For an array, _size_ corresponds to the `count` of the array. For files, _size_
-corresponds to the file size in kilobytes. Let's look at some examples:
-
-    // Validate that a string is exactly 12 characters long...
-    'title' => 'size:12';
-
-    // Validate that a provided integer equals 10...
-    'seats' => 'integer|size:10';
-
-    // Validate that an array has exactly 5 elements...
-    'tags' => 'array|size:5';
-
-    // Validate that an uploaded file is exactly 512 kilobytes...
-    'image' => 'file|size:512';
+//
 
 #### Slice
 
