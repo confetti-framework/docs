@@ -312,7 +312,7 @@ The field under validation must be an integer.
 
 #### Max
 
-The field under validation must be less than or equal to a maximum number or amount of items in a map or slice.
+The field under validation must be less than or equal to a maximum amount of items in a map or slice or maximum number.
 
     val.Verify("age", rule.Integer{}, rule.Max{Len: 120}),
     val.Verify("items", rule.Slice{}, rule.Max{Len: 5}),
