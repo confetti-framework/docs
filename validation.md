@@ -385,7 +385,13 @@ following conditions are true:
 
 </div>
 
-#### size:_value_
+#### Size
+
+     // Validate that a provided integer equals 10...
+    val.Verify("age", rule.Integer{}, rule.Size{Len: 120}),
+
+    // Validate that an slice has exactly 5 elements...
+    val.Verify("items", rule.Slice{}, rule.Size{Len: 5}),
 
 #### size Character
 
