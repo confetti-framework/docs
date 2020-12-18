@@ -38,8 +38,7 @@ to validate your application's incoming data.
 With Lanvard it is very easy to validate incoming data. With the first parameter you enter the data you want to
 validate. Furthermore, you enter fields with rules.
 
-	failures := val.Validate(
-        request.Content(),
+	failures := val.Validate(request.App(), request.Content(),
 		val.Verify("name", rule.Required{}, rule.MaxCharacters{Max: 255}),
 		val.Verify("email", rule.Required{}, rule.Email{}),
 	)
@@ -50,7 +49,7 @@ If a validation error occurs, you will receive a slice with errors.
 
 If your data contains "nested" parameters, you may specify them in your validation rules using "dot" syntax:
 
-    failures := val.Validate(request.Content(),
+    failures := val.Validate(request.App(), request.Content(),
 		val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
 		val.Verify("author.name", rule.Required{}),
 		val.Verify("author.description", rule.Required{}),
@@ -58,7 +57,7 @@ If your data contains "nested" parameters, you may specify them in your validati
 
 If you want to validate all fields in a slice or in a map, you can use an asterisk:
 
-    failures := val.Validate(request.Content(),
+    failures := val.Validate(request.App(), request.Content(),
 		val.Verify("orders", rule.Sum{Sum: 3}),
 		val.Verify("orders.*.street", rule.Required{}, rule.MaxCharacters{Max: 255}),
 	)
@@ -92,8 +91,7 @@ Or you pass the errors to a view. That way you can, for example, place the error
 
     func UserStore(request inter.Request) inter.Response {
         content := request.Content()
-        failures := val.Validate(
-            content,
+        failures := val.Validate(request.App(), content,
             val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
         )
     
@@ -303,7 +301,7 @@ The field under validation must be included in the given list of values.
 
     rule.In{}.With("admin", "manager")
 
-#### integer
+#### Integer
 
 The field under validation must be an integer.
 
@@ -311,51 +309,22 @@ The field under validation must be an integer.
 
 > {note} This validation rule does not verify that the input is of the "integer" variable type, only that the input is a string or numeric value that contains an integer.
 
-#### ip
-
-The field under validation must be an IP address.
-
-#### ipv4
-
-The field under validation must be an IPv4 address.
-
-#### ipv6
-
-The field under validation must be an IPv6 address.
-
-#### json
-
-The field under validation must be a valid JSON string.
-
-#### max:_value_
+#### max
 
 The field under validation must be less than or equal to a maximum _value_. Strings, numerics, arrays, and files are
 evaluated in the same fashion as the [`size`](#rule-size) rule.
 
-#### mimetypes:_text/plain_,...
+#### max Character
 
-The file under validation must match one of the given MIME types:
-
-    'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
-
-To determine the MIME type of the uploaded file, the file's contents will be read and the framework will attempt to
-guess the MIME type, which may be different from the client provided MIME type.
-
-#### mimes:_foo_,_bar_,...
-
-The file under validation must have a MIME type corresponding to one of the listed extensions.
-
-#### Basic Usage Of MIME Rule
-
-    'photo' => 'mimes:jpeg,bmp,png'
-
-Even though you only need to specify the extensions, this rule actually validates against the MIME type of the file by
-reading the file's contents and guessing its MIME type.
-
-A full listing of MIME types and their corresponding extensions may be found at the following
-location: [https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types](https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types)
+The field under validation must be less than or equal to a maximum _value_. Strings
+evaluated in the same fashion as the [`size`](#rule-size) rule.
 
 #### min:_value_
+
+The field under validation must have a minimum _value_. Strings, numerics, arrays, and files are evaluated in the same
+fashion as the [`size`](#rule-size) rule.
+
+#### min Character
 
 The field under validation must have a minimum _value_. Strings, numerics, arrays, and files are evaluated in the same
 fashion as the [`size`](#rule-size) rule.
@@ -383,22 +352,6 @@ by `preg_match` and thus also include valid delimiters. For example: `'email' =>
 
 **Note:** When using the `regex` / `not_regex` patterns, it may be necessary to specify rules in an array instead of
 using pipe delimiters, especially if the regular expression contains a pipe character.
-
-#### nullable
-
-The field under validation may be `null`. This is particularly useful when validating primitive such as strings and
-integers that can contain `null` values.
-
-#### numeric
-
-The field under validation must be numeric.
-
-#### password
-
-The field under validation must match the authenticated user's password. You may specify an authentication guard using
-the rule's first parameter:
-
-    'password' => 'password:api'
 
 #### present
 
@@ -459,19 +412,6 @@ The field under validation must start with one of the given values.
 
 The field under validation must be a string. If you would like to allow the field to also be `null`, you should assign
 the `nullable` rule to the field.
-
-#### timezone
-
-The field under validation must be a valid timezone identifier according to the `timezone_identifiers_list` PHP
-function.
-
-#### url
-
-The field under validation must be a valid URL.
-
-#### uuid
-
-The field under validation must be a valid RFC 4122 (version 1, 3, 4, or 5) universally unique identifier (UUID).
 
 ## Validating Arrays
 
