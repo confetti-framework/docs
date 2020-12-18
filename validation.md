@@ -323,10 +323,12 @@ The field to be validated must be less than or equal to a maximum number of char
 
     //
 
-#### min:_value_
+#### Min
 
-The field under validation must have a minimum _value_. Strings, numerics, arrays, and files are evaluated in the same
-fashion as the [`size`](#rule-size) rule.
+The field under validation must be at least amount of items in a map or slice or maximum number.
+
+    val.Verify("age", rule.Integer{}, rule.Min{Len: 120}),
+    val.Verify("items", rule.Slice{}, rule.Min{Len: 5}),
 
 #### min Character
 
