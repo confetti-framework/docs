@@ -10,6 +10,7 @@
 - [Custom Validation Rules](#custom_validation_rules)
   - [Using Rule Objects](#using_rule_objects)
   - [Requirements](#requirements)
+  - [Dependency Injection](#dependency_injection)
 - [Available Validation Rules](#available_validation_rules)
   - [Accepted](#accepted)
   - [After](#after)
@@ -182,8 +183,8 @@ other validation rules:
 
 ### Requirements
 
-Should your rule execute other rules first? Use method `Requirements` to determine which other rules should be executed
-first. The above example would then become:
+Should your rule execute other rules first? Use method `Requirements` (`inter.RuleWithRequirements`) to determine which
+other rules should be executed first. The above example would then become:
 
     package custom_rule
     
@@ -207,6 +208,33 @@ first. The above example would then become:
             return rule.ValidationError.Wrap("the :attribute must be uppercase")
         }
         return nil
+    }
+
+### Dependency Injection
+
+If you need dependency injection in your rule? Then you can use method `SetApp` (`inter.RuleWithApp`) to
+use `inter.AppReader` for Dependency Injection.:
+
+    package custom_rule
+    
+    import (
+        "github.com/lanvard/contract/inter"
+        "github.com/lanvard/support"
+    )
+    
+    type TimeZone struct {
+        app inter.AppReader
+    }
+    
+    func (r TimeZone) SetApp(app inter.AppReader) inter.Rule {
+        r.app = app
+        return r
+    }
+    
+    func (r TimeZone) Verify(value support.Value) error {
+        currentTimeZone := r.app.Make("config.App.TimeZone")
+    
+        //
     }
 
 ## Available Validation Rules
