@@ -65,7 +65,7 @@ If your data contains "nested" parameters, you may specify them in your validati
 If you want to validate all fields in a slice or in a map, you can use an asterisk:
 
     failures := val.Validate(request.App(), request.Content(),
-		val.Verify("orders", rule.Sum{Sum: 3}),
+		val.Verify("orders", rule.Size{Len: 3}),
 		val.Verify("orders.*.street", rule.Required{}, rule.String{}),
 	)
 
