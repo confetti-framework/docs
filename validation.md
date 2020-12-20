@@ -239,14 +239,14 @@ use `inter.AppReader` for Dependency Injection.:
 
 ## Available Validation Rules
 
-### Accepted
+#### Accepted
 
 The field under validation must be _yes_, _on_, _1_, or _true_. This is useful for validating "Terms of Service"
 acceptance.
 
     rule.Accepted{}
 
-### After
+#### After
 
 The field under validation must be a value after a given date:
 
@@ -261,103 +261,103 @@ timezone (default `Local`):
 		TimeZone: "UTC",
 	}
 
-### After Or Equal
+#### After Or Equal
 
 The field under validation must be a value after or equal to the given date. For more options, see the [After](#after)
 rule.
 
     rule.AfterOrEqual{Date: carbon.Now().AddDay()}
 
-### Before
+#### Before
 
 The field under validation must be a value after a given date. For more options, see the [After](#after) rule.
 
     rule.Before{Date: carbon.Now().AddDay()}
 
-### Before Or Equal
+#### Before Or Equal
 
 The field under validation must be a value preceding or equal to the given date. For more options, see
 the [After](#after) rule.
 
     rule.BeforeOrEqual{Date: carbon.Now().AddDay()}
 
-### Boolean
+#### Boolean
 
 The field under validation must be able to be cast as a boolean. Accepted input are `true`, `false`, `1`, `0`, `"1"`,
 and `"0"`.
 
     rule.Boolean{}
 
-### Date
+#### Date
 
 The field under validation must be a valid date according to the format (default format is `yyyy-mm-dd HH:MM:SS`
 / `2006-01-02 15:04:05`).
 
     rule.Date{Format: carbon.HourMinuteFormat}
 
-### Date Equals
+#### Date Equals
 
 The field under validation must be equal to the given date. For more options, see the [After](#after) rule.
 
     rule.DateEqual{Date: carbon.Now(), Format: carbon.DateFormat}
 
-### Ends With
+#### Ends With
 
 The field under validation must end with one of the given values.
 
     rule.Ends{}.With(".com", ".nl")
 
-### Filled
+#### Filled
 
 The field under validation must not be empty when it is present.
 
     rule.Filled{}
 
-### In
+#### In
 
 The field under validation must be included in the given list of values.
 
     rule.In{}.With("admin", "manager")
 
-### Integer
+#### Integer
 
 The field under validation must be an integer.
 
     rule.Integer{}
 
-### Integer Able
+#### Integer Able
 
 The field being validated can be cast to an integer.
 
     rule.IntegerAble{}
 
-### Map
+#### Map
 
 The field under validation must be a `map`.
 
     rule.Map{}
 
-### Max
+#### Max
 
 The field under validation must be less than or equal to a maximum amount of items in a map or slice or maximum number.
 
     val.Verify("age", rule.Integer{}, rule.Max{Len: 120}),
     val.Verify("items", rule.Slice{}, rule.Max{Len: 5}),
 
-### Min
+#### Min
 
 The field under validation must be at least amount of items in a map or slice or maximum number.
 
     val.Verify("age", rule.Integer{}, rule.Min{Len: 0}),
     val.Verify("items", rule.Slice{}, rule.Min{Len: 5}),
 
-### Present
+#### Present
 
 The field under validation must be present in the input data but can be empty.
 
     rule.Present{}
 
-### Required
+#### Required
 
 The field under validation must be present in the input data and not empty.
 
@@ -368,7 +368,7 @@ The field under validation must be present in the input data and not empty.
 > * The value is an empty `string`.
 > * The value is an empty `slice` or empty `map` object.
 
-### Size
+#### Size
 
 The field under validation must have a size matching the given value.
 
@@ -378,19 +378,19 @@ The field under validation must have a size matching the given value.
     // Validate that an slice has exactly 5 elements...
     val.Verify("items", rule.Slice{}, rule.Size{Len: 5}),
 
-### Slice
+#### Slice
 
 The field under validation must be a `slice`.
 
     rule.Slice{}
 
-### Start With
+#### Start With
 
 The field under validation must start with one of the given values.
 
     rule.Start{}.With("06-")
 
-### String
+#### String
 
 The field under validation must be a `string`.
 
