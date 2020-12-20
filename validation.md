@@ -112,6 +112,7 @@ Or you pass the errors to a view. That way you can, for example, place the error
 
 Once in the template you can do whatever you want with the errors:
 
+    {% raw %}
     {{- /*gotype: lanvard/resources/views.UserCreateView*/ -}}
     
     <h1>Create Post</h1>
@@ -128,11 +129,13 @@ Once in the template you can do whatever you want with the errors:
     
     
     <!-- Create Post Form --> 
+    {% endraw %}
 
 #### Fetch Error By Field
 
 You may also use the `Error` function to quickly check if validation error messages exist for a given field:
 
+    {% raw %}
     {{- /*gotype: lanvard/resources/views.UserCreateView*/ -}}
 
     <label for="name">User Name</label>
@@ -142,6 +145,7 @@ You may also use the `Error` function to quickly check if validation error messa
     {{ if Error .Failures "name" }}
         <div class="alert">{{ Error .Failures "name" }}</div>
     {{ end }}
+    {% endraw %}
 
 ## Custom Validation Rules
 
@@ -154,9 +158,9 @@ an error:
     package custom_rule
 
     import (
-      "github.com/lanvard/support"
-      "github.com/lanvard/validation/rule"
-      "strings"
+        "github.com/lanvard/support"
+        "github.com/lanvard/validation/rule"
+        "strings"
     )
     
     type Uppercase struct{}
