@@ -308,7 +308,11 @@ The field under validation must be an integer.
 
     rule.Integer{}
 
-> {note} This validation rule does not verify that the input is of the "integer" variable type, only that the input is a string or numeric value that contains an integer.
+#### Integer Able
+
+The field being validated can be cast to an integer.
+
+    rule.IntegerAble{}
 
 #### Max
 
@@ -327,7 +331,7 @@ The field to be validated must be less than or equal to a maximum number of char
 
 The field under validation must be at least amount of items in a map or slice or maximum number.
 
-    val.Verify("age", rule.Integer{}, rule.Min{Len: 120}),
+    val.Verify("age", rule.Integer{}, rule.Min{Len: 0}),
     val.Verify("items", rule.Slice{}, rule.Min{Len: 5}),
 
 #### min Character
@@ -392,7 +396,7 @@ following conditions are true:
 The field under validation must have a size matching the given value.
 
     // Validate that a provided integer equals 10...
-    val.Verify("age", rule.Integer{}, rule.Size{Len: 120}),
+    val.Verify("age", rule.Integer{}, rule.Size{Len: 12}),
 
     // Validate that an slice has exactly 5 elements...
     val.Verify("items", rule.Slice{}, rule.Size{Len: 5}),
