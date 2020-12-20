@@ -314,18 +314,18 @@ The field being validated can be cast to an integer.
 
     rule.IntegerAble{}
 
+#### Map
+
+The field under validation must be a `map`.
+
+    rule.Map{}
+
 #### Max
 
 The field under validation must be less than or equal to a maximum amount of items in a map or slice or maximum number.
 
     val.Verify("age", rule.Integer{}, rule.Max{Len: 120}),
     val.Verify("items", rule.Slice{}, rule.Max{Len: 5}),
-
-#### Max Character
-
-The field to be validated must be less than or equal to a maximum number of characters.
-
-    //
 
 #### Min
 
@@ -334,62 +334,22 @@ The field under validation must be at least amount of items in a map or slice or
     val.Verify("age", rule.Integer{}, rule.Min{Len: 0}),
     val.Verify("items", rule.Slice{}, rule.Min{Len: 5}),
 
-#### min Character
-
-The field under validation must have a minimum _value_. Strings, numerics, arrays, and files are evaluated in the same
-fashion as the [`size`](#rule-size) rule.
-
-#### not_in:_foo_,_bar_,...
-
-The field under validation must not be included in the given list of values. The `Rule::notIn` method may be used to
-fluently construct the rule:
-
-    use Illuminate\Validation\Rule;
-
-    Validator::make($data, [
-        'toppings' => [
-            'required',
-            Rule::notIn(['sprinkles', 'cherries']),
-        ],
-    ]);
-
-#### not_regex:_pattern_
-
-The field under validation must not match the given regular expression.
-
-Internally, this rule uses the PHP `preg_match` function. The pattern specified should obey the same formatting required
-by `preg_match` and thus also include valid delimiters. For example: `'email' => 'not_regex:/^.+$/i'`.
-
-**Note:** When using the `regex` / `not_regex` patterns, it may be necessary to specify rules in an array instead of
-using pipe delimiters, especially if the regular expression contains a pipe character.
-
-#### present
+#### Present
 
 The field under validation must be present in the input data but can be empty.
 
-#### regex:_pattern_
+    rule.Present{}
 
-The field under validation must match the given regular expression.
+#### Required
 
-Internally, this rule uses the PHP `preg_match` function. The pattern specified should obey the same formatting required
-by `preg_match` and thus also include valid delimiters. For example: `'email' => 'regex:/^.+@.+$/i'`.
+The field under validation must be present in the input data and not empty.
 
-**Note:** When using the `regex` / `not_regex` patterns, it may be necessary to specify rules in an array instead of
-using pipe delimiters, especially if the regular expression contains a pipe character.
+    rule.Required{}
 
-#### required
-
-The field under validation must be present in the input data and not empty. A field is considered "empty" if one of the
-following conditions are true:
-
-<div class="content-list" markdown="1">
-
-- The value is `null`.
-- The value is an empty string.
-- The value is an empty array or empty `Countable` object.
-- The value is an uploaded file with no path.
-
-</div>
+> A field is considered "empty" if one of the following conditions are true:
+> * The value is `nil`.
+> * The value is an empty `string`.
+> * The value is an empty `slice` or empty `map` object.
 
 #### Size
 
@@ -401,13 +361,11 @@ The field under validation must have a size matching the given value.
     // Validate that an slice has exactly 5 elements...
     val.Verify("items", rule.Slice{}, rule.Size{Len: 5}),
 
-#### size Character
-
-//
-
 #### Slice
 
 The field under validation must be a `slice`.
+
+    rule.Slice{}
 
 #### starts_with:_foo_,_bar_,...
 
