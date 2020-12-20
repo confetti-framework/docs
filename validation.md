@@ -76,7 +76,7 @@ validation you will receive the errors in a slice.
 
 #### Return Errors As Response
 
-You can choose to return the errors immediately. In that case, the customer will immediately see the correct HTTP page
+You can choose to return the errors immediately. In that case, the customer will immediately see the correct HTML page
 or JSON response.
 
     func UserStore(request inter.Request) inter.Response {
