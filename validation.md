@@ -367,9 +367,11 @@ The field under validation must be a `slice`.
 
     rule.Slice{}
 
-#### starts_with:_foo_,_bar_,...
+#### Start With
 
 The field under validation must start with one of the given values.
+
+    rule.Start{}.With("06-")
 
 #### string
 
