@@ -373,10 +373,11 @@ The field under validation must start with one of the given values.
 
     rule.Start{}.With("06-")
 
-#### string
+#### String
 
-The field under validation must be a string. If you would like to allow the field to also be `null`, you should assign
-the `nullable` rule to the field.
+The field under validation must be a `string`.
+
+    rule.String{}
 
 ## Validating Arrays
 
