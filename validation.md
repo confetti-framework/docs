@@ -39,7 +39,7 @@ With Lanvard it is very easy to validate incoming data. With the first parameter
 validate. Furthermore, you enter fields with rules.
 
 	failures := val.Validate(request.App(), request.Content(),
-		val.Verify("name", rule.Required{}, rule.MaxCharacters{Max: 255}),
+		val.Verify("name", rule.Required{}, rule.String{}),
 		val.Verify("email", rule.Required{}, rule.Email{}),
 	)
 
@@ -50,7 +50,7 @@ If a validation error occurs, you will receive a slice with errors.
 If your data contains "nested" parameters, you may specify them in your validation rules using "dot" syntax:
 
     failures := val.Validate(request.App(), request.Content(),
-		val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
+		val.Verify("title", rule.Required{}, rule.String{}),
 		val.Verify("author.name", rule.Required{}),
 		val.Verify("author.description", rule.Required{}),
 	)
@@ -59,7 +59,7 @@ If you want to validate all fields in a slice or in a map, you can use an asteri
 
     failures := val.Validate(request.App(), request.Content(),
 		val.Verify("orders", rule.Sum{Sum: 3}),
-		val.Verify("orders.*.street", rule.Required{}, rule.MaxCharacters{Max: 255}),
+		val.Verify("orders.*.street", rule.Required{}, rule.String{}),
 	)
 
 ### Displaying The Validation Errors
@@ -74,7 +74,7 @@ or JSON response.
 
     func UserStore(request inter.Request) inter.Response {
         failures := val.Validate(request.App(), request.Content(),
-            val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
+            val.Verify("title", rule.Required{}, rule.String{}),
         )
         if len(failures) > 0 {
             return outcome.Html(failures)
@@ -93,7 +93,7 @@ Or you pass the errors to a view. That way you can, for example, place the error
         app := request.App()
         content := request.Content()
         failures := val.Validate(app, content,
-            val.Verify("title", rule.Required{}, rule.MaxCharacters{Max: 255}),
+            val.Verify("title", rule.Required{}, rule.String{}),
         )
     
         return outcome.Html(views.UserCreate(
@@ -379,128 +379,42 @@ The field under validation must be a `string`.
 
     rule.String{}
 
-## Validating Arrays
-
-Validating array based form input fields doesn't have to be a pain. You may use "dot notation" to validate attributes
-within an array. For example, if the incoming HTTP request contains a `photos[profile]` field, you may validate it like
-so:
-
-    $validator = Validator::make($request->all(), [
-        'photos.profile' => 'required|image',
-    ]);
-
-You may also validate each element of an array. For example, to validate that each e-mail in a given array input field
-is unique, you may do the following:
-
-    $validator = Validator::make($request->all(), [
-        'person.*.email' => 'email|unique:users',
-        'person.*.first_name' => 'required_with:person.*.last_name',
-    ]);
-
-Likewise, you may use the `*` character when specifying your validation messages in your language files, making it a
-breeze to use a single validation message for array based fields:
-
-    'custom' => [
-        'person.*.email' => [
-            'unique' => 'Each person must have a unique e-mail address',
-        ]
-    ],
-
 ## Custom Validation Rules
 
 ### Using Rule Objects
 
-Lanvard provides a variety of helpful validation rules; however, you may wish to specify some of your own. One method of
-registering custom validation rules is using rule objects. To generate a new rule object, you may use the `make:rule`
-Artisan command. Let's use this command to generate a rule that verifies a string is uppercase. Lanvard will place the
-new rule in the `app/Rules` directory:
+Lanvard provides a variety of helpful validation rules; however, you may wish to specify some of your own. The rule only
+needs to meet the `inter.Rule` interface with the `Verify` method. If the value does not meet the rule, you must return
+an error:
 
-    php artisan make:rule Uppercase
+    package custom_rule
 
-Once the rule has been created, we are ready to define its behavior. A rule object contains two methods: `passes`
-and `message`. The `passes` method receives the attribute value and name, and should return `true` or `false` depending
-on whether the attribute value is valid or not. The `message` method should return the validation error message that
-should be used when validation fails:
-
-    <?php
-
-    namespace App\Rules;
-
-    use Illuminate\Contracts\Validation\Rule;
-
-    class Uppercase implements Rule
-    {
-        /**
-         * Determine if the validation rule passes.
-         *
-         * @param  string  $attribute
-         * @param  mixed  $value
-         * @return bool
-         */
-        public function passes($attribute, $value)
-        {
-            return strtoupper($value) === $value;
+    import (
+      "github.com/lanvard/support"
+      "github.com/lanvard/validation/rule"
+      "strings"
+    )
+    
+    type Uppercase struct{}
+    
+    func (u Uppercase) Verify(value support.Value) error {
+        val, err := value.StringE()
+        if err != nil {
+            return rule.MustBeAStringError
         }
 
-        /**
-         * Get the validation error message.
-         *
-         * @return string
-         */
-        public function message()
-        {
-            return 'The :attribute must be uppercase.';
+        if strings.ToUpper(val) == val {
+            return rule.ValidationError.Wrap("the :attribute must be uppercase")
         }
-    }
 
-You may call the `trans` helper from your `message` method if you would like to return an error message from your
-translation files:
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return trans('validation.uppercase');
+        return nil
     }
 
 Once the rule has been defined, you may attach it to a validator by passing an instance of the rule object with your
 other validation rules:
 
-    use App\Rules\Uppercase;
+    failures := val.Validate(app, content,
+        val.Verify("title", rule.Required{}, custom_rule.Uppercase{}),
+    )
 
-    $request->validate([
-        'name' => ['required', 'string', new Uppercase],
-    ]);
-
-#### Defining The Error Message
-
-You will also need to define an error message for your custom rule. You can do so either using an inline custom message
-array or by adding an entry in the validation language file. This message should be placed in the first level of the
-array, not within the `custom` array, which is only for attribute-specific error messages:
-
-    "foo" => "Your input was invalid!",
-
-    "accepted" => "The :attribute must be accepted.",
-
-    // The rest of the validation error messages...
-
-When creating a custom validation rule, you may sometimes need to define custom placeholder replacements for error
-messages. You may do so by creating a custom Validator as described above then making a call to the `replacer` method on
-the `Validator` facade. You may do this within the `boot` method of a [service provider](/docs/{{version}}/providers):
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Validator::extend(...);
-
-        Validator::replacer('foo', function ($message, $attribute, $rule, $parameters) {
-            return str_replace(...);
-        });
-    }
+#### Before
