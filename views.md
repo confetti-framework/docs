@@ -24,8 +24,8 @@ A simple view for a HTML response might look something like this:
     package views
     
     import (
-        "github.com/lanvard/contract/inter"
-        "lanvard/config"
+        "github.com/confetti/contract/inter"
+        "confetti/config"
     )
     
     type homepage struct {
@@ -87,7 +87,7 @@ You can then use the view as a json response:
 ## Combine Multiple Views
 
 Each website consists of several small templates. For example, you need a menu and footer on every page of your website.
-Lanvard makes it easy to reuse predefined templates.
+Confetti makes it easy to reuse predefined templates.
 
 ### Define Templates
 

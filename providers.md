@@ -8,15 +8,15 @@
 
 ## Introduction
 
-Service providers are the central place of all Lanvard application bootstrapping. Your own application, as well as all of Lanvard's core services are bootstrapped via service providers.
+Service providers are the central place of all Confetti application bootstrapping. Your own application, as well as all of Confetti's core services are bootstrapped via service providers.
 
 Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit.
 
 But, what do we mean by "bootstrapped"? In general, we mean **registering** things, including registering service container bindings, event listeners, and even routes. Service providers are the central place to configure your application.
 
-If you open the `app/providers/provider.go` file included with Lanvard, you will see a `Providers` struct. These are all the service providers that will be loaded for your application.
+If you open the `app/providers/provider.go` file included with Confetti, you will see a `Providers` struct. These are all the service providers that will be loaded for your application.
 
-In this overview you will learn how to write your own service providers and register them with your Lanvard application.
+In this overview you will learn how to write your own service providers and register them with your Confetti application.
 
 ## Writing Service Providers
 
@@ -31,7 +31,7 @@ Let's take a look at a basic service provider. Within any of your service provid
     package providers
     
     import (
-        "github.com/lanvard/foundation"
+        "github.com/confetti/foundation"
         "github.com/riak/riak"
     )
     
@@ -78,7 +78,7 @@ You may use Container for your dependencies in your service provider's `Boot` me
 
 ## Registering Providers
 
-All service providers are registered in the `app/providers/provider.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Lanvard core service providers are listed in this struct. These providers bootstrap the core Lanvard components, such as the mailer, queue, cache, and others.
+All service providers are registered in the `app/providers/provider.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Confetti core service providers are listed in this struct. These providers bootstrap the core Confetti components, such as the mailer, queue, cache, and others.
 
 To register your provider, add it to the slices:
 

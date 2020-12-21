@@ -1,4 +1,4 @@
-# Lanvard documentation
+# Confetti documentation
 
 ## Get Started
   - [Configuration](configuration.md)

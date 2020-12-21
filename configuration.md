@@ -9,13 +9,13 @@
 
 ## Introduction
 
-All the configuration files for the Lanvard framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
+All the configuration files for the Confetti framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
 ## Environment Configuration
 
 It is often helpful to have different configuration values based on the environment where the application is running. For example, you may wish to use a different cache driver locally than you do on your production server.
 
-To make this a cinch, Lanvard utilizes the [GoDotEnv](https://github.com/joho/godotenv) library by John Barton. In a fresh Lanvard installation, the root directory of your application will contain a `.env` file.
+To make this a cinch, Confetti utilizes the [GoDotEnv](https://github.com/joho/godotenv) library by John Barton. In a fresh Confetti installation, the root directory of your application will contain a `.env` file.
 
 Your `.env` file should not be committed to your application's source control, since each developer / server using your
 application could require a different environment configuration. Furthermore, this would be a security risk in the event
@@ -31,7 +31,7 @@ override the `.env` file when running tests.
 ### Retrieving Environment Configuration
 
 All the variables listed in this file will be loaded when your application is running for the first time. However,
-you may use the `env` package to retrieve values from these variables in your configuration files. In fact, if you view the Lanvard configuration files, you will notice several of the options already using this package:
+you may use the `env` package to retrieve values from these variables in your configuration files. In fact, if you view the Confetti configuration files, you will notice several of the options already using this package:
 
     env.String("APP_URL"),
     env.StringOr("APP_URL", "http://localhost"),

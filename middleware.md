@@ -16,7 +16,7 @@ Middleware provide a convenient mechanism for filtering HTTP requests entering y
 can be written to perform a variety of tasks. A CORS middleware might be responsible for adding the proper headers to
 all responses leaving your application. A logging middleware might log all incoming requests to your application.
 
-There are several middleware included in the Lanvard framework. All of these middleware are located in
+There are several middleware included in the Confetti framework. All of these middleware are located in
 the `app/http/middleware` directory.
 
 ## Defining Middleware
@@ -26,8 +26,8 @@ Let's place a new `CheckAge` struct within your `app/http/middleware` directory.
     package middleware
     
     import (
-    	"github.com/lanvard/contract/inter"
-    	"github.com/lanvard/routing/outcome"
+    	"github.com/confetti/contract/inter"
+    	"github.com/confetti/routing/outcome"
     )
     
     type CheckAge struct{}
@@ -53,7 +53,7 @@ Whether a middleware runs before or after a request depends on the middleware it
     package middleware
     
     import (
-    	"github.com/lanvard/contract/inter"
+    	"github.com/confetti/contract/inter"
     )
     
     type BeforeMiddleware struct{}
@@ -69,7 +69,7 @@ However, this middleware would perform its task **after** the request is handled
     package middleware
     
     import (
-    	"github.com/lanvard/contract/inter"
+    	"github.com/confetti/contract/inter"
     )
     
     type AfterMiddleware struct{}
@@ -117,11 +117,11 @@ The `WithoutMiddleware` method can only remove route middleware and does not app
 
 Sometimes you may want to group several middleware under a single key to make them easier to assign to routes. We call this Middleware Groups.
 
-Out of the box, Lanvard comes with `Web` and `Api` middleware groups that contain common middlewares you may want to apply to your web UI and API routes. Let's see how the Web middleware group might look like:
+Out of the box, Confetti comes with `Web` and `Api` middleware groups that contain common middlewares you may want to apply to your web UI and API routes. Let's see how the Web middleware group might look like:
     
     package middleware
     
-    import "github.com/lanvard/contract/inter"
+    import "github.com/confetti/contract/inter"
 
     var Web = []inter.HttpMiddleware{
     	EncryptCookies{},
@@ -149,9 +149,9 @@ Middleware can also receive additional parameters. For example, if your applicat
     package middleware
     
     import (
-        "github.com/lanvard/contract/inter"
-        "github.com/lanvard/routing/outcome"
-        "lanvard/src/adapter"
+        "github.com/confetti/contract/inter"
+        "github.com/confetti/routing/outcome"
+        "confetti/src/adapter"
     )
     
     type CheckRole struct{
@@ -174,4 +174,4 @@ You can pass the parameters to the public fields of the middleware:
 
 ## Terminable Middleware
 
-This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/63
+This hasn't been built yet, but feel free to help: https://github.com/confetti/confetti/issues/63

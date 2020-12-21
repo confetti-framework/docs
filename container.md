@@ -13,16 +13,16 @@
 
 ## Introduction
 
-The Lanvard service container is a powerful tool for managing struct dependencies and performing dependency injection. Dependency injection is a fancy phrase that essentially means this: struct dependencies are "injected" into the struct via the constructor or, in some cases, "setter" methods.
+The Confetti service container is a powerful tool for managing struct dependencies and performing dependency injection. Dependency injection is a fancy phrase that essentially means this: struct dependencies are "injected" into the struct via the constructor or, in some cases, "setter" methods.
 
 Let's look at a simple example:
 
     package model
 
     import (
-        "github.com/lanvard/contract/inter"
-    "github.com/lanvard/foundation"
-        "lanvard/app/repository"
+        "github.com/confetti/contract/inter"
+    "github.com/confetti/foundation"
+        "confetti/app/repository"
     )
 
     type User struct {
@@ -44,7 +44,7 @@ Let's look at a simple example:
 
 In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service is able to retrieve users. In this context, our `UserRepository` most likely uses [~~Eloquent~~](/docs/{{version}}/eloquent) to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
 
-A deep understanding of the Lanvard service container is essential to building a powerful, large application, as well as for contributing to the Lanvard core itself.
+A deep understanding of the Confetti service container is essential to building a powerful, large application, as well as for contributing to the Confetti core itself.
 
 ## Binding
 

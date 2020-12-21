@@ -16,10 +16,10 @@
 
 ## Introduction
 
-To help you learn more about what's happening within your application, Lanvard provides robust logging services that allow you to log messages to files, the system error log, and even to Slack to notify your entire team.
+To help you learn more about what's happening within your application, Confetti provides robust logging services that allow you to log messages to files, the system error log, and even to Slack to notify your entire team.
 
-Under the hood, Lanvard utilizes the [Syslog](https://github.com/lanvard/syslog) library, which provides support for
-a variety of powerful log handlers. Lanvard makes it a cinch to configure these handlers, allowing you to mix and match them to customize your application's log handling.
+Under the hood, Confetti utilizes the [Syslog](https://github.com/confetti/syslog) library, which provides support for
+a variety of powerful log handlers. Confetti makes it a cinch to configure these handlers, allowing you to mix and match them to customize your application's log handling.
 
 ## Configuration
 
@@ -27,7 +27,7 @@ All of the configuration for your application's logging system is housed in the 
 file. This file allows you to configure your application's log channels, so be sure to review each of the available
 channels and their options. We'll review a few common options below.
 
-By default, Lanvard will use the `stack` channel when logging messages. The `stack` channel is used to aggregate
+By default, Confetti will use the `stack` channel when logging messages. The `stack` channel is used to aggregate
 multiple log channels into a single channel. For more information on building stacks, check out
 the [documentation below](#building-log-stacks).
 
@@ -107,7 +107,7 @@ message.
 
 Take note of the `MinLevel` configuration option present on the `daily` and `slack` channel configurations in the
 example above. This option determines the minimum "level" a message must be in order to be logged by the channel.
-loggers.Syslog, which powers Lanvard's logging services, offers all of the log levels defined in
+loggers.Syslog, which powers Confetti's logging services, offers all of the log levels defined in
 the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**, **critical**, **error**, **
 warning**, **notice**, **info**, and **debug**.
 
@@ -160,8 +160,8 @@ written to the default log channel as configured by your `config/logging.go` con
     package controller
 
     import (
-        "github.com/lanvard/contract/inter"
-        "github.com/lanvard/routing/outcome"
+        "github.com/confetti/contract/inter"
+        "github.com/confetti/routing/outcome"
     )
     
     func ShowProfile(request inter.Request) inter.Response {

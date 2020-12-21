@@ -38,7 +38,7 @@ error, you can use `panic`.
 
 The most common way is to return the error from the function:
 
-    import "github.com/lanvard/errors"
+    import "github.com/confetti/errors"
 
     var NoUserFound = errors.New("no user found")
 
@@ -159,7 +159,7 @@ In case of a server error where the request cannot proceed, you could choose to 
         //
     }
 
-Lanvard automatically ensures that the correct http response is generated.
+Confetti automatically ensures that the correct http response is generated.
 
 > {tip} Using panic can save you a lot of time. However, if you want to build a robust application, use `panic` only for critical or unexpected errors.
 
@@ -245,11 +245,11 @@ other error types to this array as needed:
 
 ### Custom HTTP Error Pages
 
-Lanvard makes it easy to display custom error pages. You can edit template `resources/views/error.gohtml` design your
+Confetti makes it easy to display custom error pages. You can edit template `resources/views/error.gohtml` design your
 own error page. The following variables can be used when using this template:
 
     {% raw %}
-    {{- /*gotype: github.com/lanvard/foundation/encoder.ErrorView*/ -}}
+    {{- /*gotype: github.com/confetti/foundation/encoder.ErrorView*/ -}}
     <html lang="{{.Locale}}">
     <h1>{{.AppName}}</h1>
     <h2>{{.Status}} | {{.Message}}</h2>

@@ -37,12 +37,12 @@
 
 ## Introduction
 
-Good validation prevents bugs and will make your application more secure. Lanvard provides several different approaches
+Good validation prevents bugs and will make your application more secure. Confetti provides several different approaches
 to validate your application's incoming data.
 
 ### Writing The Validation Logic
 
-With Lanvard it is very easy to validate incoming data. With the first parameter you enter the data you want to
+With Confetti it is very easy to validate incoming data. With the first parameter you enter the data you want to
 validate. Furthermore, you enter fields with rules.
 
 	failures := val.Validate(request.App(), request.Content(),
@@ -113,7 +113,7 @@ Or you pass the errors to a view. That way you can, for example, place the error
 Once in the template you can do whatever you want with the errors:
 
     {% raw %}
-    {{- /*gotype: lanvard/resources/views.UserCreateView*/ -}}
+    {{- /*gotype: confetti/resources/views.UserCreateView*/ -}}
     
     <h1>Create Post</h1>
     
@@ -136,7 +136,7 @@ Once in the template you can do whatever you want with the errors:
 You may also use the `Error` function to quickly check if validation error messages exist for a given field:
 
     {% raw %}
-    {{- /*gotype: lanvard/resources/views.UserCreateView*/ -}}
+    {{- /*gotype: confetti/resources/views.UserCreateView*/ -}}
 
     <label for="name">User Name</label>
 
@@ -151,15 +151,15 @@ You may also use the `Error` function to quickly check if validation error messa
 
 ### Using Rule Objects
 
-Lanvard provides a variety of helpful validation rules; however, you may wish to specify some of your own. The rule only
+Confetti provides a variety of helpful validation rules; however, you may wish to specify some of your own. The rule only
 needs to meet the `inter.Rule` interface with the `Verify` method. If the value does not meet the rule, you need to return
 an error:
 
     package custom_rule
 
     import (
-        "github.com/lanvard/support"
-        "github.com/lanvard/validation/rule"
+        "github.com/confetti/support"
+        "github.com/confetti/validation/rule"
         "strings"
     )
     
@@ -193,9 +193,9 @@ other rules should be executed first. The above example would then become:
     package custom_rule
     
     import (
-        "github.com/lanvard/contract/inter"
-        "github.com/lanvard/support"
-        "github.com/lanvard/validation/rule"
+        "github.com/confetti/contract/inter"
+        "github.com/confetti/support"
+        "github.com/confetti/validation/rule"
         "strings"
     )
     
@@ -221,8 +221,8 @@ set up `inter.AppReader` for dependency injection:
 
     package custom_rule
     import (
-        "github.com/lanvard/contract/inter"
-        "github.com/lanvard/support"
+        "github.com/confetti/contract/inter"
+        "github.com/confetti/support"
     )
     
     type TimeZone struct {

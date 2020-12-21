@@ -12,7 +12,6 @@
     - [Global Constraints](#global-constraints)
     - [Encoded Forward Slashes](#encoded-forward-slashes)
   - [Route Model Binding](#route-model-binding)
-  - [Route Adapters](#route-adapters)
 - [Named Routes](#named-routes)
   - [Generating URLs To Named Routes](#generating-urls-to-named-routes)
   - [Inspecting The Current Route](#inspecting-the-current-route)
@@ -28,7 +27,7 @@
 
 ## Basic Routing
 
-The most basic Lanvard routes accept a URI and a `Closure`, providing a very simple and expressive method of defining routes:
+The most basic Confetti routes accept a URI and a `Closure`, providing a very simple and expressive method of defining routes:
 
     Get("/users", func(request inter.Request) inter.Response {
         return outcome.Http("Hello World")
@@ -36,7 +35,7 @@ The most basic Lanvard routes accept a URI and a `Closure`, providing a very sim
 
 ### The Default Route Files
 
-All Lanvard routes are defined in your route files, which are located in the `routes` directory. These files are
+All Confetti routes are defined in your route files, which are located in the `routes` directory. These files are
 automatically loaded by the framework. The `routes/web.go` file defines routes that are for your web interface. These
 routes are assigned the `Web` middleware group. The routes in `routes/api.go` are stateless and are assigned the `Api`
 middleware group.
@@ -105,7 +104,7 @@ You may define as many route parameters as required by your route:
         //
     }),
 
-If the parameter cannot be found, a Lanvard exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
+If the parameter cannot be found, a Confetti exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
 
     postId, err := request.Value("post_id").NumberE()
     commentAlias, err := request.Value("comment_alias").StringE()
@@ -171,7 +170,7 @@ Once the pattern has been defined, it is automatically applied to all routes usi
 
 #### Encoded Forward Slashes
 
-The Lanvard routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `Where` condition regular expression:
+The Confetti routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `Where` condition regular expression:
 
     Get("/search/{search}", controller.User.Index).Where("search", ".*")
 
@@ -194,47 +193,6 @@ Later you can retrieve the user from the container:
      user := request.Make("user").(model.User)
 
 > {note} The callback ensures that the user is received from the database when you need it. This can be nice if you first want to validate the request before accessing the database.
-
-### Route Adapters
-
-If you want to extract users from a request in different ways, then it can be helpful to use the adapter pattern. The adapter pattern is a pattern that ensures that you convert something in a certain interface.
-
-    package adapters
-
-    ...
-
-    func (adapter User) FindE() (contract.User, error) {
-        userId, err := adapter.Request.Value("user").NumberE()
-        if err != nil {
-            return _, err
-        }
-    
-        return model.NewUserE(userId, "test@lanvard.com")
-    }
-
- Then you can retrieve a model from a parameter, body or session in a nice and elegant way:
-
-    user, err := adapters.User{request}.FindE()
-    if err != nil {
-        //
-    }
-    
-Most of the time it is nice that the caller is responsible for handling the errors. If the errors often have to be treated in the same way, it can be nice to leave that responsibility with the adapter:
-
-    func (adapter User) Find() contract.User {
-        user, err := adapter.FindE()
-        if err != nil {
-            panic(err)
-        }
-    
-        return user
-    }
-    
-Your caller will stay organized and clean:
-
-    user := adapters.User{request}.Find()    
-    
-In the standard src code you see this example. Feel free to implement the adapter pattern your way.
 
 ## Named Routes
 
@@ -368,11 +326,11 @@ the `web` middleware group will apply to the route. You are free to add addition
 
 ## Rate Limiting
 
-This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/51
+This hasn't been built yet, but feel free to help: https://github.com/confetti/confetti/issues/51
 
 ## Form Method Spoofing
 
-This hasn't been built yet, but feel free to help: https://github.com/lanvard/lanvard/issues/52
+This hasn't been built yet, but feel free to help: https://github.com/confetti/confetti/issues/52
 
 ## Accessing The Current Route
 

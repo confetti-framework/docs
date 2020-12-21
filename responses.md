@@ -20,7 +20,7 @@
 
 ### Strings & Slices
 
-All routes and controllers should return a response to be sent back to the user's browser. Lanvard provides several
+All routes and controllers should return a response to be sent back to the user's browser. Confetti provides several
 different ways to return responses. The most basic response is returning a string from a route or controller with
 function `outcome.Html`. The framework will automatically convert the string into a full HTTP response:
 

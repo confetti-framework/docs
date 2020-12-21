@@ -29,8 +29,8 @@ that has been sent to you. Think for example of cookies, headers, body and query
     package controller
     
     import (
-        "github.com/lanvard/contract/inter"
-        "github.com/lanvard/routing/outcome"
+        "github.com/confetti/contract/inter"
+        "github.com/confetti/routing/outcome"
     )
     
     var User = struct {
@@ -47,7 +47,7 @@ More information about receiving a parameter, see: [Route Parameters](/docs/{{ve
 
 ### Accessing The Request Via Route Closures
 
-You can also receive the `request` interface on a route Closure. Lanvard inject the incoming request into the Closure
+You can also receive the `request` interface on a route Closure. Confetti inject the incoming request into the Closure
 when it is executed:
 
     Get("/", func(request inter.Request) inter.Response {
@@ -214,7 +214,7 @@ If you would like to determine if a value is present on the request and is not e
 
 #### Retrieving Cookies From Requests
 
-All cookies created by the Lanvard framework are encrypted and signed with an authentication code, meaning they will be
+All cookies created by the Confetti framework are encrypted and signed with an authentication code, meaning they will be
 considered invalid if they have been changed by the client. To retrieve a cookie value from the request, use
 the `Cookie` method on a `inter.Request` instance:
 
