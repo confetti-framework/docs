@@ -152,7 +152,7 @@ You may also use the `Error` function to quickly check if validation error messa
 ### Using Rule Objects
 
 Lanvard provides a variety of helpful validation rules; however, you may wish to specify some of your own. The rule only
-needs to meet the `inter.Rule` interface with the `Verify` method. If the value does not meet the rule, you must return
+needs to meet the `inter.Rule` interface with the `Verify` method. If the value does not meet the rule, you need to return
 an error:
 
     package custom_rule
@@ -187,7 +187,7 @@ other validation rules:
 
 ### Requirements
 
-Should your rule execute other rules first? Use method `Requirements` (`inter.RuleWithRequirements`) to determine which
+Should your rule execute other rules first? Use can use interface `inter.RuleWithRequirements` with method `Requirements` to determine which
 other rules should be executed first. The above example would then become:
 
     package custom_rule
@@ -216,11 +216,10 @@ other rules should be executed first. The above example would then become:
 
 ### Dependency Injection
 
-If you need dependency injection in your rule? Then you can use method `SetApp` (`inter.RuleWithApp`) to
-use `inter.AppReader` for Dependency Injection.:
+If you need dependency injection in your rule? Then you can use interface `inter.RuleWithApp` with method `SetApp` to
+set up `inter.AppReader` for dependency injection:
 
     package custom_rule
-    
     import (
         "github.com/lanvard/contract/inter"
         "github.com/lanvard/support"
