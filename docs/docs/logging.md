@@ -153,7 +153,7 @@ app.Log().Log(syslog.ALERT, message)
 So, you may call any of these methods to log a message for the corresponding level. By default, the message will be
 written to the default log channel as configured by your `config/logging.go` configuration file:
 
-``` go
+``` go{10}
 package controller
 
 import (

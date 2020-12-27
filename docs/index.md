@@ -7,7 +7,7 @@ actionText: Documentation →
 actionLink: /docs/
 features:
 - title: Developer friendly
-  details: A project starts simple, yet all possibilities are within reach.
+  details: Your project starts simple, yet all possibilities are within reach.
 - title: Easily adaptable
   details: Confetti consists of all small parts that are easily adjustable.
 - title: No magic

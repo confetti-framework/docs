@@ -38,10 +38,6 @@ module.exports = {
         text: 'Documentation',
         link: '/docs/',
       },
-      // {
-      //   text: 'Why Go?',
-      //   link: 'https://github.com/reindert-vetter'
-      // },
       {
         text: 'Twitter',
         link: 'https://github.com/reindert-vetter'
@@ -53,7 +49,6 @@ module.exports = {
         {
           collapsable: false,
           children: [
-            '',
             'configuration',
             'lifecycle',
             'container',

@@ -4,6 +4,8 @@
 
 All the configuration files for the Confetti framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
+These configuration files allow you to configure things like your database connection information, your mail server information, as well as various other core configuration values such as your application timezone and encryption key.
+
 ## Environment Configuration
 
 It is often helpful to have different configuration values based on the environment where the application is running. For example, you may wish to use a different cache driver locally than you do on your production server.

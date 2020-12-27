@@ -50,7 +50,7 @@ validation you will receive the errors in a slice.
 You can choose to return the errors immediately. In that case, the customer will immediately see the correct HTML page
 or JSON response.
 
-``` go
+``` go{6}
 func UserStore(request inter.Request) inter.Response {
     failures := val.Validate(request.App(), request.Content(),
         val.Verify("title", rule.Required{}, rule.String{}),
@@ -69,7 +69,7 @@ func UserStore(request inter.Request) inter.Response {
 
 Or you pass the errors to a view. That way you can, for example, place the errors next to the fields in a form:
 
-``` go
+``` go{10}
 func UserStore(request inter.Request) inter.Response {
     app := request.App()
     content := request.Content()
@@ -168,7 +168,7 @@ failures := val.Validate(app, content,
 Should your rule execute other rules first? Use can use interface `inter.RuleWithRequirements` with method `Requirements` to determine which
 other rules should be executed first. The above example would then become:
 
-``` go
+``` go{12-16}
 package custom_rule
 
 import (
@@ -199,7 +199,7 @@ func (u Uppercase) Verify(value support.Value) error {
 If you need dependency injection in your rule? Then you can use interface `inter.RuleWithApp` with method `SetApp` to
 set up `inter.AppReader` for dependency injection:
 
-``` go
+``` go{17}
 package custom_rule
 import (
     "github.com/confetti/contract/inter"
