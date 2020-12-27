@@ -11,7 +11,7 @@
 
 ## Creating Views
 
-> {tip} Looking for more information on how to write Go templates? Check out the [Text template documentation](https://golang.org/pkg/text/template/#hdr-Text_and_spaces) and subsequent [HTML template documentation](https://golang.org/pkg/html/template/) to get started.
+> Looking for more information on how to write Go templates? Check out the [Text template documentation](https://golang.org/pkg/text/template/#hdr-Text_and_spaces) and subsequent [HTML template documentation](https://golang.org/pkg/html/template/) to get started.
 
 Views and templates are there to separate your controller / application logic from your presentation logic. A template
 consists of HTML, while a view contains data that you can use in a HTML or a JSON response. Views and templates are

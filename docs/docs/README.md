@@ -1,14 +1,14 @@
 # Confetti documentation
 
-## Get Started
+#### Get Started
   - [Configuration](configuration.md)
 
-## Architecture Concepts
+#### Architecture Concepts
   - [Request Lifecycle](lifecycle.md)
   - [Service Container](container.md)
   - [Service Providers](providers.md)
 
-## The Basics
+#### The Basics
 
 - [Routing](routing.md)
 - [Middleware](middleware.md)

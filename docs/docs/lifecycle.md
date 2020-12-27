@@ -1,19 +1,5 @@
 # Request Lifecycle
 
-## [Introduction](#introduction)
-
-## [Lifecycle Overview](#lifecycle-overview)
-
-### [First Things](#first-things)
-
-### [Service Providers](#service-providers)
-
-### [HTTP / Console Kernels](#http--console-kernels)
-
-### [Dispatch Request](#dispatch-request)
-
-## [Focus On Service Providers](#focus-on-service-providers)
-
 ## Introduction
 
 When using any tool in the "real world", you feel more confident if you understand how that tool works. Application
@@ -40,7 +26,7 @@ One of the most important bootstrapping actions is loading the [service provider
 Service providers are responsible for bootstrapping all the framework's various components, such as the database,
 configuration, queue, validation, and routing components. Since they bootstrap and configure every feature offered by the framework, service providers are the most important aspect of the entire Confetti bootstrap process. Feel free to create a service provider yourself.
 
-> {tip} Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit. For example, you can have a cache warmup in a 'service provider'.
+> Service providers are loaded once (so before requests takes place). And can therefore lead to a performance profit. For example, you can have a cache warmup in a 'service provider'.
 
 ### HTTP / Console Kernels
 
