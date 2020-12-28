@@ -2,6 +2,7 @@
   <p class="demo">
     {{ msg }}
   </p>
+
 </template>
 
 <script>
