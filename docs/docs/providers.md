@@ -26,7 +26,7 @@ Let's take a look at a basic service provider. Within any of your service provid
 package providers
 
 import (
-    "github.com/confetti/foundation"
+    "github.com/confetti-framework/foundation"
     "github.com/riak/riak"
 )
 

@@ -9,8 +9,8 @@ that has been sent to you. Think for example of cookies, headers, body and query
 package controller
 
 import (
-    "github.com/confetti/contract/inter"
-    "github.com/confetti/routing/outcome"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/routing/outcome"
 )
 
 var User = struct {
@@ -239,9 +239,7 @@ if body.Filled("name") {
 
 #### Retrieving Cookies From Requests
 
-All cookies created by the Confetti framework are encrypted and signed with an authentication code, meaning they will be
-considered invalid if they have been changed by the client. To retrieve a cookie value from the request, use
-the `Cookie` method on a `inter.Request` instance:
+To retrieve a cookie value from the request, use the `Cookie` method on a `inter.Request` instance:
 
 ``` go
 latestPage := request.Cookie("latest_page")
@@ -251,7 +249,7 @@ latestPage, err := request.CookieE("latest_page")
 If you are looking for how to set a cookie, you can
 read [Attaching Cookies To Responses](/docs/{{version}}/responses#attaching-cookies-to-responses)
 
-> If you want to receive all original cookies, you can use the cookies from source by `request.Source().Cookies()`
+> If you want to receive all original cookies, you can get the cookies from source by `request.Source().Cookies()`
 
 ## Files
 

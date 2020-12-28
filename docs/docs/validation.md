@@ -133,8 +133,8 @@ an error:
 package custom_rule
 
 import (
-    "github.com/confetti/support"
-    "github.com/confetti/validation/rule"
+    "github.com/confetti-framework/support"
+    "github.com/confetti-framework/validation/rule"
     "strings"
 )
 
@@ -172,9 +172,9 @@ other rules should be executed first. The above example would then become:
 package custom_rule
 
 import (
-    "github.com/confetti/contract/inter"
-    "github.com/confetti/support"
-    "github.com/confetti/validation/rule"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/support"
+    "github.com/confetti-framework/validation/rule"
     "strings"
 )
 
@@ -202,8 +202,8 @@ set up `inter.AppReader` for dependency injection:
 ``` go{17}
 package custom_rule
 import (
-    "github.com/confetti/contract/inter"
-    "github.com/confetti/support"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/support"
 )
 
 type TimeZone struct {

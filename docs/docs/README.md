@@ -5,28 +5,26 @@
 Confetti is a web framework written in Go (Golang). The web framework consists of the most important components to create your
  application. The goal of Confetti is to give you all the tools you need to write fast, secure and scalable code.
 
-Whether you are new to Go or web frameworks or have years of experience, Confetti is a framework that can grow with
-you. We can't wait to see what you build.
+Whether you are new to Go or web frameworks or have years of experience, Confetti is a perfect framework that fits into any web development project.
 
 ## Why Confetti?
 
-Confetti was created by dissatisfaction with PHP and the appreciation of Laravel. In serious applications PHP lags behind in terms of performance, asynchronous and strict typing. Still, PHP has something that other languages don't have: Laravel.
+Confetti has been heavily influenced by Laravel. That's because Laravel provides the functionalists you need to build an application the right way. But because Laravel is made on PHP, it has its limitations (in terms of performance, asynchronous and strict typing). It turned out: Go does very well in these subjects.
 
-Go shows that it is a language with very simple syntax, easy to learn and very easy to deploy. Confetti combines the
-elegance of Laravel and the strictness of Go.
+Go shows that it is a language with extremely simple syntax, easy to learn and very easy to deploy. Confetti combines
+the elegance of Laravel and the strictness of Go.
 
 ## Documentation
 
 ### Get Started
-  - [Configuration](configuration.md)
+- [Configuration](configuration.md)
 
 ### Architecture Concepts
-  - [Request Lifecycle](lifecycle.md)
-  - [Service Container](container.md)
-  - [Service Providers](providers.md)
+- [Request Lifecycle](lifecycle.md)
+- [Service Container](container.md)
+- [Service Providers](providers.md)
 
 ### The Basics
-
 - [Routing](routing.md)
 - [Middleware](middleware.md)
 - [Requests](requests.md)

@@ -16,7 +16,7 @@ A simple view for a HTML response might look something like this:
 package views
 
 import (
-    "github.com/confetti/contract/inter"
+    "github.com/confetti-framework/contract/inter"
     "confetti/config"
 )
 
@@ -121,7 +121,7 @@ at [the manual](https://golang.org/pkg/text/template/#Template.AddParseTree).
 
 ## Helper Functions
 
-You can also define functions in providers.ViewServiceProvider. You can use those functions in any template:
+You can define functions in providers.ViewServiceProvider. You can use those functions in any template:
 
 ``` go
 templateBuilder.Funcs(template.FuncMap{

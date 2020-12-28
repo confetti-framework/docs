@@ -10,8 +10,8 @@ Let's look at a simple example:
 package model
 
 import (
-    "github.com/confetti/contract/inter"
-"github.com/confetti/foundation"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/foundation"
     "confetti/app/repository"
 )
 

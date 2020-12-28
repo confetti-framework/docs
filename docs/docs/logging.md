@@ -4,7 +4,8 @@
 
 To help you learn more about what's happening within your application, Confetti provides robust logging services that allow you to log messages to files, the system error log, and even to Slack to notify your entire team.
 
-Under the hood, Confetti utilizes the [Syslog](https://github.com/confetti/syslog) library, which provides support for
+Under the hood, Confetti utilizes the [Syslog](https://github.com/confetti-framework/syslog) library, which provides
+support for
 a variety of powerful log handlers. Confetti makes it a cinch to configure these handlers, allowing you to mix and match them to customize your application's log handling.
 
 ## Configuration
@@ -98,8 +99,7 @@ message.
 Take note of the `MinLevel` configuration option present on the `daily` and `slack` channel configurations in the
 example above. This option determines the minimum "level" a message must be in order to be logged by the channel.
 loggers.Syslog, which powers Confetti's logging services, offers all of the log levels defined in
-the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**, **critical**, **error**, **
-warning**, **notice**, **info**, and **debug**.
+the [RFC 5424 specification](https://tools.ietf.org/html/rfc5424): **emergency**, **alert**, **critical**, **error**, **warning**, **notice**, **info**, and **debug**.
 
 So, imagine we log a message using the `debug` method:
 
@@ -157,8 +157,8 @@ written to the default log channel as configured by your `config/logging.go` con
 package controller
 
 import (
-    "github.com/confetti/contract/inter"
-    "github.com/confetti/routing/outcome"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/routing/outcome"
 )
 
 func ShowProfile(request inter.Request) inter.Response {

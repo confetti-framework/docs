@@ -17,8 +17,8 @@ Let's place a new `CheckAge` struct within your `app/http/middleware` directory.
 package middleware
 
 import (
-    "github.com/confetti/contract/inter"
-    "github.com/confetti/routing/outcome"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/routing/outcome"
 )
 
 type CheckAge struct{}
@@ -46,7 +46,7 @@ Whether a middleware runs before or after a request depends on the middleware it
 package middleware
 
 import (
-    "github.com/confetti/contract/inter"
+    "github.com/confetti-framework/contract/inter"
 )
 
 type BeforeMiddleware struct{}
@@ -64,7 +64,7 @@ However, this middleware would perform its task **after** the request is handled
 package middleware
 
 import (
-    "github.com/confetti/contract/inter"
+    "github.com/confetti-framework/contract/inter"
 )
 
 type AfterMiddleware struct{}
@@ -122,7 +122,7 @@ Out of the box, Confetti comes with `Web` and `Api` middleware groups that conta
 ``` go 
 package middleware
 
-import "github.com/confetti/contract/inter"
+import "github.com/confetti-framework/contract/inter"
 
 var Web = []inter.HttpMiddleware{
     EncryptCookies{},
@@ -154,8 +154,8 @@ Middleware can also receive additional parameters. For example, if your applicat
 package middleware
 
 import (
-    "github.com/confetti/contract/inter"
-    "github.com/confetti/routing/outcome"
+    "github.com/confetti-framework/contract/inter"
+    "github.com/confetti-framework/routing/outcome"
     "confetti/src/adapter"
 )
 

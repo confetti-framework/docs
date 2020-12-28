@@ -9,7 +9,7 @@ features:
 - title: Developer friendly
   details: Your project starts simple, yet all possibilities are within reach.
 - title: Easily adaptable
-  details: Confetti consists of all small parts that are easily adjustable.
+  details: Confetti consists of small parts that are easily adjustable.
 - title: No magic
   details: A framework that you immediately understand.
 

@@ -7,17 +7,16 @@ on errors, the faster bugs can be found. It therefore deserves its own chapter.
 
 ## Panic And Return Errors
 
-In other languages you throw an error (or error). If the caller wants to do something based on that error, then you have
-to catch the error. This is very different with Go. The idea is that the caller is made responsible for what to do with
-the error. The error is passed on until you can do something with it. If you want to stop the process and just fire the
-error, you can use `panic`.
+In other languages you throw an exception (or error). If the caller wants to do something based on that error, then you
+have to catch the error. This is very different with Go. The error is passed on until you can do something with it.
+If you want to stop the process and just fire the error, you can use `panic`.
 
 ### Return Errors
 
 The most common way is to return the error from the function:
 
 ``` go
-import "github.com/confetti/errors"
+import "github.com/confetti-framework/errors"
 
 var NoUserFound = errors.New("no user found")
 
@@ -51,7 +50,7 @@ user, _ := GetUser()
 
 #### Wrap
 
-By applying multiple layers, you can add more information to the error. You can use the `Wrap` method to suffix a
+By applying multiple layers, you can add more information to the error. You can use the `Wrap` method to prefix a
 message (with `validation error: no user found` as a result).
 
 ``` go
@@ -70,12 +69,14 @@ err.Unwrap().Error()
 
 #### Apply Stack Trace
 
-If you have a standard error, it does not contain a stack trace. Use function `WithStack` or` Wrap` To put the trace on
+If you have a standard error, it does not contain a stack trace. Use function `Wrap` or `WithStack` To put the trace on
 it:
 
 ``` go
-con, err := db.Connection()
-errors.Wrap(err, "asdf")
+errors.Wrap(err, "can't connect to database")
+```
+
+``` go
 errors.WithStack(err)
 ```
 
@@ -256,8 +257,8 @@ NoLogging: []error{
 Confetti makes it easy to display custom error pages. You can edit template `resources/views/error.gohtml` design your
 own error page. The following variables can be used when using this template:
 
-``` go
-{{- /*gotype: github.com/confetti/foundation/encoder.ErrorView*/ -}}
+``` html
+{{- /*gotype: github.com/confetti-framework/foundation/encoder.ErrorView*/ -}}
 <html lang="{{.Locale}}">
 <h1>{{.AppName}}</h1>
 <h2>{{.Status}} | {{.Message}}</h2>

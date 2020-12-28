@@ -29,7 +29,6 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
    */
   themeConfig: {
-    repo: 'confetti-framework/docs',
     editLinks: false,
     editLinkText: '',
     logo: 'https://avatars1.githubusercontent.com/u/57274804?s=400&u=058242df13e206950c08efd68a540445ce4da17f&v=4',
@@ -40,9 +39,13 @@ module.exports = {
         link: '/docs/',
       },
       {
-        text: 'Twitter',
-        link: 'https://github.com/reindert-vetter'
-      }
+        text: 'Github',
+        link: 'https://github.com/confetti-framework',
+      },
+      {
+        text: 'Edit',
+        link: 'https://github.com/confetti-framework/docs/tree/main/docs/docs',
+      },
     ],
     sidebarDepth: 10,
     sidebar: {
