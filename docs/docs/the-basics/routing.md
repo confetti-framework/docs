@@ -5,11 +5,16 @@
 The most basic Confetti routes accept a URI and a `Closure`, providing a very simple and expressive method of defining routes:
 
 ``` go
-Get("/users", func(request inter.Request) inter.Response {
+Get("/user", func(request inter.Request) inter.Response {
     return outcome.Http("Hello World")
 })
 ```
 
+If you use multiple routers, you can place a reference to a function in the second parameter:
+
+``` go
+Get("/user", controller.UserIndex),
+```
 
 ### The Default Route Files
 
@@ -22,7 +27,7 @@ The routes defined in `routes/web.go` may be accessed by entering the defined ro
 you may access the following route by navigating to `http://your-app.test/user` in your browser:
 
 ``` go
-Get("/user", controller.User.Index),
+Get("/user", controller.UserIndex),
 ```
 
 Routes defined in the `routes/api.go` file are nested within a route group. Within this group, the `/api` URI prefix is automatically applied, so you do not need to manually apply it to every route in the file. You may modify the prefix and other route group options by using multiple methods.
@@ -32,17 +37,17 @@ Routes defined in the `routes/api.go` file are nested within a route group. With
 The router allows you to register routes that respond to any HTTP verb:
 
 ``` go
-Get("/photos", controller.Photos.Index),
-Post("/photos", controller.Photos.Store),
-Put("/photos/{photo}", controller.Photos.Update),
-Patch("/photos/{photo}", controller.Photos.Update),
-Delete("/photos/{photo}", controller.Photos.Destroy),
+Get("/photos", controller.PhotosIndex),
+Post("/photos", controller.PhotosStore),
+Put("/photos/{photo}", controller.PhotosUpdate),
+Patch("/photos/{photo}", controller.PhotosUpdate),
+Delete("/photos/{photo}", controller.PhotosDestroy),
 ```
 
 Sometimes you may need to register a route that responds to multiple HTTP verbs. You may do so using the `Match` method:
 
 ``` go
-Match([]string{method.Get, method.Post}, "/photos/{photo}", controller.Photos.Destroy),
+Match([]string{method.Get, method.Post}, "/photos/{photo}", controller.PhotosDestroy),
 ```
 
 Or, you may even register a route that responds to all HTTP verbs using the `Any` method:
@@ -146,14 +151,14 @@ if commentId.Present() {
 You may constrain the format of your route parameters using regex. The key and regular expression must be separated by a colon:
 
 ``` go
-Get("/user/{username:[A-Za-z]+}", controller.User.Show),
-Get("/user/{id:[0-9]+}", controller.User.Show),
+Get("/user/{username:[A-Za-z]+}", controller.UserShow),
+Get("/user/{id:[0-9]+}", controller.UserShow),
 ```
 
 Or define a restriction separately:
 
 ``` go
-Get("/user/{id}", controller.User.Show).Where("id", "[0-9]+")
+Get("/user/{id}", controller.UserShow).Where("id", "[0-9]+")
 ```
 
 #### Global Constraints
@@ -179,7 +184,7 @@ Once the pattern has been defined, it is automatically applied to all routes usi
 
 ``` go
 // Only executed if {id} is numeric...
-Get("/user/{id}", controller.User.Show),
+Get("/user/{id}", controller.UserShow),
 ```
 
 #### Encoded Forward Slashes
@@ -187,7 +192,7 @@ Get("/user/{id}", controller.User.Show),
 The Confetti routing component allows all characters except `/`. You must explicitly allow `/` to be part of your placeholder using a `Where` condition regular expression:
 
 ``` go
-Get("/search/{search}", controller.User.Index).Where("search", ".*")
+Get("/search/{search}", controller.UserIndex).Where("search", ".*")
 ```
 
 > Encoded forward slashes are only supported within the last route segment.
@@ -219,16 +224,16 @@ user := request.Make("user").(model.User)
 Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `Name` method onto the route definition:
 
 ``` go
-Get("/user/roles", controller.User.Role.Index).Name("user.roles")
-Get("/user/comments", controller.User.Comment.Index).Name("user.comments")
+Get("/user/roles", controller.UserRoleIndex).Name("user.roles")
+Get("/user/comments", controller.UserCommentIndex).Name("user.comments")
 ```
     
 Or you can name a group:
 
 ``` go
 Group(
-    Get("/roles", controller.User.Role.Index).Name("roles"),
-    Get("/comments", controller.User.Comment.Index).Name("comments"),
+    Get("/roles", controller.UserRoleIndex).Name("roles"),
+    Get("/comments", controller.UserCommentIndex).Name("comments"),
 ).Prefix("/users").Name("user.")
 ```
 
@@ -256,7 +261,7 @@ url := routing.UrlByName(app, "user.roles")
 If the named route defines parameters, you may pass the parameters as the third argument to the `UrlByName` function. The given parameters will automatically be inserted into the URL in their correct positions:
 
 ``` go 
-Get("/user/{id}", controller.User.Show).Name("user")
+Get("/user/{id}", controller.UserShow).Name("user")
 
 url := routing.UrlByName(app, "user", routing.Parameters{"id": 12})
 
@@ -267,7 +272,7 @@ url := routing.UrlByName(app, "user", routing.Parameters{"id": 12})
 If you also want to build a query string, use the 4th parameter, those key / value pairs will automatically be added to the generated URL's query string:
 
 ``` go
-Get("/user/{id}", controller.User.Show).Name("user")
+Get("/user/{id}", controller.UserShow).Name("user")
 
 routing.UrlByName(
     app,
@@ -305,8 +310,8 @@ To assign middleware to all routes within a group, you may use the `Middleware` 
 
 ``` go
 Group(
-    Get("/roles", controller.User.Role.Index),
-    Get("/comments", controller.User.Comment.Index),
+    Get("/roles", controller.Role.Index),
+    Get("/comments", controller.Comment.Index),
 ).Middleware(First{}, Second{})
 ```
 
@@ -332,7 +337,7 @@ The `Prefix` method may be used to prefix each route in the group with a given U
 
 ``` go
 Group(
-    Get("/users", controller.User.Show),
+    Get("/users", controller.UserShow),
 ).Prefix("/admin")
 
 // Matches "/admin/users"
@@ -344,7 +349,7 @@ The `Name` method may be used to prefix each route name in the group with a give
 
 ``` go
 Group(
-    Get("/users", controller.User.Show).Name("users"),
+    Get("/users", controller.UserShow).Name("users"),
 ).Name("admin.")
     
 // Matches "admin.users"
@@ -352,16 +357,14 @@ Group(
 
 ## Fallback Routes
 
-Using the `Route::fallback` method, you may define a route that will be executed when no other route matches the
-incoming request. Typically, unhandled requests will automatically render a "404" page via your application's exception
-handler. However, since you may define the `fallback` route within your `routes/web.go` file, all middleware in
-the `web` middleware group will apply to the route. You are free to add additional middleware to this route as needed:
+Typically, unhandled requests will automatically render a "404" page via your application's exception handler. Using
+the `Route::fallback` method, you may define a route that will be executed when no other route matches the incoming request.
 
 ``` go
 Group(
-    Get("/users", controller.User.Show).Name("users"),
+    Get("/users", controller.UserShow).Name("users"),
     Fallback(func(request inter.Request) inter.Response {
-        return outcome.Html("404 Page not found")
+        return outcome.Html("404 Page not found").Status(404)
     }),
 )
 ```
