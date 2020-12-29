@@ -10,7 +10,7 @@ Get("/user", func(request inter.Request) inter.Response {
 })
 ```
 
-If you use multiple routers, you can place a reference to a function in the second parameter:
+If you are using multiple routers, it is recommended to place a reference to a function in the second parameter:
 
 ``` go
 Get("/user", controller.UserIndex),
