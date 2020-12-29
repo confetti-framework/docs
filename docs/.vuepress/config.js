@@ -48,27 +48,44 @@ module.exports = {
       },
     ],
     sidebarDepth: 10,
-    sidebar: {
-      '/docs/': [
+    activeHeaderLinks: false,
+    sidebar:
+      [
         {
+          title: 'Get Started',
           collapsable: false,
+          sidebarDepth: 1,
           children: [
-            'configuration',
-            'lifecycle',
-            'container',
-            'providers',
-            'routing',
-            'middleware',
-            'requests',
-            'responses',
-            'views',
-            'validation',
-            'errors',
-            'logging',
+            '/docs/get-started/installation',
+            '/docs/get-started/configuration',
           ]
-        }
-      ],
-    }
+        },
+        {
+          title: 'Architecture Concepts',
+          collapsable: false,
+          sidebarDepth: 1,
+          children: [
+            '/docs/architecture-concepts/lifecycle',
+            '/docs/architecture-concepts/container',
+            '/docs/architecture-concepts/providers',
+          ]
+        },
+        {
+          title: 'The Basics',
+          collapsable: false,
+          sidebarDepth: 3,
+          children: [
+              '/docs/the-basics/routing',
+              '/docs/the-basics/middleware',
+              '/docs/the-basics/requests',
+              '/docs/the-basics/responses',
+              '/docs/the-basics/views',
+              '/docs/the-basics/validation',
+              '/docs/the-basics/errors',
+              '/docs/the-basics/logging',
+          ]
+        },
+      ]
   },
 
   /**

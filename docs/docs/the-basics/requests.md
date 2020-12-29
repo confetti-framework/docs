@@ -246,8 +246,7 @@ latestPage := request.Cookie("latest_page")
 latestPage, err := request.CookieE("latest_page")
 ```
 
-If you are looking for how to set a cookie, you can
-read [Attaching Cookies To Responses](responses#attaching-cookies-to-responses)
+If you are looking for how to set a cookie, you can read [Attaching Cookies To Responses](responses.html#attaching-cookies-to-responses)
 
 > If you want to receive all original cookies, you can get the cookies from source by `request.Source().Cookies()`
 

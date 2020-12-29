@@ -35,7 +35,7 @@ that is entering the application. These two kernels serve as the central locatio
 now, let's just focus on the HTTP kernel, which is located in `foundation/http/kernel.go`.
 
 The HTTP kernel constructs the `http.Kernel` struct, which defines a slice of `middlewares` that will be run before
-[route middlewares](middleware#assigning-middleware-to-routes). In these middlewares you can configure
+[route middlewares](middleware.html#assigning-middleware-to-routes). In these middlewares you can configure
 error handling, throttle or other tasks that need to be done before the request is actually handled.
 
 The HTTP kernel defines a list of HTTP [middleware](middleware) that all requests must pass through

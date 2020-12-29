@@ -63,7 +63,7 @@ func UserStore(request inter.Request) inter.Response {
 }
 ```
 
-> You can edit the error view yourself in response_service_provider.go. For more information about adjusting error responses, I refer you to the [error documentation](errors.md#custom-http-error-pages).
+> You can edit the error view yourself in response_service_provider.go. For more information about adjusting error responses, I refer you to the [error documentation](errors.html#custom-http-error-pages).
 
 #### Use Errors In Views
 
