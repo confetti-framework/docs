@@ -24,7 +24,7 @@ var User = struct {
 }
 ```
 
-More information about receiving a parameter, see: [Route Parameters](/docs/{{version}}/route-parameters)
+More information about receiving a parameter, see: [Route Parameters](route-parameters)
 
 ### Accessing The Request Via Route Closures
 
@@ -247,7 +247,7 @@ latestPage, err := request.CookieE("latest_page")
 ```
 
 If you are looking for how to set a cookie, you can
-read [Attaching Cookies To Responses](/docs/{{version}}/responses#attaching-cookies-to-responses)
+read [Attaching Cookies To Responses](responses#attaching-cookies-to-responses)
 
 > If you want to receive all original cookies, you can get the cookies from source by `request.Source().Cookies()`
 

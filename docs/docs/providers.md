@@ -14,11 +14,11 @@ In this overview you will learn how to write your own service providers and regi
 
 ## Writing Service Providers
 
-All service providers implements the `inter.RegisterServiceProvider` or `inter.BootServiceProvider` interface. The service providers contain a `Register` and/or a `Boot` method. Within the `Register` method, you should **only bind things into the [service container](/docs/{{version}}/container)**. You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. You can have a service provider with a register and a boot method. Then you have to add this service to the RegisterProviders slice, and the BootProviders slice.
+All service providers implements the `inter.RegisterServiceProvider` or `inter.BootServiceProvider` interface. The service providers contain a `Register` and/or a `Boot` method. Within the `Register` method, you should **only bind things into the [service container](container)**. You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. You can have a service provider with a register and a boot method. Then you have to add this service to the RegisterProviders slice, and the BootProviders slice.
 
 ### The Register Method
 
-As mentioned previously, within the `Register` method, you should only bind things into the [service container](/docs/{{version}}/container). You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. Otherwise, you may accidentally use a service that is provided by a service provider which has not loaded yet.
+As mentioned previously, within the `Register` method, you should only bind things into the [service container](container). You should never attempt to register any event listeners, routes, or any other piece of functionality within the `Register` method. Otherwise, you may accidentally use a service that is provided by a service provider which has not loaded yet.
 
 Let's take a look at a basic service provider. Within any of your service provider methods, you always have access to the `inter.Container` property which provides access to the service container:
 
@@ -43,7 +43,7 @@ func (r RiakServiceProvider) Register(container inter.Container) inter.Container
 }
 ```
 
-This service provider only defines a `Register` method, and uses that method to define an implementation of `riak` in the service container. If you don't understand how the service container works, check out [its documentation](/docs/{{version}}/container).
+This service provider only defines a `Register` method, and uses that method to define an implementation of `riak` in the service container. If you don't understand how the service container works, check out [its documentation](container).
 
 ### The Boot Method
 
@@ -65,7 +65,7 @@ func (d DataDog) Boot(container inter.Container) inter.Container {
 
 #### Boot Method Dependency Injection
 
-You may use Container for your dependencies in your service provider's `Boot` method. The [service container](/docs/{{version}}/container) will automatically inject any dependencies you need:
+You may use Container for your dependencies in your service provider's `Boot` method. The [service container](container) will automatically inject any dependencies you need:
 
 ``` go
 func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {

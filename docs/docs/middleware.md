@@ -36,7 +36,7 @@ As you can see, if the given `age` is less than or equal to `200`, the middlewar
 
 It's best to envision middleware as a series of "layers" HTTP requests must pass through before they hit your application. Each layer can examine the request and even reject it entirely.
 
-> The request contains the [service container](/docs/{{version}}/container), so you may fetch any dependencies you need with `request.Make(...)`.
+> The request contains the [service container](container), so you may fetch any dependencies you need with `request.Make(...)`.
 
 ### Before & After Middleware
 

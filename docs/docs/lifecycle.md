@@ -17,11 +17,11 @@ what is going on, and your knowledge will grow as you explore other sections of 
 
 The entry point for all requests to a Confetti application is the `main.go` file. This file listens to all incoming requests (without apache or nginx). Feel free to adjust main.go so that confetti no longer listens to a port. That way you can for example use Apache or Nginx to call `main`.
 
-The `main.go` file retrieves an instance of the Confetti application from `bootstrap/app.go` script. The first action taken by Confetti itself is to create an instance of the application / [service container](/docs/{{version}}/container).
+The `main.go` file retrieves an instance of the Confetti application from `bootstrap/app.go` script. The first action taken by Confetti itself is to create an instance of the application / [service container](container).
 
 ### Service Providers
 
-One of the most important bootstrapping actions is loading the [service providers](/docs/{{version}}/providers) for your application. All of the service providers for the application are configured in the `app/providers/providers.go` file. First, the `Register` method will be called on all RegisterProviders. Then, once all providers have been registered, the `Boot` method will be called on the BootProviders. 
+One of the most important bootstrapping actions is loading the [service providers](providers) for your application. All of the service providers for the application are configured in the `app/providers/providers.go` file. First, the `Register` method will be called on all RegisterProviders. Then, once all providers have been registered, the `Boot` method will be called on the BootProviders.
 
 Service providers are responsible for bootstrapping all the framework's various components, such as the database,
 configuration, queue, validation, and routing components. Since they bootstrap and configure every feature offered by the framework, service providers are the most important aspect of the entire Confetti bootstrap process. Feel free to create a service provider yourself.
@@ -35,10 +35,10 @@ that is entering the application. These two kernels serve as the central locatio
 now, let's just focus on the HTTP kernel, which is located in `foundation/http/kernel.go`.
 
 The HTTP kernel constructs the `http.Kernel` struct, which defines a slice of `middlewares` that will be run before
-[route middlewares](/docs/{{version}}/middleware#assigning-middleware-to-routes). In these middlewares you can configure
+[route middlewares](middleware#assigning-middleware-to-routes). In these middlewares you can configure
 error handling, throttle or other tasks that need to be done before the request is actually handled.
 
-The HTTP kernel defines a list of HTTP [middleware](/docs/{{version}}/middleware) that all requests must pass through
+The HTTP kernel defines a list of HTTP [middleware](middleware) that all requests must pass through
 before being handled by the application. Feel free to add your own middleware.
 
 ### Dispatch Request

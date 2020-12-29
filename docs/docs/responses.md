@@ -23,7 +23,7 @@ Get("/", func(_ inter.Request) inter.Response {
 }),
 ```
 
-> Did you know you can also return `[support.Collection](/docs/{{version}}/collections)` and `[support.Map](/docs/{{version}}/collections)` from your routes or controllers? They will automatically be converted to JSON. Give it a shot!
+> Did you know you can also return `[support.Collection](collections)` and `[support.Map](collections)` from your routes or controllers? They will automatically be converted to JSON. Give it a shot!
 
 ### Response Objects
 
@@ -147,7 +147,7 @@ return outcome.Json(map[string]string{
 
 ### View Responses
 
-If you need control over the response's status and headers but also need to return a [view](/docs/{{version}}/views) as
+If you need control over the response's status and headers but also need to return a [view](views) as
 the response's content, you can use the `outcome.Html` method with a created view:
 
 ``` go

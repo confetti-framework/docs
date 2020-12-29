@@ -41,7 +41,7 @@ A deep understanding of the Confetti service container is essential to building 
 
 ### Binding Basics
 
-Almost all of your service container bindings will be registered within [service providers](/docs/{{version}}/providers), so most of these examples will demonstrate using the container in that context.
+Almost all of your service container bindings will be registered within [service providers](providers), so most of these examples will demonstrate using the container in that context.
 
 > There is no need to bind structs into the container if they do not depend on any interfaces. The container does not need to be instructed on how to build these objects, since it can automatically resolve these objects using reflection.
 
