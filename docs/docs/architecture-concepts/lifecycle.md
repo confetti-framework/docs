@@ -21,7 +21,7 @@ The `main.go` file retrieves an instance of the Confetti application from `boots
 
 ### Service Providers
 
-One of the most important bootstrapping actions is loading the [service providers](providers) for your application. All of the service providers for the application are configured in the `app/providers/providers.go` file. First, the `Register` method will be called on all RegisterProviders. Then, once all providers have been registered, the `Boot` method will be called on the BootProviders.
+One of the most important bootstrapping actions is loading the [service providers](providers) for your application. All of the service providers for the application are configured in the `app/providers/provider_index.go` file. First, the `Register` method will be called on all RegisterProviders. Then, once all providers have been registered, the `Boot` method will be called on the BootProviders.
 
 Service providers are responsible for bootstrapping all the framework's various components, such as the database,
 configuration, queue, validation, and routing components. Since they bootstrap and configure every feature offered by the framework, service providers are the most important aspect of the entire Confetti bootstrap process. Feel free to create a service provider yourself.
@@ -31,23 +31,14 @@ configuration, queue, validation, and routing components. Since they bootstrap a
 ### HTTP / Console Kernels
 
 Next, the incoming request is sent to either the HTTP kernel or the console kernel, depending on the type of request
-that is entering the application. These two kernels serve as the central location that all requests flow through. For
-now, let's just focus on the HTTP kernel, which is located in `foundation/http/kernel.go`.
-
-The HTTP kernel constructs the `http.Kernel` struct, which defines a slice of `middlewares` that will be run before
-[route middlewares](middleware.html#assigning-middleware-to-routes). In these middlewares you can configure
-error handling, throttle or other tasks that need to be done before the request is actually handled.
-
-The HTTP kernel defines a list of HTTP [middleware](middleware) that all requests must pass through
-before being handled by the application. Feel free to add your own middleware.
-
-### Dispatch Request
-
-Once the application has been bootstrapped and all service providers have been registered, the `inter.Request` will be handed off to the router for dispatching. The router will run any route specific middleware and dispatch the request to a controller.
+that is entering the application. The `inter.Request` will be handed off to the router for dispatching. The router
+will run any route specific [middleware](../the-basics/middleware.html#assigning-middleware-to-routes) and dispatch the request to a controller.
 
 ## Focus On Service Providers
 
-Service providers are truly the key to bootstrapping a Confetti application. The application instance is created, the service providers are registered and bootstrapped, and the request is handed through global middlewares and route middlewares. It's really that simple!
+Service providers are truly the key to bootstrapping a Confetti application. The application instance is created
+once and the service providers are bootstrapped once. Then when a request comes in, it is handed through global
+ middlewares and route middlewares. It's really that simple!
 
 Having a firm grasp of how a Confetti application is built and bootstrapped via service providers is very valuable. Your application's default service providers are stored in the `app/providers` directory.
 

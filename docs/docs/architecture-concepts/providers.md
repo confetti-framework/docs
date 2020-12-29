@@ -69,7 +69,7 @@ You may use Container for your dependencies in your service provider's `Boot` me
 
 ``` go
 func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {
-    eventPusher := app.Make("EventPusher")(contract.EventPusher)
+    eventPusher := app.Make("EventPusher").(contract.EventPusher)
     //
 
     return app

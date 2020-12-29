@@ -23,7 +23,7 @@ type User struct {
 func NewUser(app inter.App) User {
 
     // Receive the repository from the application container
-    userRepository := app.Make(repository.User{})(repository.User)
+    userRepository := app.Make(repository.User{}).(repository.User)
 
     return User{app: app, repository: userRepository}
 }
@@ -93,7 +93,7 @@ app.Bind(
 This statement tells the container that it should inject the `redis.EventPusher` when a struct needs an implementation of `contract.EventPusher`. Now we can type-hint the `contract.EventPusher` interface in a constructor, or any other location where dependencies are injected by the service container:
 
 ``` go
-eventPusher := app.Make((*contract.EventPusher)(nil))(contract.EventPusher)
+eventPusher := app.Make((*contract.EventPusher)(nil)).(contract.EventPusher)
 ```
 
 ### Binding Without Abstract
