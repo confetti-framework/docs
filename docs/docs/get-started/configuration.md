@@ -53,7 +53,7 @@ if app.IsEnvironment("local") {
     // The environment is local
 }
 
-if app.IsEnvironment("local", "staging") {
+if app.IsEnvironment("local", "testing") {
     // The environment is either local OR testing...
 }
 ```

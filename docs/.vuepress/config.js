@@ -20,7 +20,8 @@ module.exports = {
   head: [
     ['meta', { name: 'theme-color', content: '#00828e' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: '#00828e' }],
+    ['link', { rel: "shortcut icon", href: "https://raw.githubusercontent.com/confetti-framework/docs/gh-pages/favicon.ico"}]
   ],
 
   /**
