@@ -109,7 +109,8 @@ Get("posts/{post_id}/comments/{comment_alias}", func(request inter.Request) inte
 }),
 ```
 
-If the parameter cannot be found, a Confetti exception is thrown. Do you want more control over the errors? Then use methods with the suffix E to receive an error:
+If the parameter cannot be found, then it will panic with an error. Do you want more control over the errors? Then use methods with the suffix E to
+receive the error:
 
 ``` go
 postId, err := request.Value("post_id").NumberE()
@@ -166,8 +167,7 @@ Get("/user/{id}", controller.UserShow).Where("id", "[0-9]+")
 If you would like a route parameter to always be constrained by a given regular expression, you may use the `WhereMulti` method. You should define these patterns in the `Boot` method of your `RouteServiceProvider` after the collection is filled:
 
 ``` go
-// Define your router model bindings, pattern filters, etc.
-func (p RouteServiceProvider) Boot() {
+func (p RouteServiceProvider) Boot(container inter.Container) inter.Container {
     collection := routing.NewRouteCollection()
 
     collection.Merge(routes.Api)
@@ -177,6 +177,8 @@ func (p RouteServiceProvider) Boot() {
         "id": "[0-9]+",
         "username": "[a-z_]+",
     })
+    
+    //
 }
 ```
 
@@ -199,12 +201,12 @@ Get("/search/{search}", controller.UserIndex).Where("search", ".*")
 
 ### Route Model Binding
 
-Since Golang is a strict typed language, it can be difficult to convert a request into a struct. For simple transformation of a parameter to a model, you can bind a model to a parameter. You can use the RouteModelBinding middleware for this:
+For simple transformation of a parameter to a model, you can bind a model to a parameter. You can use the RouteModelBinding middleware for this:
 
 ``` go
-func (b RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.Response {
+func (r RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.Response {
     request.App().Bind("user", func() model.User {
-        return model.User.Find(request.Value("user"))
+        return model.User.Find(request.Parameter("user_id").Int())
     })
     
     return next(request)
@@ -217,7 +219,7 @@ Later you can retrieve the user from the container:
 user := request.Make("user").(model.User)
 ```
 
-> The callback ensures that the user is received from the database when you need it. This can be nice if you first want to validate the request before accessing the database.
+> The callback ensures that the user is only received from the database when you need it. This can be nice if you first want to validate the request before accessing the database.
 
 ## Named Routes
 
@@ -376,7 +378,7 @@ Group(
 You can get the current router from the container:
 
 ``` go
-yourStruct.App().Make("route").(inter.Route)
+app.Make("route").(inter.Route)
 ```
      
  Or get the route from the request:
