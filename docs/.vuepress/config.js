@@ -86,7 +86,11 @@ module.exports = {
               '/docs/the-basics/logging',
           ]
         },
-      ]
+      ],
+    algolia: {
+      apiKey: '<API_KEY>',
+      indexName: '<INDEX_NAME>'
+    }
   },
 
   /**

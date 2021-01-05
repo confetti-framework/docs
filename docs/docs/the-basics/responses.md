@@ -125,7 +125,7 @@ return outcome.RedirectToRoute(request.App(), "profile", outcome.Parameters{"id"
 You may also generate redirects the request to controller actions. To do so, simply call the controller:
 
 ``` go
-return controller.Homepage(request)
+return controllers.Homepage(request)
 ```
 
 ## Other Response Types

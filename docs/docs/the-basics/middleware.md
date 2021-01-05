@@ -24,7 +24,7 @@ import (
 type CheckAge struct{}
 
 func (c CheckAge) Handle(request inter.Request, next inter.Next) inter.Response {
-    if request.Value("age").Number() <= 200 {
+    if request.Value("age").Int() <= 200 {
         return outcome.RedirectTemporary("home")
     }
     
@@ -36,7 +36,7 @@ As you can see, if the given `age` is less than or equal to `200`, the middlewar
 
 It's best to envision middleware as a series of "layers" HTTP requests must pass through before they hit your application. Each layer can examine the request and even reject it entirely.
 
-> The request contains the [service container](container), so you may fetch any dependencies you need with `request.Make(...)`.
+> The request contains the [service container](../architecture-concepts/container), so you may fetch any dependencies you need with `request.Make(...)`.
 
 ### Before & After Middleware
 
@@ -101,10 +101,10 @@ Get("/admin/profile", func(request inter.Request) inter.Response {
 
 When assigning middleware to a group of routes, you may occasionally need to prevent the middleware from being applied to an individual route within the group. You may accomplish this using the `WithoutMiddleware` method:
 
-``` go
+``` go {3}
 routes := Group(
-    Get("/roles", controller.Roles.Index),
-    Get("/comments", controller.Comments.Index).WithoutMiddleware(middleware.CheckAge{}),
+    Get("/roles", controllers.Roles),
+    Get("/comments", controllers.Comments).WithoutMiddleware(middleware.CheckAge{}),
 ).Middleware(
     middleware.ValidatePostSize{},
     middleware.CheckAge{},
@@ -137,7 +137,7 @@ var Web = []inter.HttpMiddleware{
 Middleware groups can be loaded by using the spread operator in the `Middleware` method. Again, middleware groups make it more convenient to assign many middlewares to a route at once:
 
 ``` go
-Get("/user", controller.User.List).Middleware(middleware.Web...),
+Get("/user", controllers.User).Middleware(middleware.Web...),
 
 Group(
     //
