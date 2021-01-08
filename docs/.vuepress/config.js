@@ -88,8 +88,8 @@ module.exports = {
         },
       ],
     algolia: {
-      apiKey: '<API_KEY>',
-      indexName: '<INDEX_NAME>'
+      apiKey: '0dcf5e48e640b2a4050ab34effe02650',
+      indexName: 'confetti-framework'
     }
   },
 
