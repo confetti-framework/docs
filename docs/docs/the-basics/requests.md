@@ -13,18 +13,14 @@ import (
     "github.com/confetti-framework/routing/outcome"
 )
 
-var User = struct {
-    Store inter.Controller
-}{
-    Store: func(request inter.Request) inter.Response {
-        name := request.Value("name").String()
+func UserStore(request inter.Request) inter.Response {
+    name := request.Parameter("name").String()
 
-        return outcome.Html("Username:" + name)
-    },
+    return outcome.Html("Username:" + name)
 }
 ```
 
-More information about receiving a parameter, see: [Route Parameters](route-parameters)
+More information about receiving a parameter, see: [Route Parameters](routing.html#route-parameters)
 
 ### Accessing The Request Via Route Closures
 
@@ -77,13 +73,16 @@ url := request.FullUrl()
 
 #### Retrieving The Request Method
 
-The `Method` method will return the HTTP verb for the request. You may use the `IsMethod` helper method to verify that
-the HTTP verb matches a given string:
+The `Method` method will return the HTTP verb for the request:
 
 ``` go
 method := request.Method()
+```
 
-if request_helper.IsMethod(request, method.Post) {
+You may use the `IsMethod` helper method to verify that the HTTP verb matches a given string:
+
+``` go
+if http_helper.IsMethod(request, method.Post) {
     //
 }
 ```
@@ -92,16 +91,13 @@ if request_helper.IsMethod(request, method.Post) {
 
 #### Retrieving An Input Value
 
-Using a few simple methods, you may access all of the user input from your `http.request` instance without worrying
-about which HTTP verb was used for the request. Regardless of the HTTP verb, the `Content` method may be used to
-retrieve user input:
+Using a few simple methods, you may access the user input from your `http.request` instance. Depending on the `Content-Type` header, the `Content` method may be used to retrieve user input:
 
 ``` go
 name := request.Content("name").String()
 ```
 
-You may pass a default value as the second argument to the `ContentOr` method. This value will be returned if the
-requested input value is not present on the request:
+You may pass a default value as the second argument to the `ContentOr` method. This value will be returned if the requested input value is not present on the request:
 
 ``` go
 name := request.ContentOr("name", "Sally").String()
@@ -112,7 +108,6 @@ When working with forms that contain array inputs, use "dot" notation to access 
 ``` go
 name := request.Content("names.1").String()
 name, err := request.Content("names.1").StringE()
-
 names := request.Content("names.*").Collection()
 ```
 
@@ -124,39 +119,35 @@ requestValues = request.Content("").Map()
 
 #### Retrieving JSON Input Values
 
-When sending JSON requests to your application, you may access the JSON data via the `Body` method as long as
-the `Content-Type` header of the request is properly set to `application/json`. You may even use "dot" syntax to dig
-into JSON arrays:
+When sending JSON requests to your application, you may access the JSON data via the `Body` method as long as the `Content-Type` header of the request is properly set to `application/json`. You may even use "dot" syntax to dig into JSON arrays:
 
 ``` go
-name := request.Body("data.address.street").String()
+name := request.Content("data.address.street").String()
 ```
 
 #### Retrieving Raw Content Data
 
-To receive the data as it was sent, use the `Content` method. In that case you will always receive a string
+To receive the data as it was sent, use the `Body` method. In that case you will always receive a string
 
 ``` go
-rawContent := request.GetBody()
+rawContent := request.Body()
 ```
 
 #### Retrieving Input From The Query String
 
-While the `Value` method retrieves values from entire request payload (including the query string), the `Parameter`
-method will only retrieve values from the query string:
+While the `Content` method retrieves values from the request payload, the `Parameter` method will retrieve values from the url, and the query string:
 
 ``` go
 name := request.Parameter("name")
 ```
 
-If the requested query string value data is not present, the second argument to this method will be returned:
+You may pass a default value as the second argument to the `ParameterOr` method. If the requested query string value data is not present, the second argument to this method will be returned:
 
 ``` go
 name := request.ParameterOr("name", "Sally").String()
 ```
 
-You may call the `Parameter` method with an empty string in order to retrieve all of the query string values as
-support.Map:
+You may call the `Parameter` method with an empty string in order to retrieve all the query string values as support.Map:
 
 ``` go
 parameters := request.Parameter("").Map()
@@ -164,23 +155,19 @@ parameters := request.Parameter("").Map()
 
 #### Retrieving Boolean Input Values
 
-When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings.
-For example, "true" or "on". For convenience, you may use the `Bool` method to retrieve these values as booleans.
-The `Bool` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
+When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings. For example, "true" or "on". For convenience, you may use the `Bool` method to retrieve these values as booleans. The `Bool` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
 
 ``` go
-archived := request.Body("archived").Bool()
-archived, err := request.Body("archived").BoolE()
+archived := request.Content("archived").Bool()
 ```
 
 #### Retrieving A Portion Of The Input Data
 
-If you need to retrieve a subset of the input data, you may use the `Only` and `Except` methods. Both of these methods
-accept dynamic list of arguments:
+If you need to retrieve a subset of the input data, you may use the `Only` and `Except` methods. Both of these methods accept dynamic list of arguments:
 
 ``` go
-request.Body("data.user").Map().Only("username", "password")
-request.Body("data.user").Map().Except("username", "password")
+request.Content("data.user").Map().Only("username", "password")
+request.Content("data.user").Map().Except("username", "password")
 ```
 
 > The `only` method returns all of the key / value pairs that you request; however, it will not return key / value pairs that are not present on the request.
@@ -191,8 +178,8 @@ You should use the `Has` method to determine if a value is present on the reques
 the value is present on the request:
 
 ``` go
-body := request.Body("data.user").Map()
-if body.Has("name") {
+user := request.Content("data.user").Map()
+if user.Has("name") {
     //
 }
 ```
@@ -200,8 +187,8 @@ if body.Has("name") {
 When given multiple strings, the `Has` method will determine if all of the specified values are present:
 
 ``` go
-body := request.Body("data.user").Map()
-if body.Has("name", "email") {
+user := request.Content("data.user").Map()
+if user.Has("name", "email") {
     //
 }
 ```
@@ -209,8 +196,8 @@ if body.Has("name", "email") {
 The `HasAny` method returns `true` if any of the specified values are present:
 
 ``` go
-body := request.Body("data.user").Map()
-if body.HasAny("name", "email") {
+user := request.Content("data.user").Map()
+if user.HasAny("name", "email") {
     //
 }
 ```
@@ -218,8 +205,8 @@ if body.HasAny("name", "email") {
 To determine if a given key is absent from the request, you may use the `Missing` method:
 
 ``` go
-body := request.Body("data.user").Map()
-if body.Missing("name") {
+user := request.Content("data.user").Map()
+if user.Missing("name") {
     //
 }
 ```
@@ -227,8 +214,8 @@ if body.Missing("name") {
 If you would like to determine if a value is present on the request and is not empty, you may use the `Filled` method:
 
 ``` go
-body := request.Body("data.user").Map()
-if body.Filled("name") {
+user := request.Content("data.user").Map()
+if user.Filled("name") {
     //
 }
 ```
@@ -255,7 +242,7 @@ If you are looking for how to set a cookie, you can read [Attaching Cookies To R
 ### Retrieving Uploaded Files
 
 You may access uploaded files from a `inter.Request` instance using the `File` method. The `File` method returns an
-instance of the `support.File`, which holds the Go `multipart.File` interface and provides a variety of methods for
+instance of the `support.File`, which holds the Go `multipart.File` interface (via `file.Source()`) and provides a variety of methods for
 interacting with the file:
 
 ``` go

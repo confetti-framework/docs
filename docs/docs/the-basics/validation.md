@@ -196,7 +196,7 @@ func (u Uppercase) Verify(value support.Value) error {
 
 ### Dependency Injection
 
-If you need dependency injection in your rule? Then you can use interface `inter.RuleWithApp` with method `SetApp` to
+If you need dependency injection in your rule? Then you can implement interface `inter.RuleWithApp` with method `SetApp` to
 set up `inter.AppReader` for dependency injection:
 
 ``` go{17}

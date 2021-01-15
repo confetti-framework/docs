@@ -11,7 +11,7 @@ the `app/http/middleware` directory.
 
 ## Defining Middleware
 
-Let's place a new `CheckAge` struct within your `app/http/middleware` directory. In this middleware, we will only allow access to the route if the supplied `age` is greater than 200. Otherwise, we will redirect the users back to the `home` URI:
+Let's place a new `EnsureTokenIsValid` struct within your `app/http/middleware` directory. In this middleware, we will only allow access to the route if the supplied `token` is valid. Otherwise, we will redirect the users back to the `home` URI:
 
 ``` go
 package middleware
@@ -21,10 +21,10 @@ import (
     "github.com/confetti-framework/routing/outcome"
 )
 
-type CheckAge struct{}
+type EnsureTokenIsValid struct{}
 
-func (c CheckAge) Handle(request inter.Request, next inter.Next) inter.Response {
-    if request.Value("age").Int() <= 200 {
+func (c EnsureTokenIsValid) Handle(request inter.Request, next inter.Next) inter.Response {
+    if request.Parameter("token").String() != "my-secret-token" {
         return outcome.RedirectTemporary("home")
     }
     
@@ -32,7 +32,7 @@ func (c CheckAge) Handle(request inter.Request, next inter.Next) inter.Response 
 }
 ```
 
-As you can see, if the given `age` is less than or equal to `200`, the middleware will return an HTTP redirect to the client; otherwise, the request will be passed further into the application. To pass the request deeper into the application (allowing the middleware to "pass"), call the `next` callback with the `request`.
+To pass the request deeper into the application (allowing the middleware to "pass"), call the `next` callback with the `request`. Then the request will be passed further into the application.
 
 It's best to envision middleware as a series of "layers" HTTP requests must pass through before they hit your application. Each layer can examine the request and even reject it entirely.
 
@@ -42,7 +42,7 @@ It's best to envision middleware as a series of "layers" HTTP requests must pass
 
 Whether a middleware runs before or after a request depends on the middleware itself. For example, the following middleware would perform some task **before** the request is handled by the application:
 
-``` go
+``` go {10-12}
 package middleware
 
 import (
@@ -52,6 +52,7 @@ import (
 type BeforeMiddleware struct{}
 
 func (c BeforeMiddleware) Handle(request inter.Request, next inter.Next) inter.Response {
+
     // Perform action
 
     return next(request)
@@ -60,7 +61,7 @@ func (c BeforeMiddleware) Handle(request inter.Request, next inter.Next) inter.R
 
 However, this middleware would perform its task **after** the request is handled by the application:
 
-``` go
+``` go {11-13}
 package middleware
 
 import (
@@ -88,23 +89,23 @@ in `app/providers/route_service_provider.go`.
 
 ### Assigning Middleware To Routes
 
-If you would like to assign middleware to specific routes, you should pass the struct of the middleware:
+If you would like to assign middleware to specific routes, you can use the `Middleware` method to pass the struct of the middleware:
 
-``` go
-Get("/admin/profile", func(request inter.Request) inter.Response {
-    //
-}).Middleware(
-    middleware.ValidatePostSize{},
-    middleware.CheckAge{},
-)
+``` go {2-5}
+Get("/admin/profile", controllers.AdminProfileStore).
+    Middleware(
+        middleware.ValidatePostSize{},
+        middleware.CheckAge{},
+    )
 ```
 
 When assigning middleware to a group of routes, you may occasionally need to prevent the middleware from being applied to an individual route within the group. You may accomplish this using the `WithoutMiddleware` method:
 
-``` go {3}
+``` go {4}
 routes := Group(
     Get("/roles", controllers.Roles),
-    Get("/comments", controllers.Comments).WithoutMiddleware(middleware.CheckAge{}),
+    Get("/comments", controllers.Comments).
+        WithoutMiddleware(middleware.CheckAge{}),
 ).Middleware(
     middleware.ValidatePostSize{},
     middleware.CheckAge{},
@@ -136,9 +137,7 @@ var Web = []inter.HttpMiddleware{
 
 Middleware groups can be loaded by using the spread operator in the `Middleware` method. Again, middleware groups make it more convenient to assign many middlewares to a route at once:
 
-``` go
-Get("/user", controllers.User).Middleware(middleware.Web...),
-
+``` go {3}
 Group(
     //
 ).Middleware(middleware.Web...)
@@ -150,13 +149,13 @@ Group(
 
 Middleware can also receive additional parameters. For example, if your application needs to verify that the authenticated user has a given "role" before performing a given action, you could create a `CheckRole` middleware that receives a role name as an additional public field.
 
-``` go
+``` go {10,14}
 package middleware
 
 import (
     "github.com/confetti-framework/contract/inter"
     "github.com/confetti-framework/routing/outcome"
-    "confetti/src/adapter"
+    "confetti/src/request-adapter"
 )
 
 type CheckRole struct{
@@ -164,7 +163,7 @@ type CheckRole struct{
 }
 
 func (c CheckRole) Handle(request inter.Request, next inter.Next) inter.Response {
-    if !adapter.CurrentUser(request).HasRole(c.Role) {
+    if requestAdapter.CurrentUser(request).Role() != c.Role {
         return outcome.RedirectTemporary("/home")
     }
 
