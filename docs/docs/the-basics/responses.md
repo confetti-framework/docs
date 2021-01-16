@@ -23,18 +23,18 @@ Get("/", func(_ inter.Request) inter.Response {
 }),
 ```
 
-> Did you know you can also return `[support.Collection](collections)` and `[support.Map](collections)` from your routes or controllers? They will automatically be converted to JSON. Give it a shot!
+> Did you know you can also return `support.Collection` and `support.Map` from your routes or controllers? They will automatically be converted to JSON. Give it a shot!
 
 ### Response Objects
 
-Functions `outcome.Html`, `outcome.Jsone` and `outcome.Content` return an object with interface `inter.Response`. That
+Functions `outcome.Html`, `outcome.Json` and `outcome.Content` return an object with interface `inter.Response`. That
 allows you to customize the response's HTTP status code and headers:
 
-``` go
+``` go {2-4}
 Get("home", func(_ inter.Request) inter.Response {
     return outcome.Html("Hello World").
         Status(200).
-        Headers(http.Header{"Content-Type": {"text/plain"}})
+        Header("Content-Type", "text/plain")
 }),
 ```
 
@@ -101,7 +101,7 @@ outcome.Redirect("home/dashboard", net.StatusPermanentRedirect)
 Sometimes you may need to redirect to a domain outside of your application. Even then you can use the above methods:
 
 ``` go
-return outcome.RedirectTemporary("https://laravel.com")
+return outcome.RedirectTemporary("https://github.com/confetti-framework")
 ```    
 
 ### Redirecting To Named Routes
@@ -122,7 +122,7 @@ return outcome.RedirectToRoute(request.App(), "profile", outcome.Parameters{"id"
 
 ### Redirecting To Controller Actions
 
-You may also generate redirects the request to controller actions. To do so, simply call the controller:
+You may also redirect the request to controller actions. To do so, simply call the controller:
 
 ``` go
 return controllers.Homepage(request)
@@ -186,7 +186,7 @@ write the contents of the operation to disk. You may use the `Content` function 
 ``` go
 return outcome.Content("%PDF-1.5").
     Header("Content-Type", "application/pdf").
-    FileName("readme.md")
+    FileName("labels.pdf")
 ```
 
 ### Show In Browser

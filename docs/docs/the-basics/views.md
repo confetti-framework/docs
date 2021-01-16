@@ -10,7 +10,7 @@ stored in the `resources/views` directory.
 
 ### HTML response
 
-A simple view for a HTML response might look something like this:
+A simple view for an HTML response might look something like this:
 
 ``` go
 package views
@@ -103,7 +103,7 @@ look like this:
 
 You can use the `template` tag to import predefined templates:
 
-``` html
+``` html {4}
 <html>
     <body>
         <h1>World's shortest street</h1>
@@ -123,7 +123,7 @@ at [the manual](https://golang.org/pkg/text/template/#Template.AddParseTree).
 
 You can define functions in providers.ViewServiceProvider. You can use those functions in any template:
 
-``` go
+``` go {3-6}
 templateBuilder.Funcs(template.FuncMap{
     return templateBuilder.Funcs(template.FuncMap{
         "Replace": func(input, from, to string) string {

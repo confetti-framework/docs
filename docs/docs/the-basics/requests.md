@@ -89,7 +89,7 @@ if http_helper.IsMethod(request, method.Post) {
 
 ## Retrieving Input Value
 
-#### Retrieving An Input Value
+### Retrieving An Input Value
 
 Using a few simple methods, you may access the user input from your `http.request` instance. Depending on the `Content-Type` header, the `Content` method may be used to retrieve user input:
 
@@ -117,7 +117,7 @@ You may call the `Content` method with an empty string in order to retrieve all 
 requestValues = request.Content("").Map()
 ```
 
-#### Retrieving JSON Input Values
+### Retrieving JSON Input Values
 
 When sending JSON requests to your application, you may access the JSON data via the `Body` method as long as the `Content-Type` header of the request is properly set to `application/json`. You may even use "dot" syntax to dig into JSON arrays:
 
@@ -125,7 +125,7 @@ When sending JSON requests to your application, you may access the JSON data via
 name := request.Content("data.address.street").String()
 ```
 
-#### Retrieving Raw Content Data
+### Retrieving Raw Content Data
 
 To receive the data as it was sent, use the `Body` method. In that case you will always receive a string
 
@@ -133,7 +133,7 @@ To receive the data as it was sent, use the `Body` method. In that case you will
 rawContent := request.Body()
 ```
 
-#### Retrieving Input From The Query String
+### Retrieving Input From The Query String
 
 While the `Content` method retrieves values from the request payload, the `Parameter` method will retrieve values from the url, and the query string:
 
@@ -153,7 +153,7 @@ You may call the `Parameter` method with an empty string in order to retrieve al
 parameters := request.Parameter("").Map()
 ```
 
-#### Retrieving Boolean Input Values
+### Retrieving Boolean Input Values
 
 When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings. For example, "true" or "on". For convenience, you may use the `Bool` method to retrieve these values as booleans. The `Bool` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
 
@@ -161,7 +161,7 @@ When dealing with HTML elements like checkboxes, your application may receive "t
 archived := request.Content("archived").Bool()
 ```
 
-#### Retrieving A Portion Of The Input Data
+### Retrieving A Portion Of The Input Data
 
 If you need to retrieve a subset of the input data, you may use the `Only` and `Except` methods. Both of these methods accept dynamic list of arguments:
 
@@ -172,7 +172,7 @@ request.Content("data.user").Map().Except("username", "password")
 
 > The `only` method returns all of the key / value pairs that you request; however, it will not return key / value pairs that are not present on the request.
 
-#### Determining If An Input Value Is Present
+### Determining If An Input Value Is Present
 
 You should use the `Has` method to determine if a value is present on the request. The `Has` method returns `true` if
 the value is present on the request:
@@ -222,9 +222,7 @@ if user.Filled("name") {
 
 > If you have a slice with multiple keys, you can use the spread operator: `.Has(keys...)`
 
-### Cookies
-
-#### Retrieving Cookies From Requests
+### Retrieving Cookies From Requests
 
 To retrieve a cookie value from the request, use the `Cookie` method on a `inter.Request` instance:
 
@@ -265,7 +263,7 @@ if file, err := request.FileE("photo"); err == nil {
 }
 ```
 
-#### File Paths & Extensions
+### File Paths & Extensions
 
 The `support.File` struct also contains methods for accessing the file's fully-qualified path and its extension.
 The `Extension` method will attempt to guess the file's extension based on its contents. This extension may be different
