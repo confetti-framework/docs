@@ -41,7 +41,7 @@ module.exports = {
       },
       {
         text: 'Github',
-        link: 'https://github.com/confetti-framework',
+        link: 'https://github.com/confetti-framework/confetti',
       },
       {
         text: 'Edit',
@@ -55,8 +55,9 @@ module.exports = {
         {
           title: 'Get Started',
           collapsable: false,
-          sidebarDepth: 1,
+          sidebarDepth: 0,
           children: [
+            '/docs/get-started/meet',
             '/docs/get-started/installation',
             '/docs/get-started/configuration',
           ]

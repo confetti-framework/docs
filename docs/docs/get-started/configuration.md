@@ -12,21 +12,15 @@ It is often helpful to have different configuration values based on the environm
 
 To make this a cinch, Confetti utilizes the [GoDotEnv](https://github.com/joho/godotenv) library by John Barton. In a fresh Confetti installation, the root directory of your application will contain a `.env` file.
 
-Your `.env` file should not be committed to your application's source control, since each developer / server using your
-application could require a different environment configuration. Furthermore, this would be a security risk in the event
-an intruder gains access to your source control repository, since any sensitive credentials would get exposed.
+Your `.env` file should not be committed to your application's source control, since each developer / server using your application could require a different environment configuration. Furthermore, this would be a security risk in the event an intruder gains access to your source control repository, since any sensitive credentials would get exposed.
 
-If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By
-putting placeholder values in the example configuration file, other developers on your team can clearly see which
-environment variables are needed to run your application. You may also create a `.env.testing` file. This file will
-override the `.env` file when running tests.
+If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By putting placeholder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application.
 
 > Any variable in your `.env` file can be set by external environment variables such as server-level or system-level environment variables.
 
 ### Retrieving Environment Configuration
 
-All the variables listed in this file will be loaded when your application is running for the first time. However,
-you may use the `env` package to retrieve values from these variables in your configuration files. In fact, if you view the Confetti configuration files, you will notice several of the options already using this package:
+All the variables listed in this file will be loaded when your application is running for the first time. However, you may use the `env` package to retrieve values from these variables in your configuration files. In fact, if you view the Confetti configuration files, you will notice several of the options already using this package:
 
 ``` go
 env.String("APP_URL"),
@@ -35,8 +29,7 @@ env.Bool("DEBUG"),
 env.BoolOr("DEBUG", true),
 ```
 
-The second value passed to the `StringOr` function is the "default value". This value will be used if no environment
-variable exists for the given key.
+The second value passed to the `StringOr` function is the "default value". This value will be used if no environment variable exists for the given key.
 
 ### Determining The Current Environment
 
