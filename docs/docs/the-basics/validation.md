@@ -165,7 +165,7 @@ failures := val.Validate(app, content,
 
 ### Requirements
 
-Should your rule execute other rules first? Use can use interface `inter.RuleWithRequirements` with method `Requirements` to determine which
+Should your rule execute other rules first? You can use interface `inter.RuleWithRequirements` with method `Requirements` to determine which
 other rules should be executed first. The above example would then become:
 
 ``` go{12-16}

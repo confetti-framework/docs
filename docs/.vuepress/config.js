@@ -55,11 +55,11 @@ module.exports = {
         {
           title: 'Get Started',
           collapsable: false,
-          sidebarDepth: 0,
+          sidebarDepth: 1,
           children: [
             '/docs/get-started/meet',
             '/docs/get-started/installation',
-            '/docs/get-started/configuration',
+            '/docs/get-started/your-first-app',
           ]
         },
         {
@@ -77,6 +77,7 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 3,
           children: [
+              '/docs/the-basics/configuration',
               '/docs/the-basics/routing',
               '/docs/the-basics/middleware',
               '/docs/the-basics/requests',

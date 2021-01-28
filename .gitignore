@@ -15,3 +15,5 @@ main
 
 # Dependency directories
 vendor
+
+docs/.vuepress/dist

@@ -133,7 +133,7 @@ Get("users/{username?}/comment/{comment_id?}", func(request inter.Request) inter
     // commentId = 0
 }),
 ```
-    
+
 Use Empty or Present to check if a value is present.
 
 ``` go {2,7}
@@ -178,7 +178,7 @@ func (p RouteServiceProvider) Boot(container inter.Container) inter.Container {
         "id": "[0-9]+",
         "username": "[a-z_]+",
     })
-    
+
     //
 }
 ```
@@ -210,11 +210,11 @@ func (r RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.
 		userId := request.Parameter("user_id").Int()
 		return model.FindUser(userId)
 	})
-    
+
     return next(request)
 }
 ```
-     
+
 Later you can retrieve the user from the container:
 
 ``` go   
@@ -231,7 +231,7 @@ Named routes allow the convenient generation of URLs or redirects for specific r
 Get("/user/roles", controllers.UserRoleIndex).Name("user.roles")
 Get("/user/comments", controllers.UserCommentIndex).Name("user.comments")
 ```
-    
+
 Or you can name a group:
 
 ``` go
@@ -271,7 +271,7 @@ url := outcome.UrlByName(request.App(), "user", outcome.Parameters{"id": 12})
 
 /user/12
 ```
-    
+
 
 If you also want to build a query string, use the 4th parameter, those key / value pairs will automatically be added to the generated URL's query string:
 
@@ -297,7 +297,7 @@ func (v ValidatePostSize) Handle(request inter.Request, next inter.Next) inter.R
     if request.Route().Named("profile") {
         //
     }
-    
+
     return next(request)
 }
 ```
@@ -321,7 +321,15 @@ Group(
 
 ### Subdomain Routing
 
-Route groups may also be used to handle subdomain routing. Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your route or controller. The subdomain may be specified by calling the `Domain` method after defining the group:
+Route groups may also be used to handle subdomain routing. The subdomain may be specified by calling the `Domain` method after defining the group:
+
+``` go {7}
+Group(
+    Get("/users", controllers.UserIndex,
+).Domain("api.myapp.com")
+```
+
+Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your controller:
 
 ``` go {7}
 Group(
@@ -355,7 +363,7 @@ The `Name` method may be used to prefix each route name in the group with a give
 Group(
     Get("/users", controllers.UserShow).Name("users"),
 ).Name("admin.")
-    
+
 // Matches "admin.users"
 ```
 
@@ -382,7 +390,7 @@ You can get the current router from the container:
 ``` go
 app.Make("route").(inter.Route)
 ```
-     
+
  Or get the route from the request:
 
 ``` go

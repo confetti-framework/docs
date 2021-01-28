@@ -19,7 +19,7 @@ Or you can download and install only Go and Confetti on your computer.
 
 1. Download Confetti template code from [GitHub](https://github.com/confetti-framework/confetti)
 1. Go to [golang.org](https://golang.org/doc/install) and follow the instructions.
-1. In your terminal, go to the place where you placed the Confetti code and run the following Go command `go run .`.
+1. In your terminal, go to the place where you placed the Confetti code and run `go run .` in your terminal.
 1. The homepage is now available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 _With every adjustment you have to cancel the command and run it again._
@@ -29,7 +29,7 @@ _With every adjustment you have to cancel the command and run it again._
 You can also use the Go integration in your favorite editor. Here is a step-by-step plan for Goland:
 
 1. Download Confetti template code from [GitHub](https://github.com/confetti-framework/confetti)
-1. Complete the steps [on Goland's website](https://www.jetbrains.com/help/go/quick-start-guide-goland.html#create-a-new-project). Use the code downloaded in step 1.
+1. Complete the steps [on Goland's website](https://www.jetbrains.com/help/go/quick-start-guide-goland.html#create-a-new-project), but the code downloaded in step 1.
 1. The homepage is now available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 _You can set a shortcut to rebuild after every modification._

@@ -6,7 +6,7 @@ The Confetti service container is a powerful tool for managing struct dependenci
 
 Let's look at a simple example:
 
-``` go
+``` go{17}
 package model
 
 import (
@@ -23,7 +23,7 @@ type User struct {
 func NewUser(app inter.App) User {
 
     // Receive the repository from the application container
-    userRepository := app.Make(repository.User{}).(repository.User)
+    userRepository := app.Make(repository.User{}).(repository.UserInterface)
 
     return User{app: app, repository: userRepository}
 }
@@ -43,7 +43,7 @@ A deep understanding of the Confetti service container is essential to building 
 
 Almost all of your service container bindings will be registered within [service providers](providers), so most of these examples will demonstrate using the container in that context.
 
-> There is no need to bind structs into the container if they do not depend on any interfaces. The container does not need to be instructed on how to build these objects, since it can automatically resolve these objects using reflection.
+> There is no need to bind structs into the container if they do not depend on any interfaces. The container does not need to be instructed on how to build these objects, since it can automatically resolve these objects.
 
 #### Simple Bindings
 

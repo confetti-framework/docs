@@ -4,11 +4,9 @@
 
 > Looking for more information on how to write Go templates? Check out the [Text template documentation](https://golang.org/pkg/text/template/#hdr-Text_and_spaces) and subsequent [HTML template documentation](https://golang.org/pkg/html/template/) to get started.
 
-Views and templates are there to separate your controller / application logic from your presentation logic. A template
-consists of HTML, while a view contains data that you can use in a HTML or a JSON response. Views and templates are
-stored in the `resources/views` directory.
+Views and templates are there to separate your controller / application logic from your presentation logic. A template consists of HTML, while a view contains data that you can use in the template. Views and templates are stored in the `resources/views` directory.
 
-### HTML response
+### HTML Response
 
 A simple view for an HTML response might look something like this:
 
@@ -56,10 +54,9 @@ func Welcome(request inter.Request) inter.Response {
 }
 ```
 
-### JSON response
+### JSON Response
 
-You can also use a view for JSON responses. Then the struct do not need to contain a `Template` method. Use the `json`
-tag to specify the field that will be included in the json response. Use `json:"title"` to lowercase the key:
+You can also use a view for JSON responses. Then the struct do not need to contain a `Template` method. Use the `json` tag to specify the field that will be included in the json response. Use `json:"title"` to lowercase the key:
 
 ``` go
 package views
