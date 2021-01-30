@@ -1,4 +1,4 @@
-## The Confetti documentation.
+# The Confetti documentation.
 
 Present in directory docs/docs
 
