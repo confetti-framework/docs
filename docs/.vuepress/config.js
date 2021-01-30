@@ -44,6 +44,10 @@ module.exports = {
         link: 'https://github.com/confetti-framework/confetti',
       },
       {
+        text: 'Twitter',
+        link: 'https://twitter.com/ConfettiFw',
+      },
+      {
         text: 'Edit',
         link: 'https://github.com/confetti-framework/docs/tree/main/docs/docs',
       },
