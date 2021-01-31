@@ -17,3 +17,4 @@ main
 vendor
 
 docs/.vuepress/dist
+node_modules
