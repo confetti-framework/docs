@@ -2,7 +2,7 @@
 
 Present in directory docs/docs
 
-View the documentation at: confetti-framework.github.io/docs/
+View the documentation at: [confetti-framework.com](https://confetti-framework.com)
 
 ## License
 
