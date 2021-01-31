@@ -10,12 +10,14 @@ npm run build
 cd .vuepress/dist
 
 # if you are deploying to a custom domain
-# echo 'www.example.com' > CNAME
+echo 'www.confetti-framework.com' > CNAME
 
 git init
 git add -A
 git commit -m 'deploy'
 
 git push -f git@github.com:confetti-framework/docs.git master:gh-pages
+
+echo 'confetti-framework.com'
 
 cd -

@@ -49,7 +49,7 @@ module.exports = {
       },
       {
         text: 'Edit',
-        link: 'https://github.com/confetti-framework/docs/tree/main/docs/docs',
+        link: 'https://github.com/confetti-framework/docs/tree/main/docs',
       },
     ],
     sidebarDepth: 10,
@@ -77,21 +77,21 @@ module.exports = {
           ]
         },
         {
-        //   title: 'The Basics',
-        //   collapsable: false,
-        //   sidebarDepth: 3,
-        //   children: [
-        //       '/docs/the-basics/configuration',
-        //       '/docs/the-basics/routing',
-        //       '/docs/the-basics/middleware',
-        //       '/docs/the-basics/requests',
-        //       '/docs/the-basics/responses',
-        //       '/docs/the-basics/views',
-        //       '/docs/the-basics/validation',
-        //       '/docs/the-basics/errors',
-        //       '/docs/the-basics/logging',
-        //   ]
-        // },
+          title: 'The Basics',
+          collapsable: false,
+          sidebarDepth: 3,
+          children: [
+              '/docs/the-basics/configuration',
+              '/docs/the-basics/routing',
+              '/docs/the-basics/middleware',
+              '/docs/the-basics/requests',
+              '/docs/the-basics/responses',
+              '/docs/the-basics/views',
+              '/docs/the-basics/validation',
+              '/docs/the-basics/errors',
+              '/docs/the-basics/logging',
+          ]
+        },
       ],
     algolia: {
       apiKey: '0dcf5e48e640b2a4050ab34effe02650',
