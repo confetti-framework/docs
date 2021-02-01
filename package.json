@@ -1,7 +1,7 @@
 {
   "name": "Confetti",
   "version": "1.0.0",
-  "description": "Confetti is a Go web application framework with an expressive, elegant syntax. Confetti combines the elegance of Laravel and the strictness of Go (Golang).",
+  "description": "Confetti is a Go (Golang) web application framework with an expressive, elegant syntax. Confetti combines the elegance of Laravel and the simplicity of Go.",
   "main": "index.js",
   "authors": {
     "name": "Reindert Vetter",
@@ -17,7 +17,5 @@
     "vuepress": "^1.5.3"
   },
   "dependencies": {
-    "@dovyp/vuepress-plugin-clipboard-copy": "^1.0.0-alpha.7",
-    "vuepress-plugin-clipboard-copy": "master"
   }
 }
