@@ -4,7 +4,7 @@ Where do you start to create a page or set up an API endpoint? Here is a brief e
 
 ## Create A Web Page
 
-Confetti has a homepage ready by default. But we will create a new contact page as an example.
+Confetti has a homepage ready by default. For now we will create a new contact page as an example.
 
 ### Controller
 

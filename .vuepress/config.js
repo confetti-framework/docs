@@ -37,7 +37,7 @@ module.exports = {
     nav: [
       {
         text: 'Documentation',
-        link: '/docs/',
+        link: '/docs/get-started/meet.html',
       },
       {
         text: 'Github',
@@ -47,10 +47,6 @@ module.exports = {
         text: 'Twitter',
         link: 'https://twitter.com/ConfettiFw',
       },
-      {
-        text: 'Edit',
-        link: 'https://github.com/confetti-framework/docs/tree/main/docs',
-      },
     ],
     sidebarDepth: 10,
     activeHeaderLinks: false,
@@ -59,11 +55,11 @@ module.exports = {
         {
           title: 'Get Started',
           collapsable: false,
-          sidebarDepth: 1,
+          sidebarDepth: 0,
           children: [
             '/docs/get-started/meet',
             '/docs/get-started/installation',
-            '/docs/get-started/your-first-app',
+            '/docs/get-started/your-first-project',
           ]
         },
         {
