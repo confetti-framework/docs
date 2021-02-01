@@ -1,10 +1,10 @@
 # Your First App
 
-Where do you start to create a page or set up an API endpoint? Here is a brief explanation of the steps you can take to create your first application. We will explain how to create a page and how to create an API endpoint. You will soon find that the possibilities are endless.
+Where do you start to create a page or set up an API endpoint? Here is a brief explanation of the steps you can take to create your first application. We will explain how to create a page and how to create an API endpoint. You will soon see that the possibilities are endless.
 
 ## Create A Web Page
 
-Confetti has a homepage ready by default. For now we will create a new contact page as an example.
+Confetti has a homepage ready by default. For now, we will create a contact page.
 
 ### Controller
 
@@ -19,8 +19,8 @@ import (
 )
 
 func Contact(request inter.Request) inter.Response {
-	name := "Donald Duck"
-	city := "Duckstad"
+	name := "Irma M. Peak"
+	city := "Kingsville"
 	return outcome.Html("The Contact Page<br/>Name: " + name + "<br/>City: " + city)
 }
 ```
