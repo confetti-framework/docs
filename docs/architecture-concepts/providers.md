@@ -35,11 +35,11 @@ type RiakServiceProvider struct{}
 // Register any application services.
 func (r RiakServiceProvider) Register(container inter.Container) inter.Container {
 
-    app.Container.Singleton(database.Connection{}, func() {
+    container.Singleton(database.Connection{}, func() {
         return riak.NewConnection()
     })
 
-    return app
+    return container
 }
 ```
 
@@ -69,10 +69,10 @@ You may use Container for your dependencies in your service provider's `Boot` me
 
 ``` go
 func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container {
-    eventPusher := app.Make("EventPusher").(contract.EventPusher)
+    eventPusher := container.Make("EventPusher").(contract.EventPusher)
     //
 
-    return app
+    return container
 }
 ````
 
@@ -86,16 +86,16 @@ To register your provider, add it to the slices:
 RegisterProviders: []decorator.RegisterServiceProvider{
     providers.AppServiceProvider{},
     providers.ComposerServiceProvider{},
-    
+
     //
 },
 BootProviders: []decorator.BootServiceProvider{
     providers.AppServiceProvider{},
     providers.RouteServiceProvider{},
     providers.ComposerServiceProvider{},
-    
+
     //
 },
 ```
-    
+
 If you have a service provider with a register and a boot method, you have to add this service to the RegisterProviders slice, and the BootProviders slice.

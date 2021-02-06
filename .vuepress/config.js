@@ -102,6 +102,6 @@ module.exports = {
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
     '@dovyp/vuepress-plugin-clipboard-copy',
-    ['minimal-analytics', {ga: 'G-KMH0576FZK'}],
+    ['minimal-analytics', {ga: 'UA-188653694-1'}],
   ]
 }

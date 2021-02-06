@@ -25,7 +25,7 @@ Or you can download and install only Go and Confetti on your computer.
 
 _With every adjustment you have to cancel the command and run it again._
 
-### Editor Goland
+### IDE Goland
 
 You can also use the Go integration in your favorite editor. Here is a step-by-step plan for Goland:
 

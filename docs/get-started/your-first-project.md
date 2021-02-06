@@ -1,4 +1,4 @@
-# Your First App
+# Your First Project
 
 Where do you start to create a page or set up an API endpoint? Here is a brief explanation of the steps you can take to create your first application. We will explain how to create a page and how to create an API endpoint. You will soon see that the possibilities are endless.
 
@@ -19,9 +19,7 @@ import (
 )
 
 func Contact(request inter.Request) inter.Response {
-	name := "Irma M. Peak"
-	city := "Kingsville"
-	return outcome.Html("The Contact Page<br/>Name: " + name + "<br/>City: " + city)
+	return outcome.Html("Hello world")
 }
 ```
 This is the place where you can place your logic. Of course you can make other functions and structs to keep everything organized.
@@ -52,8 +50,8 @@ import (
 
 func Contact(request inter.Request) inter.Response {
 	data := map[string]string{
-		"name": "Donald Duck",
-		"city": "Duckstad",
+		"name": "Singh",
+		"city": "New Delhi",
 	}
 	return outcome.Json(data)
 }

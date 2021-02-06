@@ -4,7 +4,7 @@
 
 > Looking for more information on how to write Go templates? Check out the [Text template documentation](https://golang.org/pkg/text/template/#hdr-Text_and_spaces) and subsequent [HTML template documentation](https://golang.org/pkg/html/template/) to get started.
 
-Views and templates are there to separate your controller / application logic from your presentation logic. A template consists of HTML, while a view contains data that you can use in the template. Views and templates are stored in the `resources/views` directory.
+Views and templates are there to separate your controller/application logic from your presentation logic. A template consists of HTML, while a view contains data that you can use in the template. Views and templates are stored in the `resources/views` directory.
 
 ### HTML Response
 
@@ -79,6 +79,8 @@ func ShowBook(request inter.Request) inter.Response {
     return outcome.Json(views.Book("James"))
 }
 ```
+
+> Although we now call this a View, no one is preventing you from putting these in a folder 'responses'.
 
 ## Combine Multiple Views
 
