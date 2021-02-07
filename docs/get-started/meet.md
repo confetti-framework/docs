@@ -29,9 +29,7 @@ func OrderStore(request inter.Request) inter.Response {
 		return outcome.Json(failures)
 	}
 
-	// Transform the content into usable structs and save them in the database
-	orders := entities.GetOrdersFromContent(request.Body())
-	orders = respository.SaveOrders(orders)
+	// (...)
 
 	// Return the response with the saved orders
 	return outcome.Json(orders)
