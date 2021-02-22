@@ -25,7 +25,7 @@ func OrderStore(request inter.Request) inter.Response {
 		val.Verify("orders.*.street", rule.Required{}, rule.String{}),
 	)
 	if len(failures) > 0 {
-		app.Log("slack").Notice("%b incorrect orders given", len(failures))
+		app.Log("slack").Notice("Incorrect order given")
 		return outcome.Json(failures)
 	}
 

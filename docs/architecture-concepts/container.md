@@ -121,8 +121,30 @@ The `Extend` method allows the modification of resolved services. For example, w
 
 ## Resolving
 
-You may use the `Make` method to resolve a struct instance out of the container. The `Make` method accepts the name of the struct or interface you wish to resolve:
+You may use the `Make` method to resolve a concrete struct instance out of the container.
 
+The `Make` method accepts the name of the struct:
 ``` go
-kernel := app.Make("http.kernel").(http.Kernel)
+client := app.Make("http.Client").(http.Client)
+```
+
+An interface you wish to resolve:
+``` go
+client := app.Make((*http.ClientInterface)(nil)).(http.ClientInterface)
+```
+
+An struct you wish to resolve:
+``` go
+client := app.Make(http.Client{}).(http.Client)
+```
+
+An pointer/reference you wish to resolve:
+``` go
+var client http.Client
+app.Make(&client)
+```
+
+Use `MakeE` to get more control over the errors. For example, if you don't know if it can be resolved:
+``` go
+client, err := app.MakeE(http.Client{})
 ```
