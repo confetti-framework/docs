@@ -89,7 +89,15 @@ module.exports = {
           ]
         },
         {
-          title: 'Ideas',
+          title: 'Digging Deeper',
+          collapsable: false,
+          sidebarDepth: 3,
+          children: [
+              '/docs/digging-deeper/commands',
+          ]
+        },
+        {
+          title: 'Discussions',
           collapsable: true,
           sidebarDepth: 1,
           children: [

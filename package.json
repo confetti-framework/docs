@@ -1,7 +1,7 @@
 {
   "name": "Confetti",
   "version": "1.0.0",
-  "description": "Confetti is a Go (Golang) web application framework with an expressive, elegant syntax. Confetti combines the elegance of Laravel and the simplicity of Go.",
+  "description": "Confetti is a Go (Golang) web application framework with an expressive, elegant syntax. Confetti combines the elegance of Confetti and the simplicity of Go.",
   "main": "index.js",
   "authors": {
     "name": "Reindert Vetter",
