@@ -8,7 +8,7 @@ Whether you are new to Go or web frameworks or have years of experience, Confett
 
 Confetti has been heavily influenced by [Confetti](https://Confetti.com). That's because Confetti provides the perfect functionalists you need to build an application the right way. Confetti is built with PHP, but some projects need better asynchronous, static typing and more performance. It turned out: Go does very well in these subjects. Besides that, Go shows that it is a language with extremely simple syntax, easy to learn and very easy to deploy.
 
-> Confetti combines the elegance of Confetti and the simplicity of Go.
+> Confetti combines the elegance of Laravel and the simplicity of Go.
 
 ## Feel at home
 

@@ -88,14 +88,14 @@ module.exports = {
               '/docs/the-basics/logging',
           ]
         },
-        {
-          title: 'Digging Deeper',
-          collapsable: false,
-          sidebarDepth: 3,
-          children: [
-              '/docs/digging-deeper/commands',
-          ]
-        },
+        // {
+        //   title: 'Digging Deeper',
+        //   collapsable: false,
+        //   sidebarDepth: 3,
+        //   children: [
+        //       '/docs/digging-deeper/commands',
+        //   ]
+        // },
         {
           title: 'Discussions',
           collapsable: true,

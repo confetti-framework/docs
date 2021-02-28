@@ -16,11 +16,11 @@ Every command also includes a "help" screen which displays and describes the com
 
 ### Baker (REPL)
 
-Baker is a powerful REPL for the Confetti framework, forked from the motemen/gore package.
+Baker is a powerful REPL for the Confetti framework, forked from the motemen/gore package. Baker allows you to interact with your entire Confetti application on the command line.
 
 #### Usage
 
-Baker allows you to interact with your entire Confetti application on the command line. To enter the Baker environment, run the `baker` subcommando:
+To enter the Baker environment, run the `baker` subcommando:
 
     go run main.go baker
 
@@ -59,8 +59,8 @@ func (s SendEmails) Description() string {
 	return "Send a marketing email to a user."
 }
 
-func (s SendEmails) Handle(app inter.App, writer io.Writer) inter.ExitCode {
-	mailer := app.Make(support.DripEmailer{}).(support.DripEmailer)
+func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
+	mailer := c.App().Make(support.DripEmailer{}).(support.DripEmailer)
 	mailer.Send(s.Email)
 
 	return inter.Success
@@ -91,7 +91,7 @@ go run main.go mail:send --queue
 
 #### Options With Values
 
-Next, let's take a look at an flag that expects a value. If the user must specify a value for a flag, then you simply define a different type. By default you can choose from `string`, `int`, `float`, `[]string`, `[]int` and `duration`, but you can also implement [Custom Getters](#custom-getters) to cast the flags to the fields.
+Next, let's take a look at an flag that expects a value. If the user must specify a value for a flag, then you simply define a different type. By default you can choose from `string`, `int`, `float`, `[]string`, `[]int` and `duration`, but you can also implement [Custom Getters](#custom-types-getters) to cast the flags to the fields.
 
 ``` go
 type SendEmails struct {
@@ -125,6 +125,27 @@ type SendEmails struct {
 go run main.go mail:send --ids 1,2,3
 ```
 
+### Input Descriptions
+
+You can assign descriptions to flags by defining the `description` tag:
+
+``` go
+type SendEmails struct {
+	Subject string `flag:"subject" description:"The subject of the mail"`
+}
+```
+
+### Required Fields
+
+Provide the required tag to ensure that the value is different from the default value of the field.
+
+``` go
+type SendEmails struct {
+	Subject string `flag:"subject" required:"true"`
+}
+```
+In the above example, you can be sure that `Subject` is not an empty string.
+
 ### Custom Types (Getters)
 
 In addition to the above types, you can create custom types to cast the flags to a value. Create a struct that follows the `flag.Getter` interface. The `Get` method returns the value with a type which must be the same type as defined in a field of a command.
@@ -157,27 +178,6 @@ func (s *StringList) Get() interface{} {
 
 You have to register these getters in `app/console/kernel.go`.
 
-### Input Descriptions
-
-You can assign descriptions to flags by defining the `description` tag:
-
-``` go
-type SendEmails struct {
-	Subject string `flag:"subject" description:"The subject of the mail"`
-}
-```
-
-### Required Fields
-
-Provide the required tag to ensure that the value is different from the default value of the field.
-
-``` go
-type SendEmails struct {
-	Subject string `flag:"subject" required:"true"`
-}
-```
-In the above example, you can be sure that `Subject` is not an empty string.
-
 ## Command I/O
 
 ### Retrieving Input
@@ -189,248 +189,159 @@ type SendEmails struct {
 	Subject string `flag:"subject" required:"true"`
 }
 
-func (s SendEmails) Handle(app inter.App, output io.Writer) inter.ExitCode {
-	_, _ = fmt.Fprintln(output, "The subject: "+s.Subject)
+func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
+  c.Info(output, "The subject: "+s.Subject)
 }
 ```
 
 ### Prompting For Input
 
-In addition to displaying output, you may also ask the user to provide input during the execution of your command. The `ask` method will prompt the user with the given question, accept their input, and then return the user's input back to your command:
+In addition to displaying output, you may also ask the user to provide input during the execution of your command. The `Ask` method will prompt the user with the given question, accept their input, and then return the user's input back to your command:
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        $name = $this->ask('What is your name?');
-    }
+``` go
+func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
+	name := c.Ask("What is your name?")
+	//
+	return inter.Success
+}
+```
 
-The `secret` method is similar to `ask`, but the user's input will not be visible to them as they type in the console. This method is useful when asking for sensitive information such as passwords:
+The `Secret` method is similar to `Ask`, but the user's input will not be visible to them as they type in the console. This method is useful when asking for sensitive information such as passwords:
 
-    $password = $this->secret('What is the password?');
+``` go
+password := c.Secret("What is the password?")
+```
 
 #### Asking For Confirmation
 
-If you need to ask the user for a simple "yes or no" confirmation, you may use the `confirm` method. By default, this method will return `false`. However, if the user enters `y` or `yes` in response to the prompt, the method will return `true`.
+If you need to ask the user for a simple "yes or no" confirmation, you may use the `Confirm` method. If the user enters `y` or `yes` in response to the prompt, the method will return `true`.
 
-    if ($this->confirm('Do you wish to continue?')) {
-        //
-    }
+``` go
+if c.Confirm("Do you wish to continue?", false) {
+  //
+}
+```
 
-If necessary, you may specify that the confirmation prompt should return `true` by default by passing `true` as the second argument to the `confirm` method:
+If necessary, you may specify that the confirmation prompt should return `true` by default by passing `true` as the second argument to the `Confirm` method:
 
-    if ($this->confirm('Do you wish to continue?', true)) {
-        //
-    }
 
-#### Auto-Completion
-
-The `anticipate` method can be used to provide auto-completion for possible choices. The user can still provide any answer, regardless of the auto-completion hints:
-
-    $name = $this->anticipate('What is your name?', ['Taylor', 'Dayle']);
-
-Alternatively, you may pass a closure as the second argument to the `anticipate` method. The closure will be called each time the user types an input character. The closure should accept a string parameter containing the user's input so far, and return an array of options for auto-completion:
-
-    $name = $this->anticipate('What is your address?', function ($input) {
-        // Return auto-completion options...
-    });
+``` go
+if c.Confirm("Do you wish to continue?", true) {
+  //
+}
+```
 
 #### Multiple Choice Questions
 
 If you need to give the user a predefined set of choices when asking a question, you may use the `choice` method. You may set the array index of the default value to be returned if no option is chosen by passing the index as the third argument to the method:
 
-    $name = $this->choice(
-        'What is your name?',
-        ['Taylor', 'Dayle'],
-        $defaultIndex
-    );
-
-In addition, the `choice` method accepts optional fourth and fifth arguments for determining the maximum number of attempts to select a valid response and whether multiple selections are permitted:
-
-    $name = $this->choice(
-        'What is your name?',
-        ['Taylor', 'Dayle'],
-        $defaultIndex,
-        $maxAttempts = null,
-        $allowMultipleSelections = false
-    );
+``` go
+name := c.Choice("Select Day", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+```
 
 ### Writing Output
 
-To send output to the console, you may use the `line`, `info`, `comment`, `question` and `error` methods. Each of these methods will use appropriate ANSI colors for their purpose. For example, let's display some general information to the user. Typically, the `info` method will display in the console as green colored text:
+To send output to the console, you may use the `Line`, `Info`, `Comment` and `Error` methods. Each of these methods will use appropriate ANSI colors for their purpose. For example, let's display some general information to the user. Typically, the `Info` method will display in the console as green colored text:
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        // ...
+``` go {3}
+func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
+	//
+	c.Info("The command was successful!")
+	return inter.Success
+}
+```
 
-        $this->info('The command was successful!');
-    }
+To display an error message, use the `Error` method. Error message text is typically displayed in red (and to stderr):
 
-To display an error message, use the `error` method. Error message text is typically displayed in red:
+``` go {3}
+func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
+	//
+	c.Error("Something went wrong!")
+	return inter.Failure
+}
+```
 
-    $this->error('Something went wrong!');
+You may use the `Line` method to display plain, uncolored text:
 
-You may use the `line` method to display plain, uncolored text:
-
-    $this->line('Display this on the screen');
-
-You may use the `newLine` method to display a blank line:
-
-    // Write a single blank line...
-    $this->newLine();
-
-    // Write three blank lines...
-    $this->newLine(3);
+``` go {3}
+func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
+	//
+	c.Line("Display this on the screen")
+	return inter.Success
+}
+```
 
 #### Tables
 
-The `table` method makes it easy to correctly format multiple rows / columns of data. All you need to do is provide the column names and the data for the table and Confetti will
-automatically calculate the appropriate width and height of the table for you:
+The `Table` method makes it easy to correctly format multiple rows and columns of data. All you need to do is provide the column names and the data for the table and method `Render` will automatically calculate the appropriate width and height of the table for you:
 
-    use App\Models\User;
+``` go
+t := c.Table()
+t.AppendHeader([]interface{}{"Name", "Email"})
+t.AppendRow([]interface{}{"Piet", "piet@niet.nl"})
+t.Render()
+```
 
-    $this->table(
-        ['Name', 'Email'],
-        User::all(['name', 'email'])->toArray()
-    );
+> Confetti uses the [go-pretty](https://github.com/jedib0t/go-pretty) package. Many more options are available to generate tables. Take a look at the [readme](https://github.com/jedib0t/go-pretty/tree/master/table).
 
 #### Progress Bars
 
-For long running tasks, it can be helpful to show a progress bar that informs users how complete the task is. Using the `withProgressBar` method, Confetti will display a progress bar and advance its progress for each iteration over a given iterable value:
+For long running tasks, it can be helpful to show a progress bar that informs users how complete the task is. First, define the total number of steps the process will iterate through (with an optional description). Then, use `Add(1)` after processing each item:
 
-    use App\Models\User;
+``` go
+bar := c.ProgressBar(4, "Sending emails")
+for _, user := range users {
+  //
+  _ = bar.Add(1)
+}
+```
 
-    $users = $this->withProgressBar(User::all(), function ($user) {
-        $this->performTask($user);
-    });
-
-Sometimes, you may need more manual control over how a progress bar is advanced. First, define the total number of steps the process will iterate through. Then, advance the progress bar after processing each item:
-
-    $users = App\Models\User::all();
-
-    $bar = $this->output->createProgressBar(count($users));
-
-    $bar->start();
-
-    foreach ($users as $user) {
-        $this->performTask($user);
-
-        $bar->advance();
-    }
-
-    $bar->finish();
-
-> {tip} For more advanced options, check out the [Symfony Progress Bar component documentation](https://symfony.com/doc/current/components/console/helpers/progressbar.html).
+> For more advanced options, check out the [schollz/progressbar](https://github.com/schollz/progressbar) package.
 
 ## Registering Commands
 
-All of your console commands are registered within your application's `App\Console\Kernel` class, which is your application's "console kernel". Within the `commands` method of this class, you will see a call to the kernel's `load` method. The `load` method will scan the `app/Console/Commands` directory and automatically register each command it contains with Confetti Commands. You are even free to make additional calls to the `load` method to scan other directories for Confetti Commands commands:
+All of your console commands are registered within your application's `app/console/kernel.go` file, which create your application's "console kernel". You have to manually register commands by adding the command's struct to the `Commands` field of the `console.Kernel` struct. When Confetti boots, all the commands listed in this field will be registered:
 
-    /**
-     * Register the commands for the application.
-     *
-     * @return void
-     */
-    protected function commands()
-    {
-        $this->load(__DIR__.'/Commands');
-        $this->load(__DIR__.'/../Domain/Orders/Commands');
-
-        // ...
-    }
-
-If necessary, you may manually register commands by adding the command's class name to the `$commands` property of your `App\Console\Kernel` class. When Confetti Commands boots, all the commands listed in this property will be resolved by the [service container](/docs/{{version}}/container) and registered with Confetti Commands:
-
-    protected $commands = [
-        Commands\SendEmails::class
-    ];
+``` go {5,6}
+func NewKernel(app inter.App) console.Kernel {
+	return console.Kernel{
+		App: app,
+		Commands: []inter.Command{
+			commands.AppServe{},
+			commands.SendEmails{},
+		},
+		FlagProviders: []func() []flag.Getter{flagGetters},
+	}
+}
+```
 
 ## Programmatically Executing Commands
 
-Sometimes you may wish to execute an Confetti Commands command outside of the CLI. For example, you may wish to execute an Confetti Commands command from a route or controller. You may use the `call` method on the `Confetti Commands` facade to accomplish this. The `call` method accepts either the command's signature name or class name as its first argument, and an array of command parameters as the second argument. The exit code will be returned:
+Sometimes you may wish to execute an command outside of the CLI. For example, you may wish to execute an command from a route or controller. Simply call the command with the required fields. Call the `Handle` method with a cli facade. The exit code will be returned:
 
-    use Illuminate\Support\Facades\Confetti Commands;
+``` go
+exitCode := commands.MailSend{User: user}.Handle(facade.NewCli(app))
+```
 
-    Route::post('/user/{user}/mail', function ($user) {
-        $exitCode = Confetti Commands::call('mail:send', [
-            'user' => $user, '--queue' => 'default'
-        ]);
+Want to capture all output from the command? Then give a writer as the second parameter.
 
-        //
-    });
+``` go {2,3}
+var writer bytes.Buffer
+cli := facade.NewCli(app, &writer)
+exitCode := commands.MailSend{}.Handle(cli)
 
-Alternatively, you may pass the entire Confetti Commands command to the `call` method as a string:
+output := writer.String()
+```
 
-    Confetti Commands::call('mail:send 1 --queue=default');
+If you want to separate the normal output from the errors, use the third parameter with an extra writer:
 
-#### Passing Array Values
+``` go {4,5}
+var writer bytes.Buffer
+var writerErr bytes.Buffer
 
-If your command defines an option that accepts an array, you may pass an array of values to that option:
+cli := facade.NewCli(app, &writer, &writerErr)
+exitCode := commands.MailSend{}.Handle(cli)
 
-    use Illuminate\Support\Facades\Confetti Commands;
-
-    Route::post('/mail', function () {
-        $exitCode = Confetti Commands::call('mail:send', [
-            '--id' => [5, 13]
-        ]);
-    });
-
-#### Passing Boolean Values
-
-If you need to specify the value of an option that does not accept string values, such as the `--force` flag on the `migrate:refresh` command, you should pass `true` or `false` as the value of the option:
-
-    $exitCode = Confetti Commands::call('migrate:refresh', [
-        '--force' => true,
-    ]);
-
-#### Queueing Confetti Commands Commands
-
-Using the `queue` method on the `Confetti Commands` facade, you may even queue Confetti Commands commands so they are processed in the background by your [queue workers](/docs/{{version}}/queues). Before using this method, make sure you have configured your queue and are running a queue listener:
-
-    use Illuminate\Support\Facades\Confetti Commands;
-
-    Route::post('/user/{user}/mail', function ($user) {
-        Confetti Commands::queue('mail:send', [
-            'user' => $user, '--queue' => 'default'
-        ]);
-
-        //
-    });
-
-Using the `onConnection` and `onQueue` methods, you may specify the connection or queue the Confetti Commands command should be dispatched to:
-
-    Confetti Commands::queue('mail:send', [
-        'user' => 1, '--queue' => 'default'
-    ])->onConnection('redis')->onQueue('commands');
-
-### Calling Commands From Other Commands
-
-Sometimes you may wish to call other commands from an existing Confetti Commands command. You may do so using the `call` method. This `call` method accepts the command name and an array of command arguments / options:
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        $this->call('mail:send', [
-            'user' => 1, '--queue' => 'default'
-        ]);
-
-        //
-    }
-
-If you would like to call another console command and suppress all of its output, you may use the `callSilently` method. The `callSilently` method has the same signature as the `call` method:
-
-    $this->callSilently('mail:send', [
-        'user' => 1, '--queue' => 'default'
-    ]);
+output := writer.String()
+outputErr := writerErr.String()
+```
