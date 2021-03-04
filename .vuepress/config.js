@@ -36,16 +36,16 @@ module.exports = {
     lastUpdated: false,
     nav: [
       {
-        text: 'Documentation',
-        link: '/docs/get-started/meet.html',
-      },
-      {
         text: 'Github',
         link: 'https://github.com/confetti-framework/confetti',
       },
       {
-        text: 'Twitter',
+        text: 'Twitter / News',
         link: 'https://twitter.com/ConfettiFw',
+      },
+      {
+        text: 'Becoming a sponsor',
+        link: 'https://www.patreon.com/confetti_framework',
       },
     ],
     sidebarDepth: 10,
@@ -86,6 +86,22 @@ module.exports = {
               '/docs/the-basics/validation',
               '/docs/the-basics/errors',
               '/docs/the-basics/logging',
+          ]
+        },
+        {
+          title: 'Digging Deeper',
+          collapsable: false,
+          sidebarDepth: 3,
+          children: [
+              '/docs/digging-deeper/commands',
+          ]
+        },
+        {
+          title: 'Discussions',
+          collapsable: true,
+          sidebarDepth: 1,
+          children: [
+              ['https://github.com/confetti-framework/confetti/discussions/110', 'ORM & Database '],
           ]
         },
       ],

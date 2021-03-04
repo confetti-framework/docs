@@ -35,5 +35,3 @@ func OrderStore(request inter.Request) inter.Response {
 	return outcome.Json(orders)
 }
 ```
-
-> <img src="https://www.redditstatic.com/avatars/avatar_default_07_0079D3.png" alt="redit_quote" class="profile"> **u/odd-arne** _5+ years of Laravel experience_<br/>This looks very promising, I felt right at home.
