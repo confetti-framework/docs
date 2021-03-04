@@ -20,7 +20,7 @@ Or you can download and install only Go and Confetti on your computer.
 
 1. Download Confetti template code from [GitHub](https://github.com/confetti-framework/confetti)
 1. Go to [golang.org](https://golang.org/doc/install) and follow the instructions.
-1. In your terminal, go to the place where you placed the Confetti code and run `go run .` in your terminal.
+1. In your terminal, go to the place where you placed the Confetti code and run `go run main.go` in your terminal.
 1. The homepage is now available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 _With every adjustment you have to cancel the command and run it again._

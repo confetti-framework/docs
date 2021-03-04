@@ -6,7 +6,7 @@ Whether you are new to Go or web frameworks or have years of experience, Confett
 
 ## Why Confetti?
 
-Confetti has been heavily influenced by [Confetti](https://Confetti.com). That's because Confetti provides the perfect functionalists you need to build an application the right way. Confetti is built with PHP, but some projects need better asynchronous, static typing and more performance. It turned out: Go does very well in these subjects. Besides that, Go shows that it is a language with extremely simple syntax, easy to learn and very easy to deploy.
+Confetti has been heavily influenced by [Laravel](https://laravel.com). That's because Laravel provides the perfect functionalists you need to build an application the right way. Laravel is built with PHP, but some projects need better asynchronous, static typing and more performance. It turned out: Go does very well in these subjects. Besides that, Go shows that it is a language with extremely simple syntax, easy to learn and very easy to deploy.
 
 > Confetti combines the elegance of Laravel and the simplicity of Go.
 
@@ -25,7 +25,7 @@ func OrderStore(request inter.Request) inter.Response {
 		val.Verify("orders.*.street", rule.Required{}, rule.String{}),
 	)
 	if len(failures) > 0 {
-		app.Log("slack").Notice("Incorrect order given")
+		app.Log("slack").Notice("%b incorrect orders given", len(failures))
 		return outcome.Json(failures)
 	}
 
@@ -35,5 +35,3 @@ func OrderStore(request inter.Request) inter.Response {
 	return outcome.Json(orders)
 }
 ```
-
-> <img src="https://www.redditstatic.com/avatars/avatar_default_07_0079D3.png" alt="redit_quote" class="profile"> **u/odd-arne** _5+ years of Confetti experience_<br/>This looks very promising, I felt right at home.

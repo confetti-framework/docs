@@ -2,7 +2,18 @@
 
 ## Introduction
 
-Confetti comes with a handy command line interface and provides a number of helpful commands that can assist you while you build your application. Confetti Commands exists at the root of your application and is part of your normal main.go script. To view a list of all available commands, you may run the script without further commands:
+Confetti comes with a handy command line interface and provides a SOLID solution. Because of that you can create commands quickly and keep them organized. Confetti Commands exists at the root of your application and is part of your the main.go script.
+
+## Installation
+
+Confetti Commands is included by default in the [framework](https://github.com/confetti-framework/confetti), but you can also use Confetti Commands separately if you only run need to run commands and don't process http requests.
+
+1. Download Confetti Commands template code from [GitHub](https://github.com/confetti-framework/commands)
+1. Go to [golang.org](https://golang.org/doc/install) and follow the instructions.
+
+## Usage
+
+To view a list of all available commands, you may run the script without further commands:
 
     go run main.go
 
@@ -14,11 +25,11 @@ Every command also includes a "help" screen which displays and describes the com
 
     go run main.go your:command --help
 
-### Baker (REPL)
+## Baker (REPL)
 
 Baker is a powerful REPL for the Confetti framework, forked from the motemen/gore package. Baker allows you to interact with your entire Confetti application on the command line.
 
-#### Usage
+### Usage
 
 To enter the Baker environment, run the `baker` subcommando:
 
@@ -42,7 +53,7 @@ Let's take a look at an example command:
 package commands
 
 import (
-	"confetti-framework/app/support"
+	"src/app/support"
 	"github.com/confetti-framework/contract/inter"
 	"io"
 )
