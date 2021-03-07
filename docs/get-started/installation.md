@@ -6,7 +6,7 @@ One of the advantages of Confetti is that it is 'Developer friendly'. That start
 
 ### Docker
 
-The easiest way to set up Confetti is with Docker. It automatically detecting changes, and you get a MySQL database and a Redis instance (without additional configuration).
+The easiest way to set up Confetti is with Docker. It automatically detects changes, and you get a MySQL database and a Redis instance (without additional configuration).
 
 1. Download and start [Docker](https://docs.docker.com/get-docker/).
 1. Download Confetti code from [GitHub](https://github.com/confetti-framework/confetti).
