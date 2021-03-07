@@ -71,26 +71,15 @@ func (s SendEmails) Description() string {
 }
 
 func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
-<<<<<<< HEAD
-	mailer := c.App().Make(support.DripEmailer{}).(support.DripEmailer)
-	mailer.Send(s.Email)
-
-=======
 	mailer := support.DripEmailer{}
 	mailer.Send(s.Email)
 
   c.Info("Email send to: %s", s.Email)
 
->>>>>>> main
 	return inter.Success
 }
 ```
 
-<<<<<<< HEAD
-> For greater code reuse, it is good practice to keep your console commands light and let them defer to application services to accomplish their tasks. In the example above, note that we inject a service struct to do the "heavy lifting" of sending the e-mails.
-
-=======
->>>>>>> main
 ## Defining Input Expectations
 
 When writing console commands, it is common to gather input from the user through the flags. Confetti makes it very convenient to define the input you expect from the user using the fields on your commands. The fields on your commands allows you to define the type, normal flag name, short flag name and description for the command in a single, expressive syntax.
