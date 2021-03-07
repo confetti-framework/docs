@@ -9,7 +9,7 @@ Confetti comes with a handy command line interface and provides a SOLID solution
 Confetti Commands is included by default in the [framework](https://github.com/confetti-framework/confetti), but you can also use Confetti Commands separately if you only run need to run commands and don't process http requests.
 
 1. Download Confetti Commands template code from [GitHub](https://github.com/confetti-framework/commands)
-1. Go to [golang.org](https://golang.org/doc/install) and follow the instructions.
+1. To install Go, go to [golang.org](https://golang.org/doc/install) and follow the instructions.
 
 ## Usage
 
@@ -71,14 +71,14 @@ func (s SendEmails) Description() string {
 }
 
 func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
-	mailer := c.App().Make(support.DripEmailer{}).(support.DripEmailer)
+	mailer := support.DripEmailer{}
 	mailer.Send(s.Email)
+
+  c.Info("Email send to: %s", s.Email)
 
 	return inter.Success
 }
 ```
-
-> For greater code reuse, it is good practice to keep your console commands light and let them defer to application services to accomplish their tasks. In the example above, note that we inject a service struct to do the "heavy lifting" of sending the e-mails.
 
 ## Defining Input Expectations
 
