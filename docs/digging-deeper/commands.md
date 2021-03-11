@@ -114,7 +114,7 @@ In this example, the user may pass a value for the flag like so. If the argument
 
 #### Option Shortcuts
 
-To assign a shortcut when defining an flag, you may specify it with the tag `short`:
+Short lags are prefixed by one hyphen (`-`) when they are provided via the command line. To assign a shortcut when defining an flag, you may specify it with the tag `short`:
 
 ``` go
 type SendEmails struct {
