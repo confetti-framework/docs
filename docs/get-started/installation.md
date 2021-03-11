@@ -1,4 +1,5 @@
 # Installation
+<ToggleDarkMode/>
 
 ## Local Development
 

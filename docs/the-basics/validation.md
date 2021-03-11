@@ -1,4 +1,5 @@
 # Validation
+<ToggleDarkMode/>
 
 ## Introduction
 

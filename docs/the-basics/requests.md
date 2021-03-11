@@ -1,4 +1,5 @@
 # Requests
+<ToggleDarkMode/>
 
 ## Accessing The Request
 

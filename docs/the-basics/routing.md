@@ -1,4 +1,5 @@
 # Routing
+<ToggleDarkMode/>
 
 ## Basic Routing
 

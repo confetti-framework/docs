@@ -1,4 +1,6 @@
 # Meet Confetti
+<ToggleDarkMode/>
+
 
 Confetti is a web framework written in Go (Golang). The web framework consists of the most important components to create your application. The goal of Confetti is to give you all the tools you need to write fast, secure and scalable code.
 

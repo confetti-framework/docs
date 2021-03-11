@@ -1,4 +1,5 @@
 # Your First Project
+<ToggleDarkMode/>
 
 Where do you start to create a page or set up an API endpoint? Here is a brief explanation of the steps you can take to create your first application. We will explain how to create a page and how to create an API endpoint. You will soon see that the possibilities are endless.
 

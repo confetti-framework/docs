@@ -1,4 +1,5 @@
 # Middleware
+<ToggleDarkMode/>
 
 ## Introduction
 
@@ -27,7 +28,7 @@ func (c EnsureTokenIsValid) Handle(request inter.Request, next inter.Next) inter
     if request.Parameter("token").String() != "my-secret-token" {
         return outcome.RedirectTemporary("home")
     }
-    
+
     return next(request)
 }
 ```
@@ -72,7 +73,7 @@ type AfterMiddleware struct{}
 
 func (c AfterMiddleware) Handle(request inter.Request, next inter.Next) inter.Response {
     response := next(request)
-    
+
     // Perform action
 
     return response
@@ -120,7 +121,7 @@ Sometimes you may want to group several middleware under a single key to make th
 
 Out of the box, Confetti comes with `Web` and `Api` middleware groups that contain common middlewares you may want to apply to your web UI and API routes. Let's see how the Web middleware group might look like:
 
-``` go 
+``` go
 package middleware
 
 import "github.com/confetti-framework/contract/inter"
