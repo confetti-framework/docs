@@ -26,6 +26,10 @@ Every command also includes a "help" screen which displays and describes the com
 
     go run main.go your:command --help
 
+With command flag --env-file you can define a path for your env file:
+
+    go run main.go your:command --env-file ".env.testing"
+
 ## Baker (REPL)
 
 Baker is a powerful REPL for the Confetti framework, forked from the motemen/gore package. Baker allows you to interact with your entire Confetti application on the command line.
