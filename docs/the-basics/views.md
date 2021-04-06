@@ -19,24 +19,25 @@ import (
     "confetti/config"
 )
 
+//go:embed homepage.gohtml
+var homepageTemplate string
+
 type homepage struct {
-    Name    string
-    template string
+    Name string
 }
 
 func Homepage(name string) *homepage {
     return &homepage{
-        Name:     name,
-        template: config.Path.Views + "/homepage.gohtml",
+        Name: name,
     }
 }
 
 func (e homepage) Template() string {
-    return e.template
+    return homepageTemplate
 }
 ```
 
-Since the view is stored at `resources/views/homepage.go` and method `Template` points to `homepage.gohtml`, you have to
+Since the view is stored at `resources/views/homepage.go` and `//go:embed` points to `homepage.gohtml`, you have to
 create `resources/views/homepage.gohtml`:
 
 ``` html
