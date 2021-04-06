@@ -17,7 +17,7 @@ Your `.env` file should not be committed to your application's source control, s
 
 If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By putting placeholder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application.
 
-> With command flag --env-file you can define a path for your env file: `go run main.go app:serve --env-file ".env.testing"`
+> With command flag --env-file you can define a path for your env file: `go run . app:serve --env-file ".env.testing"`
 
 ### Retrieving Environment Configuration
 
