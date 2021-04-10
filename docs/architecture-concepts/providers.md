@@ -9,7 +9,7 @@ Service providers are loaded once (so before requests takes place). And can ther
 
 But, what do we mean by "bootstrapped"? In general, we mean **registering** things, including registering service container bindings, event listeners, and even routes. Service providers are the central place to configure your application.
 
-If you open the `app/providers/provider.go` file included with Confetti, you will see a `Providers` struct. These are all the service providers that will be loaded for your application.
+If you open the `app/providers/provider_index.go` file included with Confetti, you will see a `Providers` struct. These are all the service providers that will be loaded for your application.
 
 In this overview you will learn how to write your own service providers and register them with your Confetti application.
 
@@ -79,7 +79,7 @@ func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container
 
 ## Registering Providers
 
-All service providers are registered in the `app/providers/provider.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Confetti core service providers are listed in this struct. These providers bootstrap the core Confetti components, such as the mailer, queue, cache, and others.
+All service providers are registered in the `app/providers/provider_index.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Confetti core service providers are listed in this struct. These providers bootstrap the core Confetti components, such as the mailer, queue, cache, and others.
 
 To register your provider, add it to the slices:
 
