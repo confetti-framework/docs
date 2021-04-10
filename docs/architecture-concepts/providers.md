@@ -79,7 +79,7 @@ func (r ComposerServiceProvider) Boot(container inter.Container) inter.Container
 
 ## Registering Providers
 
-All service providers are registered in the `app/providers/provider.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Confetti core service providers are listed in this struct. These providers bootstrap the core Confetti components, such as the mailer, queue, cache, and others.
+All service providers are registered in the `app/providers/provider_index.go` file. This file contains a `Providers` struct where you can list the struct names of your service providers. By default, a set of Confetti core service providers are listed in this struct. These providers bootstrap the core Confetti components, such as the mailer, queue, cache, and others.
 
 To register your provider, add it to the slices:
 
