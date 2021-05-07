@@ -59,7 +59,7 @@ func Contact(request inter.Request) inter.Response {
 
 ```
 
-`outcome.Json(data)` is responsible for converted the data to json and it automatically gets the correct headers. More information about responses, consult the [Response Documentation](../the-basics/responses). If you want to get values from the request, then you can read the [Request Documentation](../the-basics/requests). It is recommended to validate incoming data. Take a look at the [Validation Documentation](../the-basics/validation).
+`outcome.Json(data)` is responsible for converting the data to json and it automatically gets the correct headers. More information about responses, consult the [Response Documentation](../the-basics/responses). If you want to get values from the request, then you can read the [Request Documentation](../the-basics/requests). It is recommended to validate incoming data. Take a look at the [Validation Documentation](../the-basics/validation).
 
 ### Route
 
