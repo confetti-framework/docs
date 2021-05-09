@@ -12,7 +12,7 @@ The easiest way to set up Confetti is with Docker. It automatically detects chan
 1. Download and start [Docker](https://docs.docker.com/get-docker/).
 1. Download Confetti code from [GitHub](https://github.com/confetti-framework/confetti).
 1. Open the folder with the code in your terminal and make sure Docker is running.
-1. Then run `docker-compose up` in your terminal to start confetti. The first time it takes a while for everything to be downloaded.
+1. Then run `docker-compose up --build` in your terminal to start confetti. The first time it takes a while for everything to be downloaded.
 1. After that, the homepage is available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 ### Standard
@@ -35,3 +35,7 @@ You can also use the Go integration in your favorite editor. Here is a step-by-s
 1. The homepage is now available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 _You can set a shortcut to rebuild after every modification._
+
+### Update Modules
+
+If you are using a new version of Confetti or other modules, you can run `go get -u all` to download the correct modules.
