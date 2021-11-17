@@ -11,11 +11,11 @@ These configuration files allow you to configure things like your database conne
 
 It is often helpful to have different configuration values based on the environment where the application is running. For example, you may wish to use a different cache driver locally than you do on your production server.
 
-To make this a cinch, Confetti utilizes the [GoDotEnv](https://github.com/joho/godotenv) library by John Barton. In a fresh Confetti installation, the root directory of your application will contain a `.env` file.
+To make this a cinch, Confetti utilizes the [GoDotEnv](https://github.com/joho/godotenv) library by John Barton. In a fresh Confetti installation, the root directory of your application will contain a `.env.example` file. Copy this to `.env` file.
 
 Your `.env` file should not be committed to your application's source control, since each developer / server using your application could require a different environment configuration. Furthermore, this would be a security risk in the event an intruder gains access to your source control repository, since any sensitive credentials would get exposed.
 
-If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By putting placeholder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application.
+If you are developing with a team, you may wish to edit the `.env.example` file with your application. By putting placeholder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application.
 
 > With command flag --env-file you can define a path for your env file: `go run . app:serve --env-file ".env.testing"`
 
