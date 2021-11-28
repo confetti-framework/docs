@@ -5,17 +5,6 @@
 
 One of the advantages of Confetti is that it is 'Developer friendly'. That starts with the installation of the framework. There are 3 easy ways to get Go and Confetti working:
 
-### Docker
-
-The easiest way to set up Confetti is with Docker. It automatically detects changes, and you get a MySQL database and a Redis instance (without additional configuration).
-
-1. Download and start [Docker](https://docs.docker.com/get-docker/).
-1. Download Confetti code from [GitHub](https://github.com/confetti-framework/confetti).
-1. Open the folder with the code in your terminal and make sure Docker is running.
-1. Create your .env file by copying .env.example: `cp .env.example .env`
-1. Then run `docker-compose up --build` in your terminal to start confetti. The first time it takes a while for everything to be downloaded.
-1. After that, the homepage is available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
-
 ### Standard
 
 Or you can download and install only Go and Confetti on your computer.
@@ -36,6 +25,17 @@ You can also use the Go integration in your favorite editor. Here is a step-by-s
 1. The homepage is now available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 _You can set a shortcut to rebuild after every modification._
+
+### Docker
+
+The easiest way to set up Confetti is with Docker. It automatically detects changes, and you get a MySQL database and a Redis instance (without additional configuration).
+
+1. Download and start [Docker](https://docs.docker.com/get-docker/).
+1. Download Confetti code from [GitHub](https://github.com/confetti-framework/confetti).
+1. Open the folder with the code in your terminal and make sure Docker is running.
+1. Create your .env file by copying .env.example: `cp .env.example .env`
+1. Then run `docker-compose up --build` in your terminal to start confetti. The first time it takes a while for everything to be downloaded.
+1. After that, the homepage is available at [http://localhost/](http://localhost/) and API endpoint /ping is available at [http://localhost/api/ping](http://localhost/api/ping).
 
 ### Update Modules
 
