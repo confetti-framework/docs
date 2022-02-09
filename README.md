@@ -1,6 +1,6 @@
 # The Confetti documentation.
 
-View the documentation at: [confetti-framework.com](https://confetti-framework.com)
+View the documentation at: [https://confetti-framework.github.io/docs/](https://confetti-framework.github.io/docs/)
 
 ## License
 
