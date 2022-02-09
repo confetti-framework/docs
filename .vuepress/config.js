@@ -10,7 +10,7 @@ module.exports = {
    */
   description: description,
 
-  base: '',
+  base: '/docs/',
 
   /**
    * Extra tags to be injected to the page HTML `<head>`
@@ -40,10 +40,6 @@ module.exports = {
         link: 'https://github.com/confetti-framework/confetti',
       },
       {
-        text: 'Twitter / News',
-        link: 'https://twitter.com/ConfettiFw',
-      },
-      {
         text: 'Becoming a sponsor',
         link: 'https://www.patreon.com/confetti_framework',
       },
@@ -57,9 +53,9 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 0,
           children: [
-            '/docs/get-started/meet',
-            '/docs/get-started/installation',
-            '/docs/get-started/your-first-project',
+            '/get-started/meet',
+            '/get-started/installation',
+            '/get-started/your-first-project',
           ]
         },
         {
@@ -67,9 +63,9 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 1,
           children: [
-            '/docs/architecture-concepts/lifecycle',
-            '/docs/architecture-concepts/container',
-            '/docs/architecture-concepts/providers',
+            '/architecture-concepts/lifecycle',
+            '/architecture-concepts/container',
+            '/architecture-concepts/providers',
           ]
         },
         {
@@ -77,15 +73,15 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 3,
           children: [
-              '/docs/the-basics/configuration',
-              '/docs/the-basics/routing',
-              '/docs/the-basics/middleware',
-              '/docs/the-basics/requests',
-              '/docs/the-basics/responses',
-              '/docs/the-basics/views',
-              '/docs/the-basics/validation',
-              '/docs/the-basics/errors',
-              '/docs/the-basics/logging',
+              '/the-basics/configuration',
+              '/the-basics/routing',
+              '/the-basics/middleware',
+              '/the-basics/requests',
+              '/the-basics/responses',
+              '/the-basics/views',
+              '/the-basics/validation',
+              '/the-basics/errors',
+              '/the-basics/logging',
           ]
         },
         {
@@ -93,7 +89,7 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 3,
           children: [
-              '/docs/digging-deeper/commands',
+              '/digging-deeper/commands',
           ]
         },
         {

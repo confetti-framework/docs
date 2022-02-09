@@ -62,7 +62,7 @@ body.dark-mode, .dark-mode .navbar, .dark-mode .navbar .links, .dark-mode aside.
   color: rgb(175, 184, 189);
 }
 .dark-mode .search-box input {
-    background: #07a7b81c url(/assets/img/search.83621669.svg) 0.6rem 0.5rem no-repeat;
+    background: #07a7b81c url(/docs/assets/img/search.83621669.svg) 0.6rem 0.5rem no-repeat;
 }
 
 .dark-mode div[class*="language-"] .highlight-lines .highlighted {
