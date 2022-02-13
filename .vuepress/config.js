@@ -40,6 +40,10 @@ module.exports = {
         link: 'https://github.com/confetti-framework/confetti',
       },
       {
+        text: 'Twitter / News',
+        link: 'https://twitter.com/ConfettiFw',
+      },
+      {
         text: 'Becoming a sponsor',
         link: 'https://www.patreon.com/confetti_framework',
       },
