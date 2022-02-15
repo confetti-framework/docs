@@ -79,7 +79,7 @@ func (s SendEmails) Handle(c inter.Cli) inter.ExitCode {
 	mailer := support.DripEmailer{}
 	mailer.Send(s.Email)
 
-  c.Info("Email send to: %s", s.Email)
+	c.Info("Email send to: %s", s.Email)
 
 	return inter.Success
 }
