@@ -1,18 +1,15 @@
-/**
- * Custom Styles here.
- *
- * ref：https://v1.vuepress.vuejs.org/config/#index-styl
- */
-
-.home .hero img
-  max-width 150px!important
+.home .hero img {
+  max-width: 150px !important;
+}
 
 .content__default a:-webkit-any-link {
     text-decoration: underline;
 }
+
 svg.icon.outbound {
     display: none;
 }
+
 a>span {
     display: none;
 }

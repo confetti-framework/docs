@@ -1,5 +1,4 @@
 # Responses
-<ToggleDarkMode/>
 
 ## Creating Responses
 
@@ -95,7 +94,7 @@ Or you can use `outcome.Redirect` to determine the HTTP status yourself.
 
 ``` go
 outcome.Redirect("home/dashboard", net.StatusPermanentRedirect)
-```    
+```
 
 ### Redirecting To External Domains
 
@@ -103,7 +102,7 @@ Sometimes you may need to redirect to a domain outside of your application. Even
 
 ``` go
 return outcome.RedirectTemporary("https://github.com/confetti-framework")
-```    
+```
 
 ### Redirecting To Named Routes
 
@@ -111,7 +110,7 @@ When you call the `outcome.RedirectToRoute` function with the route name, the us
 
 ``` go
 return outcome.RedirectToRoute(request.App(), "login")
-```    
+```
 
 If your route has parameters, you may pass them as an extra argument to the method:
 

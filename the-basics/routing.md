@@ -1,5 +1,4 @@
 # Routing
-<ToggleDarkMode/>
 
 ## Basic Routing
 
@@ -218,7 +217,7 @@ func (r RouteModelBinding) Handle(request inter.Request, next inter.Next) inter.
 
 Later you can retrieve the user from the container:
 
-``` go   
+``` go
 user := request.Make("user").(model.User)
 ```
 

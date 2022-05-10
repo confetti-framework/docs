@@ -1,5 +1,4 @@
 # Configuration
-<ToggleDarkMode/>
 
 ## Introduction
 

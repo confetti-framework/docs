@@ -1,5 +1,4 @@
 # Commands
-<ToggleDarkMode/>
 
 ## Introduction
 

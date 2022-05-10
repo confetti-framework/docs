@@ -1,5 +1,4 @@
 # Service Providers
-<ToggleDarkMode/>
 
 ## Introduction
 

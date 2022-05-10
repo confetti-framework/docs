@@ -1,5 +1,4 @@
 # Error Handling
-<ToggleDarkMode/>
 
 ## Introduction
 
