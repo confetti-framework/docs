@@ -1,5 +1,4 @@
 # Request Lifecycle
-<ToggleDarkMode/>
 
 ## Introduction
 

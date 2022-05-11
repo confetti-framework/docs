@@ -1,5 +1,4 @@
 # Views
-<ToggleDarkMode/>
 
 ## Creating Views
 

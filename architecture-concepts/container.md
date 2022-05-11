@@ -1,5 +1,4 @@
 # Service Container
-<ToggleDarkMode/>
 
 ## Introduction
 

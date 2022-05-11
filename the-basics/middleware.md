@@ -1,5 +1,4 @@
 # Middleware
-<ToggleDarkMode/>
 
 ## Introduction
 

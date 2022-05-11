@@ -1,5 +1,4 @@
 # Logging
-<ToggleDarkMode/>
 
 ## Introduction
 
