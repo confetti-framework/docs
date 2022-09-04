@@ -1,9 +1,9 @@
+import { docsearchPlugin } from '@vuepress/plugin-docsearch'
+import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
+import { defaultTheme } from '@vuepress/theme-default'
+import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
+import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 const { description } = require('../package.json')
-const { docsearchPlugin } = require('@vuepress/plugin-docsearch')
-const { defaultTheme } = require('@vuepress/theme-default')
-const { backToTopPlugin } = require('@vuepress/plugin-back-to-top')
-const { mediumZoomPlugin } = require('@vuepress/plugin-medium-zoom')
-const { googleAnalyticsPlugin } = require('@vuepress/plugin-google-analytics')
 
 
 module.exports = {
