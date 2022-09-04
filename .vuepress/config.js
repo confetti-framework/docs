@@ -6,7 +6,7 @@ import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 const { description } = require('../package.json')
 
 
-module.exports = {
+const config = {
     title: 'Confetti',
     description: description,
     base: '/docs/',
@@ -103,3 +103,5 @@ module.exports = {
         }),
     ],
 }
+
+export default config
