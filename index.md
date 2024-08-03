@@ -2,14 +2,15 @@
 home: true
 heroText: Confetti
 heroImage: https://avatars1.githubusercontent.com/u/57274804?s=400&u=058242df13e206950c08efd68a540445ce4da17f&v=4
-tagline: Confetti is a Go web application framework with an expressive, elegant syntax. Confetti combines the elegance of Laravel and the simplicity of Go.
+#tagline: Confetti provides a foundation with idiomatic Go, but with the ease and documentation of a frameworks.
+tagline: ‼️This is under construction and will be released in September 2024.‼️
 actions:
   - text: Get Started
     link: /get-started/meet
     type: primary
 features:
 - title: Developer friendly
-  details: Your project starts simple, yet all possibilities are within reach.
+  details: We take you step by step to write idiomatic Go code.
 - title: Easily adaptable
   details: Confetti consists of small parts that are easily adjustable.
 - title: No magic
