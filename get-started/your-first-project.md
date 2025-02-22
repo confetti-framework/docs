@@ -14,7 +14,7 @@ package controllers
 
 import (
 	"net/http"
-	"path/to/your/project/internal/pkg/handler" // Adjust the import path as needed.
+	"src/internal/pkg/handler"
 )
 
 // ContactContactShow handles API requests to retrieve contact information.
