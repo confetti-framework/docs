@@ -22,7 +22,7 @@ main
 
 ### Your First Command
 
-To create a command in Confetti CMS, you need to implement the `Command` interface:
+To create a command in Confetti Framework, you need to implement the `Command` interface:
 
 ```go
 type Command interface {
@@ -169,5 +169,5 @@ func (s AppStatus) Handle() error {
 }
 ```
 
-By following this structure, you can easily create and manage CLI commands in Confetti CMS.
+By following this structure, you can easily create and manage CLI commands in Confetti Framework.
 

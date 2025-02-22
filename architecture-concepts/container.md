@@ -10,7 +10,7 @@ In many other web frameworks, such as Ruby on Rails and Laravel, dependency inje
 
 ## Basics
 
-The Confetti CMS uses Go's `context.Context` to manage dependencies and handle dependency injection in a structured and idiomatic way. Dependency injection is a design pattern where struct dependencies are provided externally rather than created inside the struct itself.
+You can use Go's `context.Context` to manage dependencies and handle dependency injection in a structured and idiomatic way. Dependency injection is a design pattern where struct dependencies are provided externally rather than created inside the struct itself.
 
 Let's look at a simple example:
 
@@ -20,8 +20,6 @@ ctx = context.WithValue(ctx, "userRepository", NewUserRepository())
 ```
 
 In this example, the `User` struct needs to retrieve users from a data source. We **inject** a service that retrieves users via `context.WithValue`, allowing us to easily swap out implementations or mock dependencies for testing.
-
-A deep understanding of how `context` works in Confetti CMS is essential for building scalable applications and contributing to the Confetti core.
 
 ## Using Context for Dependency Injection
 

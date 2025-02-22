@@ -1,6 +1,6 @@
-# Routing in Confetti CMS
+# Routing
 
-This documentation explains how to handle HTTP requests in Confetti CMS using standard Go techniques and the built-in routing system with `handler.New()`. This provides full control over routes and middleware without external libraries.
+This documentation explains how to handle HTTP requests in Confetti Framework using standard Go techniques and the built-in routing system with `handler.New()`. This provides full control over routes and middleware without external libraries.
 
 ## Defining Routes
 
@@ -67,8 +67,6 @@ handler.New("GET /users/{$}", user.List)
 ```
 
 ## Working with Route Parameters
-
-Confetti CMS uses the built-in Go 1.22+ `request.PathValue()` function to retrieve route parameters.
 
 ### Example:
 

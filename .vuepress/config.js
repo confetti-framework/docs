@@ -62,7 +62,6 @@ const config = {
                 '/the-basics/middleware',
                 '/the-basics/requests',
                 '/the-basics/responses',
-                '/the-basics/views',
                 '/the-basics/validation',
                 '/the-basics/errors',
                 '/the-basics/logging',
