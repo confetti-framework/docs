@@ -10,7 +10,7 @@ To view a list of all available commands, run the script without further command
 go run main.go
 ```
 
-Or if the application is built, use the executable binary:
+Or, if the application is built, use the executable binary:
 
 ```sh
 main
@@ -20,7 +20,7 @@ main
 
 ### Your First Command
 
-To create a command in Confetti Framework, implement the `Command` interface:
+In Confetti Framework, each command implements the `Command` interface:
 
 ```go
 type Command interface {
@@ -30,24 +30,20 @@ type Command interface {
 }
 ```
 
-Each command must define a name, description, and a handler function to execute its logic.
-
-### Command Structure
-
-Place your commands inside the `command` package and register them in `cmd/api/main.go`.
+Each command must define a name, description, and a handler function to execute its logic. Commands should be placed inside the `command` package and registered in `cmd/api/main.go`.
 
 ## Defining Input Expectations with the Standard Go Approach
 
 ### Flags
 
-Commands can accept flags to modify their behavior. Instead of using an abstract `request.Input`, the Go way is to use the standard `flag` package.
+Commands can accept flags to modify their behavior. The idiomatic Go way is to use the built-in `flag` package.
 
 #### Options With Values
 
 For example, to create a command that accepts a name flag:
 
 ```go
-package main
+package command
 
 import (
     "flag"
@@ -55,49 +51,26 @@ import (
     "os"
 )
 
-func main() {
-    // Define the flag
-    name := flag.String("name", "", "Name of the user")
-    // Parse the command-line flags
-    flag.Parse()
+type UserCreate struct{}
 
-    // Validate that the flag is provided
-    if *name == "" {
-        fmt.Fprintln(os.Stderr, "Error: --name flag is required")
-        os.Exit(1)
-    }
-
-    // Use the flag value
-    fmt.Println("Name provided:", *name)
+func (u UserCreate) Name() string {
+    return "user:create"
 }
-```
 
-You can run this command as follows:
+func (u UserCreate) Description() string {
+    return "Create a new user with the specified name"
+}
 
-```sh
-go run main.go --name "John Doe"
-```
-
-#### Option Shortcuts
-
-To support shorter flag names, you can define additional flags:
-
-```go
-package main
-
-import (
-    "flag"
-    "fmt"
-    "os"
-)
-
-func main() {
-    // Define both the long and short versions for the same purpose
+func (u UserCreate) Handle() error {
+    // Define a flag for the user's name.
     name := flag.String("name", "", "Name of the user")
+    // Alternatively, you can also support a shorthand flag.
     n := flag.String("n", "", "Name of the user (shorthand)")
+    
+    // Parse command-line flags.
     flag.Parse()
 
-    // Prefer the long flag if provided, otherwise use the short flag
+    // Prefer the long flag if provided, otherwise use the short flag.
     userName := *name
     if userName == "" {
         userName = *n
@@ -109,15 +82,22 @@ func main() {
     }
 
     fmt.Println("Name provided:", userName)
+    return nil
 }
+```
+
+You can run the command as follows:
+
+```sh
+go run main.go user:create --name "John Doe"
 ```
 
 #### Flag Arrays
 
-If a flag expects multiple input values, you can accept a comma-separated string and split it:
+When a flag expects multiple input values, accept a comma-separated string and split it:
 
 ```go
-package main
+package command
 
 import (
     "flag"
@@ -126,9 +106,19 @@ import (
     "strings"
 )
 
-func main() {
-    // Define the flag that expects a comma-separated list
-    idsStr := flag.String("ids", "", "Comma-separated list of IDs (e.g., 1,2,3)")
+type MailSend struct{}
+
+func (m MailSend) Name() string {
+    return "mail:send"
+}
+
+func (m MailSend) Description() string {
+    return "Send mail to a list of user IDs"
+}
+
+func (m MailSend) Handle() error {
+    // Define a flag that accepts a comma-separated list of IDs.
+    idsStr := flag.String("ids", "", "Comma-separated list of user IDs (e.g., 1,2,3)")
     flag.Parse()
 
     if *idsStr == "" {
@@ -136,18 +126,19 @@ func main() {
         os.Exit(1)
     }
 
-    // Split the string into a slice
+    // Split the string into a slice.
     ids := strings.Split(*idsStr, ",")
     fmt.Println("IDs provided:", ids)
+    return nil
 }
 ```
 
 ### Checking If a Flag Is Provided
 
-In the Go way, you check if a flag has been provided by verifying whether its value is not the empty string (or using any other default you set):
+In the Go approach, you check whether a flag was provided by validating its value (e.g., checking for an empty string):
 
 ```go
-package main
+package command
 
 import (
     "flag"
@@ -155,7 +146,17 @@ import (
     "os"
 )
 
-func main() {
+type CheckFlag struct{}
+
+func (c CheckFlag) Name() string {
+    return "flag:check"
+}
+
+func (c CheckFlag) Description() string {
+    return "Check if the name flag is provided"
+}
+
+func (c CheckFlag) Handle() error {
     name := flag.String("name", "", "Name of the user")
     flag.Parse()
 
@@ -165,6 +166,7 @@ func main() {
         fmt.Fprintln(os.Stderr, "Error: --name flag is required")
         os.Exit(1)
     }
+    return nil
 }
 ```
 
@@ -172,14 +174,14 @@ func main() {
 
 ### Retrieving Input
 
-Instead of a custom input object, simply use the flag package to retrieve values as demonstrated above.
+Using the standard library, simply retrieve the flag values as shown above.
 
 ### Prompting For Input
 
 For interactive input (when flags are not enough), use Go’s standard input methods:
 
 ```go
-package main
+package command
 
 import (
     "bufio"
@@ -187,17 +189,28 @@ import (
     "os"
 )
 
-func main() {
+type Interactive struct{}
+
+func (i Interactive) Name() string {
+    return "interactive:prompt"
+}
+
+func (i Interactive) Description() string {
+    return "Prompt the user for input interactively"
+}
+
+func (i Interactive) Handle() error {
     reader := bufio.NewReader(os.Stdin)
     fmt.Print("Enter your name: ")
     name, _ := reader.ReadString('\n')
     fmt.Println("Hello,", name)
+    return nil
 }
 ```
 
 ### Writing Output
 
-To send output to the console, use:
+Output to the console using:
 
 ```go
 fmt.Println("Hello, World!")
@@ -211,19 +224,31 @@ fmt.Fprintln(os.Stderr, "An error occurred")
 
 ## Registering Commands
 
-When you’re building a CLI with multiple commands, register each command in `cmd/api/main.go`:
+When building a CLI with multiple commands, register each command in `cmd/api/main.go`:
 
 ```go
-var commands = []Command{
-    command.ApiList{},
-    command.AppServe{},
+package main
+
+import (
+    "yourproject/command"
+)
+
+var commands = []command.Command{
+    command.UserCreate{},
+    command.MailSend{},
+    command.CheckFlag{},
+    command.Interactive{},
     command.AppStatus{},
+}
+
+func main() {
+    // Your logic to select and execute the command based on input.
 }
 ```
 
 ## Example: Checking Application Status and Uptime
 
-Here’s an example of a command that checks application status and uptime:
+Below is an example of a command that checks the application status and uptime, with flag parsing performed directly in the `Handle()` method:
 
 ```go
 package command
@@ -248,20 +273,24 @@ func (s AppStatus) Description() string {
 }
 
 func (s AppStatus) Handle() error {
-    // For demonstration, we could define flags specific to this command
+    // Define a flag for demonstration purposes.
     dummyFlag := flag.String("dummy", "", "A dummy flag for example purposes")
+    
+    // Parse the command-line flags.
     flag.Parse()
-
-    // Check if dummy flag is provided
+    
+    // Validate that the dummy flag is provided.
     if *dummyFlag == "" {
         fmt.Fprintln(os.Stderr, "Error: --dummy flag is required")
         os.Exit(1)
     }
-
+    
+    // Calculate and print the application uptime.
     uptime := time.Since(s.startTime)
     fmt.Printf("Application is running. Uptime: %s\n", uptime)
+    
     return nil
 }
 ```
 
-By following these updated examples, you can easily create and manage CLI commands in Confetti Framework using the idiomatic Go approach.
+In this example, flag parsing and validation are done within the `Handle()` method. If the `--dummy` flag is not provided, an error is printed to standard error and the application exits. Otherwise, the command calculates and displays the application uptime.
