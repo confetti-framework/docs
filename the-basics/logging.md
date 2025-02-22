@@ -1,25 +1,10 @@
-# Logging and Error Reporting in Confetti
+# Logging and Error Reporting
 
 ## Introduction
 
 In Go, logging is typically handled using the built-in `log` package, which lets you record informational messages, warnings, and errors. Confetti leverages this approach to provide a consistent, centralized mechanism for error reporting. All errors returned by your controllers are processed by a central error handler, and the default logging behavior can be customized by modifying the file `internal/pkg/handler/error.go`.
 
-## Logging in Go
-
-Go’s standard `log` package is simple and effective. For example:
-
-```go
-import "log"
-
-func main() {
-    log.Println("This is an informational message.")
-    log.Printf("Formatted message: %s", "example")
-}
-```
-
-This approach prints messages to standard output by default, but you can easily reconfigure it to log to files or external systems if necessary.
-
-## Logging in Confetti
+## Logging
 
 In Confetti, your controllers only need to return errors when something goes wrong. The framework’s centralized error handler logs these errors and sends appropriate responses to the client. This separation of concerns means your controller code stays focused on business logic.
 

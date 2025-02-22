@@ -47,7 +47,7 @@ func otherFunction() {
 
 In this example, the `doSomething` function returns an error if a problem occurs. In the `otherFunction` function, we immediately check if an error was returned using an `if` statement. This pattern is prevalent throughout Go code and encourages writing robust, clear, and maintainable programs.
 
-## Error Handling in Confetti Controllers
+## Error Handling Controllers
 
 Confetti follows the same idiomatic error handling practices as described above. In Confetti controllers, your handler functions return an error, allowing centralized error management by the framework. This keeps your controllers focused on handling requests while delegating error processing to a central location.
 
@@ -69,7 +69,7 @@ To streamline error handling further, Confetti differentiates between:
   ```
   This returns a structured error response that can be safely presented to the user.
 
-### Controller Example in Confetti
+### Controller Example
 
 Below is an example of a controller in Confetti that demonstrates error handling:
 

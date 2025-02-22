@@ -1,4 +1,4 @@
-# Middleware in Confetti
+# Middleware
 
 ## Introduction
 
