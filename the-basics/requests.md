@@ -1,278 +1,200 @@
 # Requests
 
+This documentation explains how to access and handle HTTP requests using normal Go code. Whether you’re working directly with the standard library or creating a custom request struct for specific needs, these examples will guide you.
+
 ## Accessing The Request
 
-In the parameter from a controller you get a `inter.Request` instance. From the request you can view all information
-that has been sent to you. Think for example of cookies, headers, body and query parameters.
+In a typical Go controller, you receive a `*http.Request` object along with the response writer. This object contains all the information sent by the client—such as cookies, headers, the body, and query parameters.
 
-``` go
+### Example Controller
+
+```go
 package controller
 
 import (
-    "github.com/confetti-framework/contract/inter"
-    "github.com/confetti-framework/routing/outcome"
+	"fmt"
+	"net/http"
 )
 
-func UserStore(request inter.Request) inter.Response {
-    name := request.Parameter("name").String()
-
-    return outcome.Html("Username:" + name)
+// UserShow handles a request by reading a query parameter "name"
+// and writing a simple HTML response.
+func UserShow(response http.ResponseWriter, request *http.Request) error {
+	// Retrieve a query parameter from the URL.
+	name := request.URL.Query().Get("name")
+	
+	// Write the response.
+	fmt.Fprintf(response, "Username: %s", name)
+	return nil
 }
 ```
 
-More information about receiving a parameter, see: [Route Parameters](routing.html#route-parameters)
+## Accessing The Request Via Route Closures
 
-### Accessing The Request Via Route Closures
+Registering a route with a callback instead of a predefined function:
 
-You can also receive the `request` interface on a route Closure. Confetti inject the incoming request into the Closure
-when it is executed:
-
-``` go
-Get("/", func(request inter.Request) inter.Response {
-    //
-})
-```
-
-### Original Request
-
-If you need to use `net.Request` for a library, or you want information that is only available in the original Golang
-request. Then you can retrieve it by the `Source` method:
-
-``` go
-request.Source().URL.Scheme
-```
-
-### Request Path & Method
-
-The `inter.Request` instance provides a variety of methods for examining the HTTP request for your application. We will
-discuss a few of the most important methods below.
-
-#### Retrieving The Request Path
-
-The `Path` method returns the request's path information. So, if the incoming request is targeted
-at `http://domain.com/foo/bar`, the `Path` method will return `foo/bar`:
-
-``` go
-path := request.Path()
-```
-
-#### Retrieving The Request URL
-
-To retrieve the full URL for the incoming request you may use the `Url` or `FullUrl` methods. The `Url` method will
-return the URL without the query string, while the `FullUrl` method includes the query string:
-
-##### Without Query String:
-``` go
-url := request.Url()
-```
-
-##### With Query String:
-``` go
-url := request.FullUrl()
-```
-
-#### Retrieving The Request Method
-
-The `Method` method will return the HTTP verb for the request:
-
-``` go
-method := request.Method()
-```
-
-You may use the `IsMethod` helper method to verify that the HTTP verb matches a given string:
-
-``` go
-if http_helper.IsMethod(request, method.Post) {
-    //
+```go
+var ApiRoutes = []handler.Route{
+	handler.New("POST /users", func(response http.ResponseWriter, request *http.Request) error {
+    	// Retrieve a query parameter from the URL.
+    	name := request.URL.Query().Get("name")
+  	
+    	// Write the response.
+    	fmt.Fprintf(response, "Username: %s", name)
+    	return nil
+	}),
 }
 ```
 
-## Retrieving Input Value
+## Using a Custom Request Struct
 
-### Retrieving An Input Value
+If you need a separate request struct for a specific request to simplify validation or processing, you can define your own. For example:
 
-Using a few simple methods, you may access the user input from your `http.request` instance. Depending on the `Content-Type` header, the `Content` method may be used to retrieve user input:
+```go
+package request
 
-``` go
-name := request.Content("name").String()
-```
-
-You may pass a default value as the second argument to the `ContentOr` method. This value will be returned if the requested input value is not present on the request:
-
-``` go
-name := request.ContentOr("name", "Sally").String()
-```
-
-When working with forms that contain array inputs, use "dot" notation to access the arrays:
-
-``` go
-name := request.Content("names.1").String()
-name, err := request.Content("names.1").StringE()
-names := request.Content("names.*").Collection()
-```
-
-You may call the `Content` method with an empty string in order to retrieve all of the input values as support.Map:
-
-``` go
-requestValues = request.Content("").Map()
-```
-
-### Retrieving JSON Input Values
-
-When sending JSON requests to your application, you may access the JSON data via the `Body` method as long as the `Content-Type` header of the request is properly set to `application/json`. You may even use "dot" syntax to dig into JSON arrays:
-
-``` go
-name := request.Content("data.address.street").String()
-```
-
-### Retrieving Raw Content Data
-
-To receive the data as it was sent, use the `Body` method. In that case you will always receive a string
-
-``` go
-rawContent := request.Body()
-```
-
-### Retrieving Input From The Query String
-
-While the `Content` method retrieves values from the request payload, the `Parameter` method will retrieve values from the url, and the query string:
-
-``` go
-name := request.Parameter("name")
-```
-
-You may pass a default value as the second argument to the `ParameterOr` method. If the requested query string value data is not present, the second argument to this method will be returned:
-
-``` go
-name := request.ParameterOr("name", "Sally").String()
-```
-
-You may call the `Parameter` method with an empty string in order to retrieve all the query string values as support.Map:
-
-``` go
-parameters := request.Parameter("").Map()
-```
-
-### Retrieving Boolean Input Values
-
-When dealing with HTML elements like checkboxes, your application may receive "truthy" values that are actually strings. For example, "true" or "on". For convenience, you may use the `Bool` method to retrieve these values as booleans. The `Bool` method returns `true` for 1, "1", true, "true", "on", and "yes". All other values will return `false`:
-
-``` go
-archived := request.Content("archived").Bool()
-```
-
-### Retrieving A Portion Of The Input Data
-
-If you need to retrieve a subset of the input data, you may use the `Only` and `Except` methods. Both of these methods accept dynamic list of arguments:
-
-``` go
-request.Content("data.user").Map().Only("username", "password")
-request.Content("data.user").Map().Except("username", "password")
-```
-
-> The `only` method returns all of the key / value pairs that you request; however, it will not return key / value pairs that are not present on the request.
-
-### Determining If An Input Value Is Present
-
-You should use the `Has` method to determine if a value is present on the request. The `Has` method returns `true` if
-the value is present on the request:
-
-``` go
-user := request.Content("data.user").Map()
-if user.Has("name") {
-    //
+// CreateUserRequest defines the expected structure of the incoming JSON payload.
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 ```
 
-When given multiple strings, the `Has` method will determine if all of the specified values are present:
+Then, in your controller, decode the request body into this struct:
 
-``` go
-user := request.Content("data.user").Map()
-if user.Has("name", "email") {
-    //
+```go
+package controller
+
+import (
+	"encoding/json"
+	"net/http"
+	"your_project/request"
+)
+
+// CreateUser handles a JSON payload by decoding it into a custom request struct.
+func CreateUser(response http.ResponseWriter, request *http.Request) error {
+	var reqData request.CreateUserRequest
+
+	if err := json.NewDecoder(request.Body).Decode(&reqData); err != nil {
+		http.Error(response, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	// Use reqData.Name and reqData.Email as needed.
+	response.Write([]byte("User created successfully"))
 }
 ```
 
-The `HasAny` method returns `true` if any of the specified values are present:
+## Request Path & Method
 
-``` go
-user := request.Content("data.user").Map()
-if user.HasAny("name", "email") {
-    //
+You can access the request path, full URL, and method using the standard `*http.Request` fields and methods.
+
+### Retrieving The Request Path
+
+For example, if the URL is `http://domain.com/foo/bar`, the path can be accessed via:
+
+```go
+path := request.URL.Path
+```
+
+### Retrieving The Request URL
+
+To get the full URL including the query string:
+
+```go
+fullUrl := request.URL.String()
+```
+
+### Retrieving The Request Method
+
+The HTTP method is available as:
+
+```go
+method := request.Method
+```
+
+## Retrieving Input Values
+
+### Query Parameters
+
+Retrieve values from the URL query string:
+
+```go
+name := request.URL.Query().Get("name")
+```
+
+You can also access all query parameters:
+
+```go
+queryParams := request.URL.Query()
+```
+
+### Form Data
+
+For form submissions (typically via POST), you can parse the form data:
+
+```go
+request.ParseForm() // Always check the error in production code
+name := request.Form.Get("name")
+```
+
+### JSON Body Data
+
+When handling JSON requests, decode the JSON payload into a struct or map:
+
+```go
+var payload struct {
+	Name string `json:"name"`
+}
+
+if err := json.NewDecoder(request.Body).Decode(&payload); err != nil {
+	http.Error(response, "Invalid JSON", http.StatusBadRequest)
+	return
 }
 ```
 
-To determine if a given key is absent from the request, you may use the `Missing` method:
+### Raw Request Body
 
-``` go
-user := request.Content("data.user").Map()
-if user.Missing("name") {
-    //
+To get the raw request body as a string:
+
+```go
+import "io"
+
+bodyBytes, err := io.ReadAll(request.Body)
+if err != nil {
+	http.Error(response, "Error reading body", http.StatusInternalServerError)
+	return
 }
+bodyString := string(bodyBytes)
 ```
 
-If you would like to determine if a value is present on the request and is not empty, you may use the `Filled` method:
+## Retrieving Cookies
 
-``` go
-user := request.Content("data.user").Map()
-if user.Filled("name") {
-    //
+Access cookies using the `request.Cookie` method:
+
+```go
+cookie, err := request.Cookie("session_id")
+if err != nil {
+	// handle error or missing cookie
 }
+sessionID := cookie.Value
 ```
-
-> If you have a slice with multiple keys, you can use the spread operator: `.Has(keys...)`
-
-### Retrieving Cookies From Requests
-
-To retrieve a cookie value from the request, use the `Cookie` method on a `inter.Request` instance:
-
-``` go
-latestPage := request.Cookie("latest_page")
-latestPage, err := request.CookieE("latest_page")
-```
-
-If you are looking for how to set a cookie, you can read [Attaching Cookies To Responses](responses.html#attaching-cookies-to-responses)
-
-> If you want to receive all original cookies, you can get the cookies from source by `request.Source().Cookies()`
 
 ## Files
 
-### Retrieving Uploaded Files
+### Handling Uploaded Files
 
-You may access uploaded files from a `inter.Request` instance using the `File` method. The `File` method returns an
-instance of the `support.File`, which holds the Go `multipart.File` interface (via `file.Source()`) and provides a variety of methods for
-interacting with the file:
+For file uploads, use `request.FormFile`:
 
-``` go
-file := request.File("photo")
-file, err := request.FileE("photo")
-```
-
-Or you can use the `Files` method to retrieve multiple files:
-
-``` go
-files := request.Files("photos")
-files, err := request.FilesE("photos")
-```
-
-You may determine if a file is present on the request:
-
-``` go
-if file, err := request.FileE("photo"); err == nil {
-    //
+```go
+file, header, err := request.FormFile("photo")
+if err != nil {
+	http.Error(response, "Error retrieving file", http.StatusBadRequest)
+	return
 }
+defer file.Close()
+// header.Filename contains the original filename.
 ```
 
-### File Paths & Extensions
+## Conclusion
 
-The `support.File` struct also contains methods for accessing the file's fully-qualified path and its extension.
-The `Extension` method will attempt to guess the file's extension based on its contents. This extension may be different
-from the extension that was supplied by the client:
-
-``` go
-name := request.File("photo").Name()
-// photo.jpg
-
-extension := request.File("photo").Extension()
-// .jpg
-```
+Using standard Go techniques for handling requests provides you with full control and flexibility. Whether you use the default `*http.Request` for most operations or create a custom request struct for specific needs, you can easily access query parameters, form data, JSON payloads, cookies, and file uploads. This approach keeps your application straightforward and idiomatic.

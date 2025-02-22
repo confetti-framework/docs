@@ -1,38 +1,34 @@
 # Meet Confetti
 
-Confetti is a web framework written in Go (Golang).
-The web framework consists of the most important components to create your application.
-The goal of Confetti is to give you all the tools you need to write fast, secure and scalable code.
+Confetti is a lightweight web framework written in Go (Golang) that provides all the essential components to build your web application. Its purpose is to equip you with the tools necessary to write fast, secure, and scalable code.
 
-Whether you are new to Go or web frameworks or have years of experience, Confetti is a perfect framework that fits into any web development project.
+Whether you’re new to Go and web frameworks or a seasoned developer, Confetti is designed to seamlessly integrate into any web development project.
 
 ## Why Confetti?
 
-Writing good Go code is often different than you are used to.
-You are used to habits from Ruby on Rails or Laravel, for example.
-Providing a standard for all the necessary features can really help you.
+Writing idiomatic Go code often requires a different approach compared to frameworks like Ruby on Rails or Laravel. Confetti offers a standardized set of features that streamline development, making it easier to maintain high-quality code.
 
-> Confetti combines the elegance of a framework and the simplicity of Go.
+> Confetti combines the elegance of a framework with the simplicity and power of Go.
 
-## Feel at home
+## Feel at Home
 
-If you feel at home, we have achieved a goal. Here is an example to make you feel at home. If you don't understand the following, don't feel overwhelmed. The documentation will guide you.
+Our goal is for you to feel right at home with Confetti. To help you get started, here’s a quick example. Don’t worry if it looks unfamiliar at first—the comprehensive documentation will guide you every step of the way.
 
-``` go
+```go
 package status
 
 func Index(response http.ResponseWriter, request *http.Request) error {
-	// Create a map to store the CPU information
+	// Create a map to store status information
 	data := map[string]any{}
 
-	// Get the number of CPUs and store in the map
+	// Set the status to "active"
 	data["status"] = "active"
 
 	return handler.ToJson(response, data, http.StatusOK)
 }
 ```
 
-With built-in routing and middlewares:
+With built-in routing and middleware support:
 ```go
 var ApiRoutes = []handler.Route{
 	handler.New("GET /status", status.Index).AppendMiddleware(auth.Middleware("status/index")),

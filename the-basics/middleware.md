@@ -1,180 +1,140 @@
-# Middleware
+# Middleware in Confetti
 
 ## Introduction
 
-Middleware provide a convenient mechanism for filtering HTTP requests entering your application. Additional middleware
-can be written to perform a variety of tasks. A CORS middleware might be responsible for adding the proper headers to
-all responses leaving your application. A logging middleware might log all incoming requests to your application.
+Middleware are components that sit between the incoming HTTP request and your controller logic. They allow you to execute code before and/or after a request is handled. This is particularly useful for tasks such as authentication, logging, request modification, and response transformation. In Confetti, middleware helps keep your controller code clean by handling cross-cutting concerns in a centralized manner.
 
-There are several middleware included in the Confetti framework. All of these middleware are located in
-the `app/http/middleware` directory.
+## Creating a Middleware
 
-## Defining Middleware
+A middleware in Confetti is typically implemented as a type that provides a `Handle` method. This method wraps your controller function, allowing you to execute custom logic before and/or after the controller is called.
 
-Let's place a new `EnsureTokenIsValid` struct within your `app/http/middleware` directory. In this middleware, we will only allow access to the route if the supplied `token` is valid. Otherwise, we will redirect the users back to the `home` URI:
+### Basic Middleware Example
 
-``` go
+Below is an example of a simple logging middleware that logs the request method and URL before passing control to the next handler:
+
+```go
 package middleware
 
 import (
-    "github.com/confetti-framework/contract/inter"
-    "github.com/confetti-framework/routing/outcome"
+	"log"
+	"net/http"
+	"src/internal/pkg/handler"
 )
 
-type EnsureTokenIsValid struct{}
+// LoggingMiddleware is a simple middleware that logs requests.
+type LoggingMiddleware struct{}
 
-func (c EnsureTokenIsValid) Handle(request inter.Request, next inter.Next) inter.Response {
-    if request.Parameter("token").String() != "my-secret-token" {
-        return outcome.RedirectTemporary("home")
-    }
-
-    return next(request)
-}
-```
-
-To pass the request deeper into the application (allowing the middleware to "pass"), call the `next` callback with the `request`. Then the request will be passed further into the application.
-
-It's best to envision middleware as a series of "layers" HTTP requests must pass through before they hit your application. Each layer can examine the request and even reject it entirely.
-
-> The request contains the [service container](../architecture-concepts/container), so you may fetch any dependencies you need with `request.Make(...)`.
-
-### Before & After Middleware
-
-Whether a middleware runs before or after a request depends on the middleware itself. For example, the following middleware would perform some task **before** the request is handled by the application:
-
-``` go {10-12}
-package middleware
-
-import (
-    "github.com/confetti-framework/contract/inter"
-)
-
-type BeforeMiddleware struct{}
-
-func (c BeforeMiddleware) Handle(request inter.Request, next inter.Next) inter.Response {
-
-    // Perform action
-
-    return next(request)
-}
-```
-
-However, this middleware would perform its task **after** the request is handled by the application:
-
-``` go {11-13}
-package middleware
-
-import (
-    "github.com/confetti-framework/contract/inter"
-)
-
-type AfterMiddleware struct{}
-
-func (c AfterMiddleware) Handle(request inter.Request, next inter.Next) inter.Response {
-    response := next(request)
-
-    // Perform action
-
-    return response
+// Handle wraps a controller with logging functionality.
+func (l LoggingMiddleware) Handle(next handler.Controller) handler.Controller {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		// Before: Log the incoming request
+		log.Printf("Incoming request: %s %s", req.Method, req.URL.Path)
+		
+		// Call the next handler in the chain
+		err := next(w, req)
+		
+		// After: Optionally log the outcome (if needed)
+		if err != nil {
+			log.Printf("Error processing request: %v", err)
+		}
+		
+		return err
+	}
 }
 ```
 
 ## Registering Middleware
 
-### Global Middleware
+Once you’ve created your middleware, you need to register it with your routes. In Confetti, routes are defined with the helper `handler.New` function. You can append middleware to a route using a method like `AppendMiddleware`.
 
-If you want a middleware to run during every HTTP request to your application, list the middleware struct in
-the `globalMiddlewares` variable in your `providers.RouteServiceProvider` located
-in `app/providers/route_service_provider.go`.
+### Registering a Middleware for a Route
 
-### Assigning Middleware To Routes
+Below is an example of how to register the `LoggingMiddleware` with a specific route:
 
-If you would like to assign middleware to specific routes, you can use the `Middleware` method to pass the struct of the middleware:
+```go
+package routes
 
-``` go {2-5}
-Get("/admin/profile", controllers.AdminProfileStore).
-    Middleware(
-        middleware.ValidatePostSize{},
-        middleware.CheckAge{},
-    )
-```
-
-When assigning middleware to a group of routes, you may occasionally need to prevent the middleware from being applied to an individual route within the group. You may accomplish this using the `WithoutMiddleware` method:
-
-``` go {4}
-routes := Group(
-    Get("/roles", controllers.Roles),
-    Get("/comments", controllers.Comments).
-        WithoutMiddleware(middleware.CheckAge{}),
-).Middleware(
-    middleware.ValidatePostSize{},
-    middleware.CheckAge{},
+import (
+	"src/internal/pkg/handler"
+	"src/internal/controllers"
+	"src/internal/middleware"
 )
-```
 
-The `WithoutMiddleware` method can only remove route middleware and does not apply to [global middleware](#global-middleware). Supply parameters to the struct of WithoutMiddleware has no effect and is therefore superfluous.
-
-### Middleware Groups
-
-Sometimes you may want to group several middleware under a single key to make them easier to assign to routes. We call this Middleware Groups.
-
-Out of the box, Confetti comes with `Web` and `Api` middleware groups that contain common middlewares you may want to apply to your web UI and API routes. Let's see how the Web middleware group might look like:
-
-``` go
-package middleware
-
-import "github.com/confetti-framework/contract/inter"
-
-var Web = []inter.HttpMiddleware{
-    EncryptCookies{},
-    AddQueuedCookiesToResponse{},
-    StartSession{},
-    ShareErrorsFromSession{},
-    VerifyCsrfToken{},
-    SubstituteBindings{},
+var ApiRoutes = []handler.Route{
+	handler.New("GET /api/example", controllers.ExampleController).
+		AppendMiddleware(middleware.LoggingMiddleware{}),
 }
 ```
 
-Middleware groups can be loaded by using the spread operator in the `Middleware` method. Again, middleware groups make it more convenient to assign many middlewares to a route at once:
+In this example, every time the `/api/example` endpoint is hit, the `LoggingMiddleware` will execute before the `ExampleController` is called.
 
-``` go {3}
-Group(
-    //
-).Middleware(middleware.Web...)
-```
+## Handy Middleware Examples
 
-> Out of the box, the `Web` middleware group is automatically applied to your web routes by `routes/web.go`.
+### 1. Authentication Middleware
 
-## Middleware Parameters
+This middleware checks whether the request contains the proper authentication token or permission before allowing it to proceed.
 
-Middleware can also receive additional parameters. For example, if your application needs to verify that the authenticated user has a given "role" before performing a given action, you could create a `CheckRole` middleware that receives a role name as an additional public field.
-
-``` go {10,14}
+```go
 package middleware
 
 import (
-    "github.com/confetti-framework/contract/inter"
-    "github.com/confetti-framework/routing/outcome"
-    "confetti/src/request-adapter"
+	"net/http"
+	"src/internal/pkg/handler"
 )
 
-type CheckRole struct{
-    Role string
+// AuthMiddleware checks for the required permission.
+type AuthMiddleware struct {
+	Permission string
 }
 
-func (c CheckRole) Handle(request inter.Request, next inter.Next) inter.Response {
-    if requestAdapter.CurrentUser(request).Role() != c.Role {
-        return outcome.RedirectTemporary("/home")
-    }
+// Handle wraps a controller with authentication logic.
+func (a AuthMiddleware) Handle(next handler.Controller) handler.Controller {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		// Perform authentication check (this is just a placeholder).
+		if req.Header.Get("Authorization") == "" {
+			return handler.NewUserError("Unauthorized: missing token", http.StatusUnauthorized)
+		}
+		// Optionally check for specific permissions.
+		// if !hasPermission(req, a.Permission) { ... }
 
-    return next(request)
+		// Proceed to the next handler if authenticated.
+		return next(w, req)
+	}
 }
 ```
 
-You can pass the parameters to the public fields of the middleware:
+### 2. Request Validation Middleware
 
-``` go
-Group(
-    //
-).Middleware(middleware.CheckRole{Role: "editor"})
+This middleware validates the incoming request data before it reaches the controller.
+
+```go
+package middleware
+
+import (
+	"encoding/json"
+	"net/http"
+	"src/internal/pkg/handler"
+)
+
+// ValidateMiddleware ensures that the request body conforms to expected structure.
+type ValidateMiddleware struct{}
+
+// Handle parses and validates the request body.
+func (v ValidateMiddleware) Handle(next handler.Controller) handler.Controller {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		var data map[string]any
+		decoder := json.NewDecoder(req.Body)
+		if err := decoder.Decode(&data); err != nil {
+			return handler.NewUserError("Invalid request payload", http.StatusBadRequest)
+		}
+
+		// You could attach validated data to the request context here.
+		// For simplicity, we proceed to the next handler.
+		return next(w, req)
+	}
+}
 ```
+
+## Conclusion
+
+Middleware in Confetti offers a powerful and flexible way to handle common tasks such as logging, authentication, and validation without cluttering your controller logic. By creating reusable middleware components and registering them with your routes, you can ensure a clean separation of concerns, maintainable code, and a consistent behavior across your application.

@@ -1,270 +1,115 @@
-# Error Handling
+# Error Handling in Go and Confetti
 
-## Introduction
+## Go’s Approach to Error Handling
 
-Error handling is very different in Go than in other languages. With Go the following applies: The more time you spend
-on errors, the faster bugs can be found. It therefore deserves its own chapter.
+In Go, error handling is explicit and straightforward—there are no exceptions or try/catch blocks like in some other languages. Instead, functions that might fail return an `error` as an additional return value. The caller then checks this value using simple `if` statements. This approach has several benefits:
 
-## Panic And Return Errors
+- **Clarity and Simplicity:**  
+  Every function call that might fail forces the developer to consider the error case explicitly.
+  
+- **No Hidden Control Flow:**  
+  Errors are not thrown and caught elsewhere in the code, making the program's flow easier to understand and debug.
+  
+- **Better Composability:**  
+  Functions can be composed more naturally since error handling is part of the function’s return values.
 
-In other languages you throw an exception (or error). If the caller wants to do something based on that error, then you
-have to catch the error. This is very different with Go. The error is passed on until you can do something with it.
-If you want to stop the process and just fire the error, you can use `panic`.
+### Example of Standard Go Error Handling
 
-### Return Errors
+Here’s a short example that demonstrates the typical pattern in Go:
 
-The most common way is to return the error from the function:
+```go
+package main
 
-``` go
-import "github.com/confetti-framework/errors"
+import (
+	"errors"
+	"fmt"
+)
 
-var NoUserFound = errors.New("no user found")
+// doSomething performs an action that might fail.
+func doSomething() error {
+	// Simulate an error condition.
+	if true { // Imagine this condition checks for an error
+		return errors.New("something went wrong")
+	}
+	return nil
+}
 
-func GetUser() (model.User, error) {
-    //
-
-    if (user == nil) {
-        return users.NewUnregistredUser(), NoUserFound
-    }
-
-    return user, nil
+func otherFunction() {
+	if err := doSomething(); err != nil {
+		// Handle the error immediately.
+		fmt.Println("Error:", err)
+		return
+	}
+	// Continue with the normal flow if no error occurred.
+	fmt.Println("Success!")
 }
 ```
 
-The following example shows how the caller can handle the error.
+In this example, the `doSomething` function returns an error if a problem occurs. In the `otherFunction` function, we immediately check if an error was returned using an `if` statement. This pattern is prevalent throughout Go code and encourages writing robust, clear, and maintainable programs.
 
-``` go
-user, err := GetUser()
-if err == NoUserFound {
-    //
+## Error Handling in Confetti Controllers
+
+Confetti follows the same idiomatic error handling practices as described above. In Confetti controllers, your handler functions return an error, allowing centralized error management by the framework. This keeps your controllers focused on handling requests while delegating error processing to a central location.
+
+### System Errors vs. User Errors
+
+To streamline error handling further, Confetti differentiates between:
+
+- **System Errors:**  
+  These represent internal issues that should not expose sensitive information. Use:
+  ```go
+  handler.NewSystemError(err, "reference")
+  ```
+  This wraps the underlying error with a reference string to help trace the issue without revealing details to the end-user.
+
+- **User Errors:**  
+  These are errors caused by user input or actions, which should provide clear feedback. Use:
+  ```go
+  handler.NewUserError("Descriptive error message", http.StatusBadRequest)
+  ```
+  This returns a structured error response that can be safely presented to the user.
+
+### Controller Example in Confetti
+
+Below is an example of a controller in Confetti that demonstrates error handling:
+
+```go
+package controllers
+
+import (
+	"errors"
+	"net/http"
+	"src/internal/pkg/handler"
+)
+
+// ProcessData handles an API request and demonstrates error handling.
+func ProcessData(response http.ResponseWriter, req *http.Request) error {
+	// Check for a valid HTTP method.
+	if req.Method != http.MethodPost {
+		return handler.NewUserError("Invalid request method; POST required", http.StatusMethodNotAllowed)
+	}
+
+	// Attempt to process data.
+	err := doProcessing()
+	if err != nil {
+		// Return a system error to avoid exposing internal details.
+		return handler.NewSystemError(err, "processing_error")
+	}
+
+	// Return a successful JSON response if everything is okay.
+	return handler.ToJson(response, map[string]string{"status": "success"}, http.StatusOK)
+}
+
+func doProcessing() error {
+	// Simulate a processing error.
+	return errors.New("processing failed due to an unexpected issue")
 }
 ```
 
-#### Ignore Errors
+### Centralized Error Handling in Confetti
 
-If you want to use the default user when the error occurs, you could ignore the error by an underscore:
+Confetti centralizes error handling so that any error returned by your controllers is processed consistently in one place. This means you do not need to write repetitive error handling code in each controller, and you can configure logging, error reporting, or custom error responses centrally.
 
-``` go
-user, _ := GetUser()
-```
+> In your controllers, simply return the error, and Confetti’s error handler will manage it according to your configuration.
 
-#### Wrap
-
-By applying multiple layers, you can add more information to the error. You can use the `Wrap` method to prefix a
-message (with `validation error: no user found` as a result).
-
-``` go
-user, err := GetUser()
-err.Wrap("validation error")
-```
-
-#### Unwrap
-
-To receive the original error (after `Wrap`), you can use `Unwrap` (with `no user found` as a result):
-
-``` go
-err := errors.New("no user found").Wrap("validation error")
-err.Unwrap().Error()
-```
-
-#### Apply Stack Trace
-
-If you have a standard error, it does not contain a stack trace. Use function `Wrap` or `WithStack` To put the trace on
-it:
-
-``` go
-errors.Wrap(err, "can't connect to database")
-```
-
-``` go
-errors.WithStack(err)
-```
-
-#### Log Level
-
-The default log level is `Emergency`. To determine the log level you can use the `Level` method:
-
-``` go
-errros.New("username not found").Level(log_level.INFO)
-```
-
-#### HTTP Status
-
-The default HTTP status is `500 Internal Server Error`. To determine the response status you can use the `Status`
-method:
-
-``` go
-err := errros.New("username not found").Status(http.StatusNotFound)
-return outcome.Html(err)
-```
-
-#### Custom
-
-Do you want to add extra data to an error? In other languages you would extend a class. Go has a SOLID solution for
-this: Each error can be wrapped in multiple structs. To add data to an error you just have to create a wrapper
-yourself (which then also contains the original error). If you want to add an error code to your error, you can make te
-following:
-
-``` go
-func WithCode(err error, code string) *withCode {
-    if err == nil {
-        return nil
-    }
-    return &withCode{
-        err,
-        code,
-    }
-}
-
-type withCode struct {
-    cause error
-    code string
-}
-
-func (w *withCode) Error() string {
-    return w.cause.Error() + " with code " + w.code
-}
-
-func (w *withCode) Unwrap() error {
-    return w.cause
-}
-
-func (w *withCode) Code() string {
-    return w.code
-}
-```
-
-Then the error can build up like this:
-
-``` go
-WithCode(errros.New("username not found"), "external_error")
-```
-
-In method `Error()` above, we put 'code' behind the message. But if you want to adjust the response, you can determine
-this in `ResponseServiceProvider`.
-
-### Panic
-
-In case of a server error where the request cannot proceed, you could choose to use `panic`:
-
-``` go
-func GetUser() (model.User) {
-    con, err := db.Connection()
-    if (err != nil) {
-        panic(err)
-    }
-
-    //
-}
-```
-
-Confetti automatically ensures that the correct http response is generated.
-
-> Using panic can save you a lot of time. However, if you want to build a robust application, use `panic` only for critical or unexpected errors.
-
-### Message Convention
-
-As you can see above, you can supplement the error with more information. Therefore, it is a convention to use a
-lowercase letter at the beginning of an error. Also, a dot at the end of the sentence can cause that the sentence can't
-be made longer. The errors are eventually automatically capitalized at the beginning of the sense.
-
-## Helpers
-
-### Is
-
-An error can be made up of several layers with structs. If you want to know if a certain struct is present, you can use
-the `Is` helper. In the running example, `validateUser()` returns a `validationError` error:
-
-``` go
-var noUserFound = New("no user found")
-var validationError = Wrap(noUserFound, "validation error")
-
-err := validateUser()
-if errors.Is(err, noUserFound) {
-    // validationError contains noUserFound error
-}
-```
-
-### As
-
-If you want to retrieve a specific struct, you can use the `As` helper. Before calling `As`, you have to define what
-needs to be searched and filled (which may be a struct or an interface).
-
-``` go
-func FindCode(err error) (string, bool) {
-    var code string
-    var codeHolder *withCode
-
-    if !As(err, &codeHolder) {
-        return "unkown code", false
-    }
-
-    return codeHolder.code, true
-}
-```
-
-If you call As, a bool is returned on which you can check whether it was successful.
-
-## Configuration
-
-## Defining Errors
-
-For the sake of simplicity, you have seen examples where we place the errors above the functions. It would be better to
-have an overview of all errors that can occur in the system. You can define your errors in `app/report/errors.go`:
-
-``` go
-var UserNotFound = errors.New("user not found").Status(net.StatusBadRequest
-var Unauthorized = UserError.Status(net.StatusUnauthorized)
-```
-
-### Global Log Context
-
-If you want to add information to all errors, you can append that in `app/report/errors.go`. In the following example
- you can see that we apply `Status` and log `Level` globally:
-
-``` go
-var UserError = errors.New("").Status(net.StatusBadRequest).Level(log_level.INFO)
-var Unauthorized = UserError.Status(net.StatusUnauthorized)
-var SessionInvalid = Unauthorized.Wrap("session is not valid")
-var SessionExpired = Unauthorized.Wrap("session expired")
-```
-
-### Information Provision
-
-The `Debug` option in your `config/app.go` configuration file determines how much information about an error is actually
-displayed to the user. By default, this option is set to respect the value of the `APP_DEBUG` environment variable,
-which is stored in your `.env` file.
-
-For local development, you should set the `APP_DEBUG` environment variable to `true`. In your production environment,
-this value should always be `false`. If the value is set to `true` in production, you risk exposing sensitive
-configuration values to your application's end users.
-
-### Ignoring Errors By Type
-
-The `NoLogging` field in `config/errors.go` contains a slice of errors that will not be logged. For example, errors
-resulting from 404 errors, as well as several other types of errors, are not written to your log files. You may add
-other error types to this array as needed:
-
-``` go
-NoLogging: []error{
-    report.ValidationError,
-    report.NotFoundError,
-},
-```
-
-### Custom HTTP Error Pages
-
-Confetti makes it easy to display custom error pages. You can edit template `resources/views/error.gohtml` design your
-own error page. The following variables can be used when using this template:
-
-``` html
-{{- /*gotype: github.com/confetti-framework/foundation/encoder.ErrorView*/ -}}
-<html lang="{{.Locale}}">
-<h1>{{.AppName}}</h1>
-<h2>{{.Status}} | {{.Message}}</h2>
-<p>{{.StackTrace}}</p>
-```
-
-To add your own variables, you can edit the view placed in `resources/views/error.go`. Do you want to have even more
-control over how you convert errors to html? Than you can replace the `encoder.ErrorToHtml` in `ResponseServiceProvider`
-with your own encoder.
+By following these guidelines, you ensure that your application not only adheres to Go’s best practices for error handling but also benefits from a consistent and maintainable error management strategy within the Confetti framework.

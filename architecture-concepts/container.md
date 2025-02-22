@@ -1,150 +1,161 @@
-# Service Container
+Below is the full, updated documentation with the "Comparison with Other Frameworks" section moved to the top and the "Introduction" section renamed to "Basics":
 
-## Introduction
+---
 
-The Confetti service container is a powerful tool for managing struct dependencies and performing dependency injection. Dependency injection is a fancy phrase that essentially means this: struct dependencies are "injected" into the struct via the constructor or, in some cases, "setter" methods.
+# Context in Confetti CMS
+
+## Comparison with Other Frameworks
+
+In many other web frameworks, such as Ruby on Rails and Laravel, dependency injection is typically handled through a service container. These frameworks use a central registry to resolve dependencies automatically. In contrast, Go’s approach with `context.Context` is more explicit. While it requires passing context manually, it avoids hidden dependencies and global state, making applications easier to understand and test.
+
+## Basics
+
+The Confetti CMS uses Go's `context.Context` to manage dependencies and handle dependency injection in a structured and idiomatic way. Dependency injection is a design pattern where struct dependencies are provided externally rather than created inside the struct itself.
 
 Let's look at a simple example:
 
-``` go{17}
-package model
+```go
+ctx := request.Context()
+ctx = context.WithValue(ctx, "userRepository", NewUserRepository())
+```
+
+In this example, the `User` struct needs to retrieve users from a data source. We **inject** a service that retrieves users via `context.WithValue`, allowing us to easily swap out implementations or mock dependencies for testing.
+
+A deep understanding of how `context` works in Confetti CMS is essential for building scalable applications and contributing to the Confetti core.
+
+## Using Context for Dependency Injection
+
+### Adding Values to Context
+
+You can add dependencies to a `context.Context` instance using `context.WithValue`:
+
+```go
+ctx := context.WithValue(request.Context(), "db", NewDatabaseConnection())
+```
+
+This allows you to pass dependencies down through the request lifecycle without modifying function signatures.
+
+### Retrieving Values from Context
+
+To access values stored in the context, use `request.Context().Value`:
+
+```go
+db := request.Context().Value("db").(*DatabaseConnection)
+```
+
+### Passing Context in Controllers
+
+When handling HTTP requests in a controller, extract the context from the request:
+
+```go
+func Contact(response http.ResponseWriter, request *http.Request) error {
+    ctx := request.Context()
+    userRepo := ctx.Value("userRepository").(UserRepository)
+    users := userRepo.GetAll()
+    return json.NewEncoder(response).Encode(users)
+}
+```
+
+## Passing Context to Multiple Methods
+
+In most cases, context needs to be passed deeper into the application. This ensures that dependencies remain accessible throughout different layers of the application.
+
+```go
+func CreateUser(response http.ResponseWriter, request *http.Request) error {
+    ctx := request.Context()
+    return processBusinessLogic(ctx, response)
+}
+
+func processBusinessLogic(ctx context.Context, response http.ResponseWriter) error {
+    db := ctx.Value("db").(*DatabaseConnection)
+    users := fetchUsers(ctx, db)
+    return json.NewEncoder(response).Encode(users)
+}
+
+func fetchUsers(ctx context.Context, db *DatabaseConnection) []User {
+    return db.GetUsers()
+}
+```
+
+This pattern ensures that all methods have access to the necessary dependencies without relying on global state.
+
+## Binding Dependencies
+
+### Singleton Dependencies
+
+For dependencies that should persist throughout the application lifecycle (not only the request lifecycle), create a package `singleton` and call `singleton.Boot()` in `cmd/api/main.go` before we handle the commands (and requests):
+
+```go
+package singleton
 
 import (
-    "github.com/confetti-framework/contract/inter"
-    "github.com/confetti-framework/foundation"
-    "confetti/app/repository"
+	"context"
+	"time"
 )
 
-type User struct {
-    app        inter.App
-    repository repository.User
+var Ctx context.Context
+
+func init() {
+    Ctx = context.Background()
 }
 
-func NewUser(app inter.App) User {
-
-    // Receive the repository from the application container
-    userRepository := app.Make(repository.User{}).(repository.UserInterface)
-
-    return User{app: app, repository: userRepository}
-}
-
-func (u User) IsAdmin() bool {
-    return u.repository.HasRole(u, "admin")
+func Boot() {
+    Ctx = context.WithValue(Ctx, "app_started_at", time.Now())
 }
 ```
 
-In this example, the `User` struct needs to retrieve users from a data source. So, we will **inject** a service is able to retrieve users. In this context, our `User` struct most likely uses `UserRepository` to retrieve user information from the database. However, since the repository is injected, we are able to easily swap it out with another implementation. We are also able to easily "mock", or create a dummy implementation of the `repository.User` when testing our application.
+### Using Context in Middleware
 
-A deep understanding of the Confetti service container is essential to building a powerful, large application, as well as for contributing to the Confetti core itself.
+Middleware can be used to inject dependencies dynamically into the request context. Below is the simplified middleware example that generates a random request ID using a random string and attaches it to the context.
 
-## Binding
+```go
+package middleware
 
-### Binding Basics
+import (
+	"context"
+	"fmt"
+	"math/rand"
+	"net/http"
 
-Almost all of your service container bindings will be registered within [service providers](providers), so most of these examples will demonstrate using the container in that context.
-
-> There is no need to bind structs into the container if they do not depend on any interfaces. The container does not need to be instructed on how to build these objects, since it can automatically resolve these objects.
-
-#### Simple Bindings
-
-We can register a binding using the `Bind` method, passing the struct or interface that we wish to register along with a `Closure` that returns an instance of the struct:
-
-``` go
-app.Bind((*contract.ErrorHandling)(nil), function () {
-    return logging.Error{app, app.Make(http.Client{}).(http.Client)}
-}
-```
-
-Note that we can then use the container to resolve sub-dependencies of the object we are building.
-
-#### Binding A Singleton
-
-The `Singleton` method binds a struct or interface into the container that should only be resolved one time. Once a singleton binding is resolved, the same object instance will be returned on subsequent calls into the container:
-
-``` go
-app.Singleton(
-    model.User{},
-    func() interface{} {
-        return model.User{}
-    },
+	"src/internal/pkg/handler"
 )
+
+// RequestIDMiddleware adds a unique request ID to the context for each request.
+type RequestIDMiddleware struct{}
+
+// Handle generates a random request ID and attaches it to the context.
+func (m RequestIDMiddleware) Handle(next handler.Controller) handler.Controller {
+	return func(response http.ResponseWriter, request *http.Request) error {
+		// Generate a random request ID.
+		reqID := fmt.Sprintf("req-%d", rand.Intn(1000000))
+		// Attach the request ID to the request context.
+		ctx := context.WithValue(request.Context(), "requestID", reqID)
+		// Proceed with the next handler, passing the modified request.
+		return next(response, request.WithContext(ctx))
+	}
+}
 ```
 
-#### Binding Instances
+## Resolving Dependencies
 
-You may also bind an existing object instance into the container using the `Instance` method. The given instance will always be returned on subsequent calls into the container:
+### Resolving from Context
 
-``` go
-user := model.NewUser()
-app.Instance("admin.User", user)
+Retrieve values from the context:
+
+```go
+logger := request.Context().Value("logger").(Logger)
+logger.Log("Application started")
 ```
 
-### Binding Interfaces To Implementations
+### Handling Missing Values Gracefully
 
-A very powerful feature of the service container is its ability to bind an interface to a given implementation. For example, let's assume we have an `contract.EventPusher` interface and a `redis.EventPusher` implementation. Once we have coded our `redis.EventPusher` implementation of this interface, we can register it with the service container like so:
+Since `ctx.Value` returns `interface{}`, always check for `nil` before type assertion:
 
-``` go
-app.Bind(
-    (*contract.EventPusher)(nil),
-    redis.EventPusher{},
-)
-```
-
-This statement tells the container that it should inject the `redis.EventPusher` when a struct needs an implementation of `contract.EventPusher`. Now we can type-hint the `contract.EventPusher` interface in a constructor, or any other location where dependencies are injected by the service container:
-
-``` go
-eventPusher := app.Make((*contract.EventPusher)(nil)).(contract.EventPusher)
-```
-
-### Binding Without Abstract
-
-If you want to bind a struct, but do not want to use an abstract, you can also omit the abstract:
-
-``` go
-app.BindStruct(http.Client{})
-
-client := app.Make(http.Client{}).(http.Client)
-```
-
-### Extending Bindings
-
-The `Extend` method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The `Extend` method accepts a Closure, which should return the modified service, as its only argument. The Closure receives the service being resolved and the container instance:
-
-``` go
-(*app.Container()).Extend(redis.connection{}, func(service interface{}) interface{} {
-    service := service.(redis.Connection)
-    service.SetName("cache")
-
-    return service
-})
-```
-
-## Resolving
-
-You may use the `Make` method to resolve a concrete struct instance out of the container.
-
-The `Make` method accepts the name of the struct:
-``` go
-client := app.Make("http.Client").(http.Client)
-```
-
-An interface you wish to resolve:
-``` go
-client := app.Make((*http.ClientInterface)(nil)).(http.ClientInterface)
-```
-
-An struct you wish to resolve:
-``` go
-client := app.Make(http.Client{}).(http.Client)
-```
-
-An pointer/reference you wish to resolve:
-``` go
-var client http.Client
-app.Make(&client)
-```
-
-Use `MakeE` to get more control over the errors. For example, if you don't know if it can be resolved:
-``` go
-client, err := app.MakeE(http.Client{})
+```go
+if val := request.Context().Value("nonexistentKey"); val != nil {
+    value := val.(string)
+    fmt.Println(value)
+} else {
+    fmt.Println("Key not found in context")
+}
 ```

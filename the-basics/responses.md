@@ -1,201 +1,223 @@
 # Responses
 
-## Creating Responses
+This document explains how to create and manage HTTP responses using idiomatic Go code. In these examples, you'll see how to set headers, write response bodies, attach cookies, and handle redirects—all using the standard library.
 
-### Strings & Slices
+In idiomatic Go, it is perfectly acceptable to place logic in extra functions—as long as those functions are clear and straightforward. For example, we use a helper function (helper.ToJson) that is simple and can be easily adapted to your needs.
 
-All routes and controllers should return a response to be sent back to the user's browser. Confetti provides several
-different ways to return responses. The most basic response is returning a string from a route or controller with
-function `outcome.Html`. The framework will automatically convert the string into a full HTTP response:
+For JSON responses, we now use a helper function:
 
-``` go
-Get("/", func(_ inter.Request) inter.Response {
-    return outcome.Html("Hello World")
-}),
+```go
+return handler.ToJson(response, result, http.StatusCreated)
 ```
 
-In addition to returning strings from your routes and controllers, you may also return slices with
-function `outcome.Json`. The framework will automatically convert the slice into a JSON response:
+Feel free to customize the `handler.ToJson` function in `media/internal/pkg/handler/response.go` or create other response types as needed.
 
-``` go
-Get("/", func(_ inter.Request) inter.Response {
-    return outcome.Json([]int{1,2,3})
-}),
+## Creating Basic Responses
+
+### Simple String Response
+
+For a simple HTML or plain text response, set the appropriate `Content-Type` header and write the response body:
+
+```go
+func Index(response http.ResponseWriter, request *http.Request) error {
+    // Set the Content-Type header
+    response.Header().Set("Content-Type", "text/html")
+    // Write the HTML string as the response body
+    _, err := response.Write([]byte("Hello World"))
+    return err
+}
 ```
 
-> Did you know you can also return `support.Collection` and `support.Map` from your routes or controllers? They will automatically be converted to JSON. Give it a shot!
+### JSON Response
 
-### Response Objects
+To return JSON data, use the helper function. For example, returning a slice as JSON:
 
-Functions `outcome.Html`, `outcome.Json` and `outcome.Content` return an object with interface `inter.Response`. That
-allows you to customize the response's HTTP status code and headers:
-
-``` go {2-4}
-Get("home", func(_ inter.Request) inter.Response {
-    return outcome.Html("Hello World").
-        Status(200).
-        Header("Content-Type", "text/plain")
-}),
+```go
+func GetNumbers(response http.ResponseWriter, request *http.Request) error {
+    result := []int{1, 2, 3}
+    return handler.ToJson(response, result, http.StatusCreated)
+}
 ```
 
-`outcome.Html` and `outcome.Json` will add a Content-Type header. Use `outcome.Content` to add `Content-Type` header
-yourself.
+## Customizing the Response
 
-### Attaching Headers To Responses
+### Setting Status Codes and Headers
 
-Keep in mind that most response methods are chainable, allowing for the fluent construction of response instances. For
-example, you may use the `Header` method to add a series of headers to the response before sending it back to the user:
+You can set custom HTTP status codes and add multiple headers before writing the response body:
 
-``` go
-return outcome.Content("# Cool Stuff").
-    Header("Content-Type", "text/markdown", "charset=UTF-8").
-    Header("X-Header-One", "Header Value")
+```go
+func Home(response http.ResponseWriter, request *http.Request) error {
+    // Set custom headers
+    response.Header().Set("Content-Type", "text/plain")
+    response.Header().Set("X-Custom-Header", "Header Value")
+    // Write the HTTP status code (must be set before writing the body)
+    response.WriteHeader(http.StatusOK)
+    // Write the response body
+    _, err := response.Write([]byte("Hello World"))
+    return err
+}
 ```
 
-Or, you may use the `Headers` method to specify a slice of headers to be added to the response:
+### Attaching Multiple Headers
 
-``` go
-return outcome.Content("# Cool Stuff").
-    Headers(http.Header{
-        "Content-Type": {"application/markdown", "charset=UTF-8"},
-        "X-Header-One": {"Header Value"},
-    })
+Simply call `Header().Set` for each header you need to add:
+
+```go
+func CoolStuff(response http.ResponseWriter, request *http.Request) error {
+    response.Header().Set("Content-Type", "text/markdown; charset=UTF-8")
+    response.Header().Set("X-Header-One", "Header Value")
+    _, err := response.Write([]byte("# Cool Stuff"))
+    return err
+}
 ```
 
-### Attaching Cookies To Responses
+### Attaching Cookies
 
-The `Cookie` method on response instances allows you to easily attach cookies to the response. For example, you may use
-the `Cookie` method to generate a cookie and fluently attach it to the response instance like so:
+Use the standard `http.SetCookie` function to attach cookies to the response:
 
-``` go
-return outcome.Html("Hello World").
-    Cookie(http.Cookie{Name: "request_id", Value: "aGdsf89hA3jr2"})
+```go
+func SetCookieExample(response http.ResponseWriter, request *http.Request) error {
+    cookie := http.Cookie{
+        Name:  "request_id",
+        Value: "aGdsf89hA3jr2",
+        // Optionally add Path, Domain, etc.
+    }
+    http.SetCookie(response, &cookie)
+    response.Header().Set("Content-Type", "text/html")
+    _, err := response.Write([]byte("Cookie has been set"))
+    return err
+}
 ```
 
 ## Redirects
 
-Redirect responses are instances of the `outcome.redirectResponse` struct, and contain the proper headers needed to
-redirect the user to another URL. There are several ways to generate a `outcome.redirectResponse` instance. The simplest
-method is to use the `outcome.RedirectPermanent` or the `outcome.RedirectTemporary` function:
+### Temporary and Permanent Redirects
 
-``` go
-    Get("dashboard", func(_ inter.Request) inter.Response {
-        return outcome.RedirectPermanent("home/dashboard")
-    }),
+Redirects in Go are handled using `http.Redirect`, which sets the appropriate headers and status code:
+
+```go
+func Dashboard(response http.ResponseWriter, request *http.Request) error {
+    // Permanent redirect to "/home/dashboard"
+    http.Redirect(response, request, "/home/dashboard", http.StatusPermanentRedirect)
+    return nil
+}
+
+func Login(response http.ResponseWriter, request *http.Request) error {
+    // Temporary redirect to "/under_construction"
+    http.Redirect(response, request, "/under_construction", http.StatusFound)
+    return nil
+}
 ```
 
-``` go
-    Get("login", func(_ inter.Request) inter.Response {
-        return outcome.RedirectTemporary("under_construction")
-    }),
-```
+### Redirecting to External Domains
 
-Or you can use `outcome.Redirect` to determine the HTTP status yourself.
+To redirect to an external URL, simply specify the full URL:
 
-``` go
-outcome.Redirect("home/dashboard", net.StatusPermanentRedirect)
-```
-
-### Redirecting To External Domains
-
-Sometimes you may need to redirect to a domain outside of your application. Even then you can use the above methods:
-
-``` go
-return outcome.RedirectTemporary("https://github.com/confetti-framework")
-```
-
-### Redirecting To Named Routes
-
-When you call the `outcome.RedirectToRoute` function with the route name, the user will be redirected to that route.
-
-``` go
-return outcome.RedirectToRoute(request.App(), "login")
-```
-
-If your route has parameters, you may pass them as an extra argument to the method:
-
-``` go
-// For a route with the following URI: profile/{id}
-
-return outcome.RedirectToRoute(request.App(), "profile", outcome.Parameters{"id": 12})
-```
-
-### Redirecting To Controller Actions
-
-You may also redirect the request to controller actions. To do so, simply call the controller:
-
-``` go
-return controllers.Homepage(request)
+```go
+func RedirectExternal(response http.ResponseWriter, request *http.Request) error {
+    http.Redirect(response, request, "https://github.com/confetti-framework", http.StatusFound)
+    return nil
+}
 ```
 
 ## Other Response Types
 
-The `outcome` package may be used to generate other types of response instances. The `outcome` package provides several
-helpful function for generating responses.
+### JSON Response with a Map
 
-### JSON Responses
+Here's an example of returning JSON data using a map:
 
-The `outcome.Json` method will automatically set the `Content-Type` header to `application/json`, as well as convert the
-given object to JSON using `json.Marshal`:
-
-``` go
-return outcome.Json(map[string]string{
-    "name": "abigail",
-    "state": "CA",
-})
+```go
+func JSONResponse(response http.ResponseWriter, request *http.Request) error {
+    data := map[string]string{
+        "name":  "abigail",
+        "state": "CA",
+    }
+    return handler.ToJson(response, data, http.StatusCreated)
+}
 ```
 
-### View Responses
+> **Note:** Feel free to customize the `handler.ToJson` function in `media/internal/pkg/handler/response.go` or create other response types as needed.
 
-If you need control over the response's status and headers but also need to return a [view](views) as
-the response's content, you can use the `outcome.Html` method with a created view:
+### JSON Resource
 
-``` go
-return outcome.Html(views.Homepage("James")).Status(200)
+You can also define a struct to represent your data and return it as JSON:
+
+```go
+// UserResource represents the JSON structure for a user.
+type UserResource struct {
+    Name  string `json:"name"`
+    State string `json:"state"`
+}
+
+func StructJSONResponse(response http.ResponseWriter, request *http.Request) error {
+    user := UserResource{
+        Name:  "abigail",
+        State: "CA",
+    }
+    return handler.ToJson(response, user, http.StatusCreated)
+}
+```
+
+### Rendering a View (Template)
+
+To render an HTML view using Go templates, parse and execute the template, writing the output directly to the response:
+
+```go
+import (
+    "html/template"
+    "net/http"
+)
+
+func HomePage(response http.ResponseWriter, request *http.Request) error {
+    response.Header().Set("Content-Type", "text/html")
+    tmpl, err := template.New("homepage").Parse("<h1>Hello, {{.}}</h1>")
+    if err != nil {
+        http.Error(response, "Template error", http.StatusInternalServerError)
+        return err
+    }
+    return tmpl.Execute(response, "James")
+}
 ```
 
 ### File Downloads
 
-Function `Download` may be used to generate a response that forces the user's browser to download the file at the given
-path. The response of the `Download` method accepts the method `Filename`, which will determine the file name that is
-seen by the user downloading the file. `Content-Type` with MIME type is automatically filled in based on the file
-extension.
+For file downloads, set the `Content-Disposition` header to force a download and use `http.ServeFile`:
 
-``` go
-return outcome.Download(filePath)
-
-return outcome.Download(filePath).Filename("label.pdf")
-```
-
-The file may not be found. Instead of a panic, `DownloadE` allows you to choose to handle your errors with more love.
-
-``` go
-response, err := outcome.DownloadE(filePath)
-if err != nil {
-    return err.Level(log_level.NOTICE)
+```go
+func Download(response http.ResponseWriter, request *http.Request) error {
+    filePath := "path/to/file.pdf"
+    // Set the header to force download with a custom filename
+    response.Header().Set("Content-Disposition", "attachment; filename=\"label.pdf\"")
+    response.Header().Set("Content-Type", "application/pdf")
+    http.ServeFile(response, request, filePath)
+    return nil
 }
 ```
 
-> The file being downloaded need to have an ASCII file name.
-
 ### Streamed Downloads
 
-Sometimes you may wish to turn the string response of a given operation into a downloadable response without having to
-write the contents of the operation to disk. You may use the `Content` function in this scenario:
+To generate a download from in-memory content without writing a file to disk:
 
-``` go
-return outcome.Content("%PDF-1.5").
-    Header("Content-Type", "application/pdf").
-    FileName("labels.pdf")
+```go
+func StreamedDownload(response http.ResponseWriter, request *http.Request) error {
+    content := "%PDF-1.5"
+    response.Header().Set("Content-Disposition", "attachment; filename=\"labels.pdf\"")
+    response.Header().Set("Content-Type", "application/pdf")
+    _, err := response.Write([]byte(content))
+    return err
+}
 ```
 
-### Show In Browser
+### Show File in Browser
 
-Function `ShowInBrowser` may be used to display a file, such as an image or PDF, directly in the user's browser instead
-of initiating a download:
+To display a file (e.g., a PDF) directly in the browser without forcing a download, set the `Content-Disposition` to inline:
 
-``` go
-return outcome.Content("%PDF-1.5").
-    Header("Content-Type", "application/pdf").
-    ShowInBrowser()
+```go
+func ShowInBrowser(response http.ResponseWriter, request *http.Request) error {
+    content := "%PDF-1.5"
+    response.Header().Set("Content-Disposition", "inline")
+    response.Header().Set("Content-Type", "application/pdf")
+    _, err := response.Write([]byte(content))
+    return err
+}
 ```
