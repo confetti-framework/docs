@@ -1,5 +1,3 @@
-Below is the corrected documentation for using configuration files in your Confetti project:
-
 # Configuration
 
 ## Introduction
