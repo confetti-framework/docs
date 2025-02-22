@@ -36,7 +36,7 @@ var ApiRoutes = []handler.Route{
 ```
 
 <div style="display: flex; align-items: center; font-family: sans-serif;">
-  <img src="https://avatars.githubusercontent.com/u/25671390?v=4" alt="Alex Wulfheart" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 15px;">
+  <img src="https://avatars.githubusercontent.com/u/25671390?v=4" alt="Alex Wulfheart" style="width: 60px; height: 60px; border-radius: 50%; margin-top: 60px; margin-right: 15px;">
   <div>
     <p style="font-size: 16px; font-weight: bold; margin: 0;">"Using Confetti feels like coming home."</p>
     <p style="font-size: 14px; margin: 0;">— Alex Wulfheart</p>
