@@ -2,7 +2,7 @@ Below is the full, updated documentation with the "Comparison with Other Framewo
 
 ---
 
-# Context in Confetti CMS
+# Context
 
 ## Comparison with Other Frameworks
 
@@ -101,6 +101,33 @@ func init() {
 
 func Boot() {
     Ctx = context.WithValue(Ctx, "app_started_at", time.Now())
+}
+```
+
+#### Accessing the Singleton Value
+
+Anywhere in your code, you can import the `singleton` package and use `singleton.Ctx` to retrieve the global context. For example, in an HTTP handler you might want to show when the application started:
+
+```go
+package handler
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+	"myapp/singleton"
+)
+
+func PrintStartedAt(w http.ResponseWriter, r *http.Request) error {
+    // Retrieve the application start time from the global context.
+    startTime, ok := singleton.Ctx.Value("app_started_at").(time.Time)
+    if !ok {
+        return handler.NewSystemError(error.New("Application start time unavailable"), "processing_error")
+    }
+    
+    fmt.Fprintf(w, "Application started at: %v", startTime)
+
+    return nil
 }
 ```
 

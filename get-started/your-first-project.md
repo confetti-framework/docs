@@ -34,7 +34,7 @@ func ContactShow(response http.ResponseWriter, request *http.Request) error {
 To expose your API endpoint, register your controller in the API routes file—typically `routes/api.go`. Add the following route registration:
 
 ```go
-handler.New("GET /contact", controllers.Contact),
+handler.New("GET /contact", controllers.ContactShow),
 ```
 
 After rebuilding your application, your API endpoint will be available at [http://localhost/contact](http://localhost/contact).

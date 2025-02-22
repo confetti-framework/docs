@@ -50,7 +50,6 @@ const config = {
             children: [
               '/architecture-concepts/lifecycle',
               '/architecture-concepts/container',
-              '/architecture-concepts/providers',
             ]
           },
           {
