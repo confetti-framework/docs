@@ -1,4 +1,4 @@
-# Error Handling in Go and Confetti
+# Errors
 
 ## Go’s Approach to Error Handling
 
