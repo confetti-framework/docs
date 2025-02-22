@@ -18,8 +18,6 @@ In Go, error handling is explicit and straightforward—there are no exceptions 
 Here’s a short example that demonstrates the typical pattern in Go:
 
 ```go
-package main
-
 import (
 	"errors"
 	"fmt"

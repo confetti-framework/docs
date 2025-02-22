@@ -9,7 +9,7 @@ Good validation prevents bugs and enhances the security of your application. In 
 In this example, we validate the `CreateUser` request. The `ValidateCreateUser` function will handle the validation logic separately from the controller.
 
 ```go
-package main
+package user
 
 import (
     "encoding/json"
