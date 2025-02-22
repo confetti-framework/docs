@@ -75,14 +75,6 @@ const config = {
                 '/digging-deeper/commands',
             ]
           },
-          {
-            text: 'Discussions',
-            collapsible: true,
-            sidebarDepth: 1,
-            children: [
-                ['https://github.com/confetti-framework/confetti/discussions/110', 'ORM & Database '],
-            ]
-          },
         ],
     }),
     plugins: [
