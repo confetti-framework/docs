@@ -63,13 +63,20 @@ In most cases, context needs to be passed deeper into the application. This ensu
 ```go
 func CreateUser(response http.ResponseWriter, request *http.Request) error {
     ctx := request.Context()
-    return processBusinessLogic(ctx, response)
+    users, err := processBusinessLogic(ctx)
+    if err != nil {
+        return err
+    }
+    return json.NewEncoder(response).Encode(users)
 }
 
-func processBusinessLogic(ctx context.Context, response http.ResponseWriter) error {
-    db := ctx.Value("db").(*DatabaseConnection)
+func processBusinessLogic(ctx context.Context) ([]User, error) {
+    db, ok := ctx.Value("db").(*DatabaseConnection)
+    if !ok {
+        return nil, errors.New("database connection not found in context")
+    }
     users := fetchUsers(ctx, db)
-    return json.NewEncoder(response).Encode(users)
+    return users, nil
 }
 
 func fetchUsers(ctx context.Context, db *DatabaseConnection) []User {
