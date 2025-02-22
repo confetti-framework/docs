@@ -1,8 +1,8 @@
 ---
 home: true
-heroText: Confetti
+heroText: Confetti Framework
 heroImage: https://avatars1.githubusercontent.com/u/57274804?s=400&u=058242df13e206950c08efd68a540445ce4da17f&v=4
-tagline: Confetti provides a foundation with idiomatic Go, but with the ease and documentation of a frameworks.
+tagline: Confetti Framework enables you to write idiomatic Go on a robust foundation that makes building new applications effortless.
 actions:
   - text: Get Started
     link: /get-started/meet
